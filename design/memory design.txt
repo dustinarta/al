@@ -1,0 +1,23 @@
+Speech model{
+
+    _p : property of data 
+    _n : name of the data 
+    _l : line of data
+    _d : derived of data
+    _cd : code of data
+
+    _dt : data type
+    _nt : noun type (name, person)
+    _sp : speech type (noun, verb, adjective)
+    _ih : inheritance of the data
+    _cl : from collection of data
+
+    _an : as a noun
+    _av : as a verb
+    _aj : as an adjective
+    _ab : as an adverb
+
+    _ds : description of the data
+    _df : definition of the data
+    _st : statement of the data
+}

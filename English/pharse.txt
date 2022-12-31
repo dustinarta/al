@@ -1,0 +1,17 @@
+
+
+Adjective:
+    @ + Noun/Pronoun
+
+Adverb:
+    @ + Verb / Verb + @
+    @ + Adjective / Adjective + @
+    @ + Adverb / Adverb + @
+
+Preposition:
+    sentence + @ + sentence / @ + sentence, + sentence
+
+Conjunction:
+    sentence + @ + sentence / sentence, + @ + sentence / @ + sentence, + sentence
+    sentence + @ + sentence + @ + sentence
+    sentence; + @, + sentence

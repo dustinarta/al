@@ -1,0 +1,12 @@
+[gd_scene format=2]
+
+[node name="Pronoun" type="HBoxContainer"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="OptionPronoun" type="OptionButton" parent="."]
+margin_right = 84.0
+margin_bottom = 40.0
+text = "Personal"
+items = [ "Personal", null, false, 4, null, "Possesive", null, false, 1, null, "Demonstrative", null, false, 2, null, "Indefinite", null, false, 3, null ]
+selected = 0

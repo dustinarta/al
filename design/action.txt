@@ -1,0 +1,26 @@
+
+
+Conclude:
+	Ex = 
+	1. {
+		Info:
+			the apple is red.
+			sasha likes apple.
+		Conclusion:
+			sasha likes red.
+	}
+	2. {
+		Info:
+			if his height is more than 100 cm, then he is tall.
+			his height is 120 cm.
+		Conclusion:
+			he is tall.
+	}
+	3. {
+		Info:
+			if his height is more than 100 cm, then he is tall.
+			his height is 80 cm.
+		Conclusion:
+			he is not tall.
+	}
+	

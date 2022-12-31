@@ -1,0 +1,28 @@
+Speech Model
+{
+    speech = ["key", data_index],
+    subject = ["name", data_index],
+    data,
+    information
+}
+
+Base Model
+{
+    key = ["name", data_index, data_type],
+    who = [],
+}
+
+Tower Model
+{
+    speech = ["key", data_index],
+    data,
+    subject = ["name", property{}]
+}
+
+Table Model
+{
+    "table name" : [
+        ["column0", "column1", "column2"],
+        [value, value, value] //first row
+    ]
+}

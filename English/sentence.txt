@@ -1,0 +1,28 @@
+Sentence types:
+
+    by function:
+        Declarative:
+
+            Example:
+                I forgot to wear a hat today.
+                Your pizza is doughy because you didn’t cook it long enough.
+                Spiders and crabs are both members of the arthropod family.
+
+        Imperative:
+
+            Example:
+                Get off my lawn!
+                After the timer dings, take the cookies out of the oven.
+                Always pack an extra pair of socks.
+
+
+
+Sentence structure:
+
+    Declarative:
+        = noun/pronoun + verb#2 + noun/pronoun
+        = (conjunction + sentence), + (adjective) + noun/pronoun + (adverb) + verb#2 + (adverb) + (adjective) + noun/pronoun + (conjunction + sentence)
+        
+    Imperative:
+        = verb#2 + noun/pronoun
+        = (conjunction + sentence), + (adverb) + verb#2 + (adverb) + (adjective) + noun/pronoun + (conjunction + sentence)

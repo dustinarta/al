@@ -1,0 +1,133 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Speech Pusher/DataLine.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Speech Pusher/Dataset Pusher.gd" type="Script" id=2]
+[ext_resource path="res://Speech Pusher/Add.svg" type="Texture" id=3]
+[ext_resource path="res://Speech Pusher/dataScript.gd" type="Script" id=4]
+[ext_resource path="res://Speech Pusher/editScript.gd" type="Script" id=5]
+
+[sub_resource type="Theme" id=1]
+
+[node name="Main" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = SubResource( 1 )
+script = ExtResource( 2 )
+
+[node name="Panel" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Container" type="VBoxContainer" parent="Panel"]
+anchor_left = 0.01
+anchor_top = 0.0133333
+anchor_right = 1.01
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Menu" type="HBoxContainer" parent="Panel/Container"]
+margin_right = 800.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="btnOpen" type="Button" parent="Panel/Container/Menu"]
+margin_right = 47.0
+margin_bottom = 30.0
+text = "Open"
+
+[node name="openDialog" type="FileDialog" parent="Panel/Container/Menu/btnOpen"]
+margin_left = 154.0
+margin_top = 102.0
+margin_right = 608.0
+margin_bottom = 466.0
+rect_min_size = Vector2( 150, 52.5 )
+window_title = "Open a File"
+resizable = true
+mode = 0
+access = 2
+
+[node name="btnSave" type="Button" parent="Panel/Container/Menu"]
+margin_left = 51.0
+margin_right = 92.0
+margin_bottom = 30.0
+text = "Save"
+
+[node name="btnSaveas" type="Button" parent="Panel/Container/Menu"]
+margin_left = 96.0
+margin_right = 157.0
+margin_bottom = 30.0
+text = "Save As"
+
+[node name="saveasDialog" type="FileDialog" parent="Panel/Container/Menu/btnSaveas"]
+margin_left = 154.0
+margin_top = 102.0
+margin_right = 608.0
+margin_bottom = 466.0
+rect_min_size = Vector2( 150, 52.5 )
+popup_exclusive = true
+resizable = true
+access = 2
+
+[node name="Edit" type="HBoxContainer" parent="Panel/Container"]
+margin_top = 34.0
+margin_right = 800.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 0, 36 )
+focus_neighbour_top = NodePath("../Menu")
+focus_neighbour_bottom = NodePath("../Data")
+script = ExtResource( 5 )
+
+[node name="LineEdit" type="LineEdit" parent="Panel/Container/Edit"]
+margin_right = 200.0
+margin_bottom = 36.0
+rect_min_size = Vector2( 200, 16 )
+max_length = 255
+expand_to_text_length = true
+clear_button_enabled = true
+placeholder_text = "Set Text Here"
+
+[node name="btnPush" type="Button" parent="Panel/Container/Edit"]
+margin_left = 204.0
+margin_right = 247.0
+margin_bottom = 36.0
+text = "Push"
+
+[node name="labelSpeech" type="Label" parent="Panel/Container/Edit"]
+margin_left = 251.0
+margin_top = 11.0
+margin_right = 251.0
+margin_bottom = 25.0
+
+[node name="btnAddSpeech" type="OptionButton" parent="Panel/Container/Edit"]
+margin_left = 255.0
+margin_right = 394.0
+margin_bottom = 36.0
+text = "Speech Type..."
+icon = ExtResource( 3 )
+
+[node name="Data" type="ScrollContainer" parent="Panel/Container"]
+margin_top = 74.0
+margin_right = 280.0
+margin_bottom = 274.0
+rect_min_size = Vector2( 280, 200 )
+size_flags_horizontal = 0
+script = ExtResource( 4 )
+
+[node name="GridContainer" type="VBoxContainer" parent="Panel/Container/Data"]
+margin_right = 280.0
+margin_bottom = 200.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="datakey" parent="Panel/Container/Data/GridContainer" instance=ExtResource( 1 )]
+margin_right = 280.0
+
+[connection signal="pressed" from="Panel/Container/Menu/btnOpen" to="." method="_on_btnOpen_pressed"]
+[connection signal="file_selected" from="Panel/Container/Menu/btnOpen/openDialog" to="." method="_on_openDialog_file_selected"]
+[connection signal="pressed" from="Panel/Container/Menu/btnSave" to="." method="_on_btnSave_pressed"]
+[connection signal="pressed" from="Panel/Container/Menu/btnSaveas" to="." method="_on_btnSaveas_pressed"]
+[connection signal="file_selected" from="Panel/Container/Menu/btnSaveas/saveasDialog" to="." method="_on_saveasDialog_file_selected"]
+[connection signal="pressed" from="Panel/Container/Edit/btnPush" to="." method="_on_btnPush_pressed"]
+[connection signal="item_selected" from="Panel/Container/Edit/btnAddSpeech" to="Panel/Container/Edit" method="_on_btnAddSpeech_item_selected"]

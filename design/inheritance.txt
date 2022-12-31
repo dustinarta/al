@@ -1,0 +1,65 @@
+thing{
+	physical{
+		alive{
+			plant{
+				fruit{},
+				vegetable{}
+			},
+			animal{},
+			human{}
+		},
+		object{
+			vehicle{
+				car, boat, air plane, train
+			}
+		},
+	},
+	idea{
+		property{
+			mass, length, height, width,
+			weight{
+				heavy, light
+			},
+			size{
+				small, big, short, tall
+			},
+			color{
+				red, yellow, green, blue, bright, dark
+			}
+		},
+		emotion{
+			joy, pain, brave, fear
+		},
+		speech{
+			noun, pronoun, verb, adjective, adverb, conjunction, preposition, interjection
+		}
+		knowledge{
+			science{
+				physic,
+				chemist,
+				biology{
+				}
+			},
+			religion
+		}
+	}
+}
+
+subject{
+	//define subject definition
+	_ds{
+		//definition from source
+		by{}
+	},
+	//define subject action
+	do{
+		//what subject do now
+		now{},
+		//what subject do by non time relative
+		is{}
+	},
+	//define subject parent
+	instance{},
+	//member of subject
+	...{}
+}

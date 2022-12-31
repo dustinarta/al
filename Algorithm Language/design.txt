@@ -1,0 +1,19 @@
+1. agent(state) => action
+2. enviroment(action) => state
+3. brain(agent, 'state, action, state) => new agent
+4. agent(state) => action
+
+agent{
+    attribute:
+        'state
+        model
+    method:
+        work(state, model) -> action
+}
+
+enviroment{
+    attribute:
+        rules
+    method:
+        work(action, rules) -> state
+}

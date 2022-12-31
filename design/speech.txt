@@ -1,0 +1,56 @@
+Type of speech:
+	1. Noun
+	2. Pronoun
+	3. Verb
+	4. Adjective
+	5. Adverb
+	6. Conjunction
+	7. Preposition
+	8. Article
+	9. Interjection
+
+Type of pronoun:
+	1. Possessive pronouns:
+		mine, yours, his, hers, ours, theirs
+	2. Personal pronouns:
+		i, you, she, he, it, we, they, me, us, them
+	3. Relative pronouns:
+		who, whom, which, what, that
+	4. Reflexive pronouns:
+		myself, yourself, itself, herself, himself, ourselves, themselves
+	5. Indefinite pronouns:
+		some, somebody, anyone, anywhere, nothing, everybody
+	6. Demonstrative pronouns:
+		this, that, these, those
+	7. Interrogative pronouns:
+		who, whom, what, which, whose
+	8. Intensive pronouns:
+		myself, yourself, herself, himself, itself, ourselves, themselves
+	9. Reciprocal pronouns:
+		each other, one another
+
+Type of adjective:
+	1. Article:
+		a, an, the
+	2. Positive:
+		short, tall, big, small
+	3. Comparitive:
+		shorter, taller, bigger, smaller
+	4. Superlative:
+		shortest, tallest, biggest, smallest
+
+Type of conjuction:
+	1. Coordinating:
+		for, and, nor, but, or, yet, so
+	2. Subordinating:
+		although, as, because, before, how, if, once, since, than, until, when, whenever, whereas, whether, while, why
+	3. Correlative:
+		both/and, whether/or, either/or, neither/nor, not/but, not only/but also
+
+Type of preposition:
+	1. Time:
+		in, on, at, before, after
+	2. Position:
+		under, above, in, on, at, below
+	3. Direction:
+		to, into, of, from, up, down, left, right

@@ -1,0 +1,110 @@
+{
+	"sort": "default",
+	"model": "reference",
+	"speech": [
+		[
+			"self",
+			0
+		],
+		[
+			"is",
+			1
+		],
+		[
+			"height",
+			2
+		],
+		[
+			"name",
+			3
+		],
+		[
+			"the",
+			4
+		],
+		[
+			"a",
+			5
+		],
+		[
+			"boy",
+			6
+		],
+		[
+			"who",
+			8
+		],
+		[
+			"what",
+			9
+		],
+		[
+			"his",
+			10
+		]
+	],
+	"subject": [
+		[
+			["andy"],
+			7
+		]
+	],
+	"data": [
+		{
+			"_n": "self",
+			"_sp" : 2
+		},
+		{
+			"_n": "is",
+			"_sp": 4
+		},
+		{
+			"_n": "height",
+			"_sp" : 1
+		},
+		{
+			"_n": "name",
+			"_sp" : 1
+		},
+		{
+			"_n": "the",
+			"_sp": 128
+		},
+		{
+			"_n": "a",
+			"_sp": 128
+		},
+		{
+			"_n": "boy",
+			"_sp": 1
+		},
+		{
+			"_n": "andy",
+			"_sp": 1,
+			"_ds" : [0]
+		},
+		{
+			"_n": "who",
+			"_sp": 2,
+			"_cd" : ""
+		},
+		{
+			"_n": "what",
+			"_sp": 2
+		}
+	],
+	"information": {
+		"description": [
+			[
+				[6],
+				[7]
+			]
+		],
+		"definition": [],
+		"statement":[],
+		"act":[]
+	},
+	"this": {
+		"_": null
+	}
+}

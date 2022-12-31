@@ -1,0 +1,5 @@
+
+
+#his hair is brown
+@his.hair.color = brown
+$his hair color be brown

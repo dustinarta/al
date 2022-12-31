@@ -1,0 +1,9 @@
+[gd_resource type="Theme" format=2]
+
+[resource]
+ItemList/colors/font_color_selected = Color( 1, 0.941176, 0.784314, 1 )
+ItemList/constants/hseparation = 4
+ItemList/constants/icon_margin = 4
+ItemList/constants/line_separation = 2
+ItemList/constants/vseparation = 10
+VBoxContainer/constants/separation = 10

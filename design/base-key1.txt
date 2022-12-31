@@ -1,0 +1,79 @@
+
+Reference:
+    This, That, It, He, She, Him, Her, His, Hers, These, Those, Its
+
+Command:
+    From, Of, By, Set, Get, To, Do, With, Be, As
+
+"From" is used for accessing thing
+"Set" is used for writing information followed by "to" for source
+"Get" is used for reading information followed by "to" for destination
+"Do" is used for calling action followed by "with" for argument
+
+Example:
+    1. {
+        Sentence: His language is english
+        Result: 
+        {
+            from he set language to english
+        }
+        Data:
+        {
+            he{
+                language{
+                    is = english
+                }
+            }
+        }
+    }
+    2. {
+        Sentence: What is his language?
+        Result: 
+        {
+            from he get language to answer
+            do say with answer
+        }
+    }
+    3. {
+        Sentence: Andy kick the ball
+        Result: 
+        {
+            by Andy do kick with ball
+        }
+        {
+            set Andy to he
+            by he do kick with ball
+        }
+        Data:
+        {
+            he,
+            Andy{
+                do{
+                    kick{
+                        is = ball
+                    }
+                }
+            },
+            ball
+        }
+    }
+    4. {
+        Sentence: His window car is broken
+        Result: 
+        {
+            from he from car set window to broken
+        }
+        Data:
+        {
+            he{
+                car{
+                    window{
+                        is = broken
+                    }
+                }
+            }
+        }
+    }
+    5. {
+        
+    }

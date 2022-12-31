@@ -1,0 +1,12 @@
+[gd_scene format=2]
+
+[node name="Verb" type="HBoxContainer"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="OptionVerb" type="OptionButton" parent="."]
+margin_right = 72.0
+margin_bottom = 40.0
+text = "Item 0"
+items = [ "Item 0", null, false, 0, null, "Item 1", null, false, 1, null, "Item 2", null, false, 2, null ]
+selected = 0

@@ -1,0 +1,22 @@
+
+
+Boy
+first capital
+
+BOY
+all capital
+
+boy
+no capital
+
+boy.
+full stop
+
+boy,
+comma
+
+boy?
+question mark
+
+boy!
+exclamation mark

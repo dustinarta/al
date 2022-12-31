@@ -1,0 +1,36 @@
+
+
+Line:
+    Aria is sick
+
+Implementation:
+    That is why she cant go to school
+
+Complete:
+    Aria is sick that herself cant go to school
+    Aria cant go to school because herself is sick
+
+Statement:
+    If Aria is sick, then herself cant go to school
+    Aria cant go to school, if herself is sick
+
+
+
+Line:
+    Tobi will watch the movie
+
+Implementation:
+    Now we know why Tobi didnt join us
+
+Complete:
+    Tobi will watch the movie so he didnt join us
+    Tobi didnt join us because he will watch the movie
+
+
+
+Line:
+    The apple is red
+
+Implementation:
+    That is why this apple is sweet
+

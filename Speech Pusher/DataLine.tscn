@@ -1,0 +1,79 @@
+[gd_scene load_steps=5 format=2]
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.172549, 0.164706, 0.196078, 1 )
+border_color = Color( 0.12549, 0.117647, 0.141176, 1 )
+corner_radius_top_left = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="Theme" id=2]
+Panel/styles/panel = SubResource( 3 )
+
+[sub_resource type="GDScript" id=4]
+script/source = "extends HBoxContainer
+
+export var key:String = \"null\"
+export var id:int = 0
+signal set_up
+
+onready var Key = $key
+onready var Id = $id
+onready var Delete = $delete
+onready var DataControl = self.get_parent().get_parent()
+
+func _ready():
+	Key.text = key
+	Id.text = str(id)
+
+func set_up(data = null):
+	if typeof(data) == TYPE_ARRAY:
+		Key.text = data[0]
+		Id.text = str(data[1])
+		key = data[0]
+		id = data[1]
+	else:
+		printerr(\"error at set_up, the data was \" + str(data))
+
+func _on_delete_pressed():
+	DataControl.emit_signal(\"delete_child\", self)
+"
+
+[sub_resource type="StreamTexture" id=5]
+flags = 4
+load_path = "res://.import/Close.svg-c1586ba727893a169c20584caeb6d7ae.stex"
+
+[node name="datakey" type="HBoxContainer"]
+margin_right = 260.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 240, 30 )
+theme = SubResource( 2 )
+script = SubResource( 4 )
+
+[node name="key" type="Label" parent="."]
+margin_top = 1.0
+margin_right = 200.0
+margin_bottom = 29.0
+rect_min_size = Vector2( 200, 28 )
+text = "null"
+valign = 1
+
+[node name="id" type="Label" parent="."]
+margin_left = 204.0
+margin_top = 7.0
+margin_right = 228.0
+margin_bottom = 23.0
+rect_min_size = Vector2( 24, 16 )
+text = "0"
+align = 1
+valign = 1
+
+[node name="delete" type="Button" parent="."]
+margin_left = 232.0
+margin_right = 260.0
+margin_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+icon = SubResource( 5 )
+
+[connection signal="set_up" from="." to="." method="set_up"]
+[connection signal="pressed" from="delete" to="." method="_on_delete_pressed"]

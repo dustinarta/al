@@ -1,0 +1,16 @@
+
+
+Types are:
+    what
+    who
+    when
+    where
+    why
+    how
+
+what:
+    structure:
+        what + noun = request of property value
+        what + verb = request of value
+    what color is your Bugatti
+    what is your mood

@@ -1,0 +1,34 @@
+Design 1:
+	{
+		key = 
+		List of keyword from string
+		[
+			[self, 0],
+			
+			List a keyword with first letter a
+			[
+				"apple" is the keyword, "1" is the object_id
+				["apple", 1]
+			],
+			
+			List a keyword with first letter b
+			[],
+			
+			List a keyword with first letter c
+			[
+				["color", 2]
+			]
+		],
+		data = 
+		List of thing information by index
+		[
+			first index is self information
+			#0{},
+			#1{
+				apple definition and description
+				"keyword" : "apple",
+				"color" : "red",
+				"parent" : "fruit"
+			}
+		]
+	}

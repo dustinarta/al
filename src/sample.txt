@@ -1,0 +1,12 @@
+
+
+1. Andy is a boy
+    parsing = {
+        'Andy' = noun
+        'is' = verb
+        'a' = adjective
+        'boy' = noun
+    }
+    guest sentence structure = simple tense
+    find every word meaning
+    execute

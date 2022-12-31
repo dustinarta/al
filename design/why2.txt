@@ -1,0 +1,13 @@
+
+
+Complete:
+    Shopia is sick, because she drank ice
+
+Question:
+    why Shopia is sick?
+
+Answear:
+    because she drank ice
+
+Condition:
+    if she drank ice, the she will get sick
