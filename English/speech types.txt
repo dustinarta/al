@@ -3,12 +3,11 @@ Types:
     Noun : 
     Pronoun : i, me, you, he, she, it, we, they
     Verb : sleep, run, go, steal, punch
-    Adjective : 
-    Adverb : 
+    Adjective :
+    Adverb :
     Conjunction : 
-    Preposition : 
-    Article (Adjective) : the, a, an
-    Interjection : 
+    Preposition :
+    Interjection :
 
     Common (Noun) : car, dog, fruit
     Proper (Noun) : Honda, Jack, London
@@ -22,14 +21,26 @@ Types:
     Intensive (Pronoun) : myself, yourself, himself, herself, itself, ourselves, themselves
 
     Auxiliary (Verb) : be, is, are, do, does, have, has, being, doing, having, been
+    Action (Verb) : jump, punch
+    State (Verb) : feel, sleep
 
     Comparative (Adjective) : taller, bigger
     Superlative (Adjective) : tallest, biggest
     Descriptive (Adjective) : nice, bad, big, hot
-    Determiner (Adjective) : all, some, every, four
+    Determiner (Adjective) : all, some, every, four 
+    Article (Adjective) : the, a, an
 
     Frequency (Adverb) : always, never, sometimes, often, once, twice
     Manner (Adverb -> Verb) : slowly, entirely, calmly
     Degree (Adverb) : very, almost, less, totally, far
     Order (Adverb) : first, second, last
+
+    Coordinating (Conjunction) : for, and, not, but, or, yet, so
+    Subordinating (Conjunction) : as, if, as if, after, before, because, when, where, while, wherever, whenever, until unless
+    Correlative (Conjunction) : either...or, not only...but
+
+    Location (Preposition) : in, on, at, above, below, middle, over, under, next
+    Time (Preposition) : in, on, at
+    Direction (Preposition) : into, to, from, up, down, left, right
+    Instrument (Preposition) : by, with, of
     

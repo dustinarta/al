@@ -1,0 +1,2 @@
+understand sentence and a working model
+    reading sentence each by each

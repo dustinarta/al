@@ -1,0 +1,6 @@
+modal{
+    can, could      = ability/access 
+    will, would     = intention/future work
+    may, maybe      = possibility
+    shall, should   = important
+}

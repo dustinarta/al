@@ -14,6 +14,12 @@ Sentence types:
                 Get off my lawn!
                 After the timer dings, take the cookies out of the oven.
                 Always pack an extra pair of socks.
+    by purpose:
+        Opinion:
+            The hat may be red
+
+        Conditional:
+            
 
 
 

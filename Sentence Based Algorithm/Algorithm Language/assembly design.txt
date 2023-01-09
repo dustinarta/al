@@ -1,0 +1,22 @@
+structure{
+    variables = var0, var1, var2, ...
+    register = reg
+    flag
+}
+
+action types{
+    assignment = mov, mova, movs, movm, movd, movo
+    arithmetic = add, sub, mul, div, mod
+    comparison = eq, nq, mt, lt, mtq, ltq
+    logical = and, or, not
+    jump = je, jn, jm, jl, jmq, jml
+}
+
+assignment{
+    structure:
+        types, variable source/value, variable destination
+    example:
+        mov 12 $1           =       var1 = 12
+        mova "Hello" $0     =       var0 += "Hello"
+}
+    
