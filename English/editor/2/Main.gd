@@ -23,7 +23,7 @@ enum SPEECH_TYPE {
 
 var speeches = SPEECH_TYPE.keys()
 var data:Dictionary = {}
-var path:String = ""
+var path:String = "res://English/dataset-key2.json"
 
 var current_type_string:Array
 var current_type_int:Array
@@ -41,9 +41,10 @@ func _ready()->void:
 	file_open.rect_size.y = 400
 	file_save.rect_size.y = 400
 	
-#	load_file(path)
-#	item_ready()
-	alert_ready()
+	load_file(path)
+	item_ready()
+	print(data)
+#	alert_ready()
 
 func item_ready()->void:
 	if itemlist.get_item_count() != 0:
@@ -51,13 +52,27 @@ func item_ready()->void:
 	var keys = data.keys().duplicate()
 	var values = data.values().duplicate()
 	
+#	each key
 	for i in range(data.size()):
-		var s = keys[i] + ": "
-		var types = []
-		types.resize(values[i].size())
-		for j in range(values[i].size()):
-			types[j] = speeches[values[i][j]]
-		s += str(types)
+		var v = values[i]
+		var s = keys[i] + ": ["
+		var types = v[0]
+#		each types
+		for j in range(types.size()):
+			s += str(speeches[types[j]])
+			s += "("
+			var each_type = v[j+1]
+#			each types of speech
+			for k in range(each_type.size()):
+				s += str(each_type[k])
+				if k != each_type.size()-1:
+					s += ", "
+			if j != types.size()-1:
+				s += "), "
+			else:
+				s += ")"
+		s += "]"
+#		s += str(types)
 #		for j in values[i]:
 ##			s += str(each[i]) + ", "
 #			s += speeches[int(j)] + ", "
@@ -65,8 +80,6 @@ func item_ready()->void:
 
 func item_add(key:String, types:Array)->void:
 	var s = key + ": "
-	var typess = []
-	types.resize(types.size())
 #	s += str(types)
 #	for i in range(types.size()):
 ##			s += str(each[i]) + ", "
@@ -115,13 +128,14 @@ func save_file(path:String)->void:
 func _on_popupmenu_id_pressed(id: int)->void:
 	if id == 8:
 		current_type_int.clear()
+		current_type_int = [[]]
 		current_type_string.clear()
 		speechmenu.text = "Type"
 		return
 	if not current_type_string.has(speeches[id]):
 		current_type_string.append(speeches[id])
 		speechmenu.text = str(current_type_string)
-		current_type_int.append(id)
+		current_type_int[0].append(id)
 
 func _on_Button_Save_pressed()->void:
 	if path == "":
@@ -154,6 +168,7 @@ func _on_Button_Push_pressed()->void:
 	print("Memasukkan " + key + " data " + str(current_type_int))
 	
 	current_type_int.clear()
+	current_type_int = [[]]
 	current_type_string.clear()
 	speechmenu.text = "Type"
 	line.text = ""
@@ -163,9 +178,10 @@ func _on_ItemList_nothing_selected()->void:
 
 func type_int_to_string(types:Array)->Array:
 	var result = []
-	result.resize(types.size())
-	for i in range(types.size()):
-		result[i] = speeches[types[i]]
+	var v = types[0]
+	result.resize(v.size())
+	for i in range(v.size()):
+		result[i] = speeches[v[i]]
 	return result
 
 func editor_set(index:int):
@@ -175,6 +191,7 @@ func editor_set(index:int):
 	speechmenu.text = str(current_type_string)
 
 func _on_ItemList_item_activated(index):
+#	print(data)
 	editor_set(index)
 
 func _on_FileDialogOpen_file_selected(path):

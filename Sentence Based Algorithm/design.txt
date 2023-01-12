@@ -1,6 +1,7 @@
 Entity:
     state
     action
+    try
     variable
     function
     agent
