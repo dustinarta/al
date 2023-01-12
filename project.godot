@@ -57,7 +57,7 @@ _global_script_class_icons={
 [application]
 
 config/name="al"
-run/main_scene="res://Neural Network/editor/nn.tscn"
+run/main_scene="res://English/editor/2/Main.tscn"
 
 [autoload]
 

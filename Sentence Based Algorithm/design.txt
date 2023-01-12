@@ -1,0 +1,19 @@
+Entity:
+    state
+    action
+    variable
+    function
+    agent
+    enviroment
+
+variable {
+    have a value
+    -> state
+}
+
+function {
+    have a parameter
+    can be used by conditional variable
+    will be action
+    -> action
+}

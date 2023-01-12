@@ -5,7 +5,7 @@ Types:
     Verb : sleep, run, go, steal, punch
     Adjective :
     Adverb :
-    Conjunction : 
+    Conjunction :
     Preposition :
     Interjection :
 
@@ -31,7 +31,7 @@ Types:
     Article (Adjective) : the, a, an
 
     Frequency (Adverb) : always, never, sometimes, often, once, twice
-    Manner (Adverb -> Verb) : slowly, entirely, calmly
+    Manner (Adverb) : slowly, entirely, calmly
     Degree (Adverb) : very, almost, less, totally, far
     Order (Adverb) : first, second, last
 
@@ -41,6 +41,6 @@ Types:
 
     Location (Preposition) : in, on, at, above, below, middle, over, under, next
     Time (Preposition) : in, on, at
-    Direction (Preposition) : into, to, from, up, down, left, right
-    Instrument (Preposition) : by, with, of
+    Direction (Preposition) : in, on, at, into, to, from, up, down, left, right
+    Instrument (Preposition) : by, with, of, for
     

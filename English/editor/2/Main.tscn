@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://English/editor/Main.gd" type="Script" id=1]
-[ext_resource path="res://English/editor/theme.tres" type="Theme" id=2]
+[ext_resource path="res://English/editor/2/Main.gd" type="Script" id=1]
+[ext_resource path="res://English/editor/1/theme.tres" type="Theme" id=2]
 
 [node name="Main" type="Control"]
 anchor_right = 1.0
@@ -84,9 +84,15 @@ margin_bottom = 30.0
 text = "Type"
 icon_align = 1
 
-[node name="Button Push" type="Button" parent="Container/Editor"]
+[node name="OptionButton" type="OptionButton" parent="Container/Editor"]
 margin_left = 150.0
-margin_right = 193.0
+margin_right = 184.0
+margin_bottom = 30.0
+text = "-"
+
+[node name="Button Push" type="Button" parent="Container/Editor"]
+margin_left = 188.0
+margin_right = 231.0
 margin_bottom = 30.0
 text = "push"
 
