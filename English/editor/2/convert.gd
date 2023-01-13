@@ -23,7 +23,7 @@ func _run():
 	f.close()
 	f = File.new()
 	f.open(newpath, File.WRITE)
-	s = JSON.print(o, "\t")
+	s = JSON.print(o, "\t", true)
 	f.store_string(s)
 	f.close()
 #	print(s)

@@ -1,8 +1,9 @@
 extends Control
 
 onready var speechmenu:MenuButton = $"Container/Editor/Button Menu"
-onready var speechtypemenu:OptionButton = $"Container/Editor/OptionButton"
+onready var speechtypemenu:MenuButton = $"Container/Editor/Type Menu"
 onready var popupmenu:Popup = speechmenu.get_popup()
+onready var popuptypemenu:Popup = speechtypemenu.get_popup()
 onready var content_list:VBoxContainer = $Container/Content_f/VBox
 onready var line:LineEdit = $Container/Editor/LineEdit
 onready var itemlist:ItemList = $Container/Content/ItemList
@@ -21,12 +22,67 @@ enum SPEECH_TYPE {
 	Interjection = 7
 }
 
+enum NOUN {
+	Common
+	Proper
+	Idea
+	Collective
+}
+
+enum PRONOUN {
+	Relative
+	Indefinite
+	Demonstrative
+	Possesive
+	Intensive
+}
+
+enum VERB {
+	Auxiliary
+	Modal
+	Action
+	State
+}
+
+enum ADJECTIVE {
+	Comparative
+	Superlative
+	Descriptive
+	Determiner 
+	Article
+}
+
+enum ADVERB {
+	Frequency
+	Manner
+	Degree
+	Order
+}
+
+enum CONJUNCTION {
+	Coordinating 
+	Subordinating
+	Correlative
+}
+
+enum PREPOSITION {
+	Location
+	Time
+	Direction 
+	Instrument
+}
+
+enum INTERJECTION {
+	
+}
+
 var speeches = SPEECH_TYPE.keys()
+var speechlist = [NOUN.keys(), PRONOUN.keys(), VERB.keys(), ADJECTIVE.keys(), ADVERB.keys(), CONJUNCTION.keys(), PREPOSITION.keys(), INTERJECTION.keys()]
 var data:Dictionary = {}
 var path:String = "res://English/dataset-key2.json"
 
 var current_type_string:Array
-var current_type_int:Array
+var current_type_int:Array = [[]]
 
 # Called when the node enters the scene tree for the first time.
 func _ready()->void:
@@ -36,6 +92,7 @@ func _ready()->void:
 	for s in speeches:
 		popupmenu.add_item(s)
 	popupmenu.add_item("[Empty]")
+	menu_ready()
 	popupmenu.connect("id_pressed", self, "_on_popupmenu_id_pressed")
 	
 	file_open.rect_size.y = 400
@@ -45,6 +102,19 @@ func _ready()->void:
 	item_ready()
 	print(data)
 #	alert_ready()
+
+func menu_ready():
+	var menu = PopupMenu.new()
+	menu.name = "submenu"
+	menu.add_item("1")
+	menu.add_item("2")
+	menu.add_item("3")
+	menu.connect("id_pressed", self, "submenuclick")
+	popupmenu.add_child(menu)
+	popupmenu.add_submenu_item("sub submenu", "submenu")
+
+func submenuclick(id):
+	print(id)
 
 func item_ready()->void:
 	if itemlist.get_item_count() != 0:
@@ -64,7 +134,7 @@ func item_ready()->void:
 			var each_type = v[j+1]
 #			each types of speech
 			for k in range(each_type.size()):
-				s += str(each_type[k])
+				s += str(speechlist[types[j]][each_type[k]])
 				if k != each_type.size()-1:
 					s += ", "
 			if j != types.size()-1:
@@ -78,7 +148,7 @@ func item_ready()->void:
 #			s += speeches[int(j)] + ", "
 		itemlist.add_item(s)
 
-func item_add(key:String, types:Array)->void:
+func item_add(key:String, _types:Array)->void:
 	var s = key + ": "
 #	s += str(types)
 #	for i in range(types.size()):
@@ -126,16 +196,34 @@ func save_file(path:String)->void:
 	OS.set_window_title(path)
 
 func _on_popupmenu_id_pressed(id: int)->void:
+	menu_add_speech(id)
+	
+func menu_add_speech(id: int)->void:
 	if id == 8:
 		current_type_int.clear()
 		current_type_int = [[]]
 		current_type_string.clear()
 		speechmenu.text = "Type"
 		return
-	if not current_type_string.has(speeches[id]):
+	print(id)
+	if not current_type_int[0].has(id):
 		current_type_string.append(speeches[id])
-		speechmenu.text = str(current_type_string)
 		current_type_int[0].append(id)
+		current_type_int.append([])
+		menu_update_speech()
+
+func menu_update_speech():
+	var s:String
+	var types = current_type_int[0]
+	s += "["
+	for i in range(types.size()):
+		s += speeches[types[i]]
+		for j in range(current_type_int[i + 1].size()):
+			s += "(" + str(speechlist[i][j]) + ")"
+		if i != types.size()-1:
+			s += ", "
+	s += "]"
+	speechmenu.text = s
 
 func _on_Button_Save_pressed()->void:
 	if path == "":
@@ -201,11 +289,11 @@ func _on_FileDialogOpen_file_selected(path):
 
 func _on_Button_Open_pressed():
 	file_open.popup_centered()
-	
+
 func alert_show(msg):
 	alert.dialog_text = msg
 	alert.show()
-	
+
 func alert_ready():
 	alert.rect_position = (OS.window_size - alert.rect_size) / 2
 
@@ -214,3 +302,11 @@ func _on_FileDialogSave_file_selected(path):
 
 func _on_Button_Save_As_pressed():
 	file_save.popup_centered()
+
+
+func _sts_noun(id:int):
+	menu_add_speech(0)
+	var pos: int = (current_type_int[0] as Array).find(0)
+	(current_type_int[pos + 1] as Array).append(id)
+	menu_update_speech()
+

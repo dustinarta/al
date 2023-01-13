@@ -84,15 +84,19 @@ margin_bottom = 30.0
 text = "Type"
 icon_align = 1
 
-[node name="OptionButton" type="OptionButton" parent="Container/Editor"]
+[node name="Type Menu" type="MenuButton" parent="Container/Editor"]
 margin_left = 150.0
-margin_right = 184.0
+margin_right = 167.0
 margin_bottom = 30.0
 text = "-"
 
+[node name="Popup" type="PopupMenu" parent="Container/Editor/Type Menu"]
+margin_right = 20.0
+margin_bottom = 20.0
+
 [node name="Button Push" type="Button" parent="Container/Editor"]
-margin_left = 188.0
-margin_right = 231.0
+margin_left = 171.0
+margin_right = 214.0
 margin_bottom = 30.0
 text = "push"
 

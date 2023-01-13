@@ -1,0 +1,51 @@
+thing{
+	real{
+		alive{
+			plant{
+				fruit{},
+				vegetable{}
+			},
+			animal{},
+			human{}
+		},
+		object{
+            tool{
+                vehicle{
+				    car, boat, air plane, train
+			    }
+            },
+            material{
+                water, fire, wind, rock, iron, wood
+            }
+		},
+	},
+	idea{
+		property{
+			mass, length, height, width,
+			weight{
+				heavy, light
+			},
+			size{
+				small, big, short, tall
+			},
+			color{
+				red, yellow, green, blue, bright, dark
+			}
+		},
+		emotion{
+			joy, pain, brave, fear
+		},
+		speech{
+			noun, pronoun, verb, adjective, adverb, conjunction, preposition, interjection
+		}
+		knowledge{
+			science{
+				physic,
+				chemist,
+				biology{
+				}
+			},
+			religion
+		}
+	}
+}

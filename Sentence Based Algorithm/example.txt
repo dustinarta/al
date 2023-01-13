@@ -1,0 +1,19 @@
+
+
+
+
+
+agent:
+    variable{
+        this weather is hot
+        my umbrella
+    }
+    function {
+        use { (item)
+
+        }
+    }
+    main {
+        if the weather is cold, use umbrella and cover yourself
+    }
+    

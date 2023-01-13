@@ -21,6 +21,7 @@ Types:
     Intensive (Pronoun) : myself, yourself, himself, herself, itself, ourselves, themselves
 
     Auxiliary (Verb) : be, is, are, do, does, have, has, being, doing, having, been
+    Modal (Verb) : can, will, shall, may, could, would, should, must
     Action (Verb) : jump, punch
     State (Verb) : feel, sleep
 
