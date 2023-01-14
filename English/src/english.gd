@@ -24,7 +24,7 @@ var data :Dictionary
 
 func read(sentence :String)->Array:
 	var each = parse(sentence.to_lower())
-	var results:Array
+	var results:Array = []
 	results.append(each)
 	results.append(find_speech(each))
 	
@@ -56,10 +56,9 @@ func find_speech(words:Array)->Array:
 
 func parse(sentence:String):
 	var each = sentence.split(" ")
-	var res:Array
+	var res:Array = []
 	
 	for s in each:
-		var is_sc = false
 		var fc:String #first index char
 		var lc:String #last index char
 		var f:int #first index
@@ -76,7 +75,7 @@ func parse(sentence:String):
 					f = j
 					break
 #		print(f)
-		var back:Array
+		var back:Array = []
 		for j in range(size-1, 0, -1):
 			lc = s[j]
 			match(lc):

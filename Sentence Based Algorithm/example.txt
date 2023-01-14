@@ -1,19 +1,40 @@
-
+object:
+    the weather has temperature
 
 
 
 
 agent:
-    variable{
+    variable:
         this weather is hot
         my umbrella
-    }
-    function {
-        use { (item)
+        my name is Steve
+        i am a human, male, and Seller [human + male + Seller = Salesman]
+        my job is a Salesman
+		Salesman:
+			work(item, costumer){
+				if no item or no costumer, cant do work
+				sell that item to that costumer
+			}
+    
+    function:
+        use(item) { 
 
         }
-    }
-    main {
+        cover() {
+
+        }
+    
+    main(args) {
         if the weather is cold, use umbrella and cover yourself
     }
-    
+
+test:
+    what is your name
+        Steve -> my name is Steve
+
+    who are you
+        Salesman -> i am a Salesman
+
+    how do you do your job
+        by selling item -> i work by selling the item to the costumer

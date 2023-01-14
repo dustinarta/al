@@ -88,11 +88,9 @@ var current_type_int:Array = [[]]
 func _ready()->void:
 	OS.window_size = Vector2(600, 400)
 	OS.set_window_title("(*)")
-	
-	for s in speeches:
-		popupmenu.add_item(s)
-	popupmenu.add_item("[Empty]")
+	alert.window_title = "Peringatan!"
 	menu_ready()
+	popupmenu.add_item("[Empty]")
 	popupmenu.connect("id_pressed", self, "_on_popupmenu_id_pressed")
 	
 	file_open.rect_size.y = 400
@@ -100,18 +98,27 @@ func _ready()->void:
 	
 	load_file(path)
 	item_ready()
-	print(data)
+#	print(data)
 #	alert_ready()
 
 func menu_ready():
-	var menu = PopupMenu.new()
-	menu.name = "submenu"
-	menu.add_item("1")
-	menu.add_item("2")
-	menu.add_item("3")
-	menu.connect("id_pressed", self, "submenuclick")
-	popupmenu.add_child(menu)
-	popupmenu.add_submenu_item("sub submenu", "submenu")
+	var menus:Array
+	menus.resize(8)
+	
+	for i in range(8):
+		menus[i] = PopupMenu.new()
+	
+	for j in range(menus.size()):
+		var m = menus[j]
+		print(m)
+		var speech = speechlist[j] as Array
+		m.name = "menu" + str(speeches[j])
+		for i in range(speech.size()):
+			m.add_item(speech[i])
+		print(m.get_item_count())
+		m.connect("id_pressed", self, "_sts_" + str(speeches[j]))
+		popupmenu.add_child(m)
+		popupmenu.add_submenu_item(str(speeches[j]), "menu" + str(speeches[j]))
 
 func submenuclick(id):
 	print(id)
@@ -130,17 +137,19 @@ func item_ready()->void:
 #		each types
 		for j in range(types.size()):
 			s += str(speeches[types[j]])
-			s += "("
 			var each_type = v[j+1]
+			var etl:int = each_type.size()
+			if etl != 0:
+				s += "("
 #			each types of speech
-			for k in range(each_type.size()):
+			for k in range(etl):
 				s += str(speechlist[types[j]][each_type[k]])
-				if k != each_type.size()-1:
+				if k != etl-1:
 					s += ", "
-			if j != types.size()-1:
-				s += "), "
-			else:
+			if etl != 0:
 				s += ")"
+			if j != types.size()-1:
+				s += ", "
 		s += "]"
 #		s += str(types)
 #		for j in values[i]:
@@ -154,7 +163,7 @@ func item_add(key:String, _types:Array)->void:
 #	for i in range(types.size()):
 ##			s += str(each[i]) + ", "
 #		s += speeches[types[i]] + ", "
-	s += str(current_type_string)
+	s += speech_parse()
 	var pos = data.keys().find(key)
 	if pos == -1:
 		itemlist.add_item(s)
@@ -178,10 +187,10 @@ func load_file(path:String)->void:
 
 func save_file(path:String)->void:
 	if data.size() == 0:
-		alert_show("Isinya kosong ya ngapain di save!")
+		alert_show("Isinya kosong!")
 		return
 	elif not path.ends_with(".json"):
-		alert_show("Bukan file json bodoh!")
+		alert_show("Bukan file json!")
 		return
 	
 	var json = JSON.print(data, "\t")
@@ -203,7 +212,7 @@ func menu_add_speech(id: int)->void:
 		current_type_int.clear()
 		current_type_int = [[]]
 		current_type_string.clear()
-		speechmenu.text = "Type"
+		menu_update_speech()
 		return
 	print(id)
 	if not current_type_int[0].has(id):
@@ -213,17 +222,32 @@ func menu_add_speech(id: int)->void:
 		menu_update_speech()
 
 func menu_update_speech():
+	var s:String = speech_parse()
+	if s == "[]":
+		s = "Type"
+	speechmenu.text = s
+
+func speech_parse() -> String:
 	var s:String
 	var types = current_type_int[0]
+	
 	s += "["
 	for i in range(types.size()):
 		s += speeches[types[i]]
-		for j in range(current_type_int[i + 1].size()):
-			s += "(" + str(speechlist[i][j]) + ")"
+		var each_type = current_type_int[i + 1]
+		var etl = each_type.size()
+		for j in range(etl):
+			if j == 0:
+				s += "("
+			else:
+				s += ", "
+			s += str(speechlist[types[i]][each_type[j]])
+			if j == etl - 1:
+				s += ")"
 		if i != types.size()-1:
 			s += ", "
 	s += "]"
-	speechmenu.text = s
+	return s
 
 func _on_Button_Save_pressed()->void:
 	if path == "":
@@ -245,8 +269,8 @@ func _on_Button_Push_pressed()->void:
 	
 	if key == "":
 		return
-	elif current_type_int.empty():
-		alert_show("Pake tipe dong!")
+	elif current_type_int[0].empty():
+		alert_show("Tipe tidak boleh kosong!")
 		return
 	elif not is_valid_key(key):
 		alert_show("Gak bisa nulis \"" + key + "\"")
@@ -275,8 +299,9 @@ func type_int_to_string(types:Array)->Array:
 func editor_set(index:int):
 	line.text = data.keys()[index]
 	current_type_int = data.values()[index].duplicate()
-	current_type_string = type_int_to_string(current_type_int)
-	speechmenu.text = str(current_type_string)
+	print(current_type_int)
+#	current_type_string = type_int_to_string(current_type_int)
+	menu_update_speech()
 
 func _on_ItemList_item_activated(index):
 #	print(data)
@@ -292,7 +317,7 @@ func _on_Button_Open_pressed():
 
 func alert_show(msg):
 	alert.dialog_text = msg
-	alert.show()
+	alert.popup_centered(Vector2(200, 100))
 
 func alert_ready():
 	alert.rect_position = (OS.window_size - alert.rect_size) / 2
@@ -303,10 +328,74 @@ func _on_FileDialogSave_file_selected(path):
 func _on_Button_Save_As_pressed():
 	file_save.popup_centered()
 
-
-func _sts_noun(id:int):
-	menu_add_speech(0)
-	var pos: int = (current_type_int[0] as Array).find(0)
-	(current_type_int[pos + 1] as Array).append(id)
+func _sts_Noun(id:int):
+	var sid = 0
+	menu_add_speech(sid)
+	var pos: int = (current_type_int[0] as Array).find(sid)
+	var loc = current_type_int[pos + 1] as Array
+	if !loc.has(id):
+		loc.append(id)
 	menu_update_speech()
 
+func _sts_Pronoun(id:int):
+	var sid = 1
+	menu_add_speech(sid)
+	var pos: int = (current_type_int[0] as Array).find(sid)
+	var loc = current_type_int[pos + 1] as Array
+	if !loc.has(id):
+		loc.append(id)
+	menu_update_speech()
+
+func _sts_Verb(id:int):
+	var sid = 2
+	menu_add_speech(sid)
+	var pos: int = (current_type_int[0] as Array).find(sid)
+	var loc = current_type_int[pos + 1] as Array
+	if !loc.has(id):
+		loc.append(id)
+	menu_update_speech()
+
+func _sts_Adjective(id:int):
+	var sid = 3
+	menu_add_speech(sid)
+	var pos: int = (current_type_int[0] as Array).find(sid)
+	var loc = current_type_int[pos + 1] as Array
+	if !loc.has(id):
+		loc.append(id)
+	menu_update_speech()
+	
+func _sts_Adverb(id:int):
+	var sid = 4
+	menu_add_speech(sid)
+	var pos: int = (current_type_int[0] as Array).find(sid)
+	var loc = current_type_int[pos + 1] as Array
+	if !loc.has(id):
+		loc.append(id)
+	menu_update_speech()
+	
+func _sts_Conjunction(id:int):
+	var sid = 5
+	menu_add_speech(sid)
+	var pos: int = (current_type_int[0] as Array).find(sid)
+	var loc = current_type_int[pos + 1] as Array
+	if !loc.has(id):
+		loc.append(id)
+	menu_update_speech()
+	
+func _sts_Preposition(id:int):
+	var sid = 6
+	menu_add_speech(sid)
+	var pos: int = (current_type_int[0] as Array).find(sid)
+	var loc = current_type_int[pos + 1] as Array
+	if !loc.has(id):
+		loc.append(id)
+	menu_update_speech()
+	
+func _sts_Interjection(id:int):
+	var sid = 7
+	menu_add_speech(sid)
+	var pos: int = (current_type_int[0] as Array).find(sid)
+	var loc = current_type_int[pos + 1] as Array
+	if !loc.has(id):
+		loc.append(id)
+	menu_update_speech()
