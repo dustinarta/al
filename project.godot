@@ -43,6 +43,11 @@ _global_script_classes=[ {
 "class": "ThreadServer",
 "language": "GDScript",
 "path": "res://GLOBAL/thread server.gd"
+}, {
+"base": "Node",
+"class": "_pharser",
+"language": "GDScript",
+"path": "res://English/src/pharser.gd"
 } ]
 _global_script_class_icons={
 "BSA": "",
@@ -51,7 +56,8 @@ _global_script_class_icons={
 "Mind": "",
 "NN": "",
 "Register": "",
-"ThreadServer": ""
+"ThreadServer": "",
+"_pharser": ""
 }
 
 [application]

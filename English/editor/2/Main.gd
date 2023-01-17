@@ -3,7 +3,6 @@ extends Control
 onready var speechmenu:MenuButton = $"Container/Editor/Button Menu"
 onready var speechtypemenu:MenuButton = $"Container/Editor/Type Menu"
 onready var popupmenu:Popup = speechmenu.get_popup()
-onready var popuptypemenu:Popup = speechtypemenu.get_popup()
 onready var content_list:VBoxContainer = $Container/Content_f/VBox
 onready var line:LineEdit = $Container/Editor/LineEdit
 onready var itemlist:ItemList = $Container/Content/ItemList
@@ -88,7 +87,7 @@ var current_type_int:Array = [[]]
 func _ready()->void:
 	OS.window_size = Vector2(600, 400)
 	OS.set_window_title("(*)")
-	alert.window_title = "Peringatan!"
+	alert_ready()
 	menu_ready()
 	popupmenu.add_item("[Empty]")
 	popupmenu.connect("id_pressed", self, "_on_popupmenu_id_pressed")
@@ -99,7 +98,7 @@ func _ready()->void:
 	load_file(path)
 	item_ready()
 #	print(data)
-#	alert_ready()
+	
 
 func menu_ready():
 	var menus:Array
@@ -110,12 +109,12 @@ func menu_ready():
 	
 	for j in range(menus.size()):
 		var m = menus[j]
-		print(m)
+#		print(m)
 		var speech = speechlist[j] as Array
 		m.name = "menu" + str(speeches[j])
 		for i in range(speech.size()):
 			m.add_item(speech[i])
-		print(m.get_item_count())
+#		print(m.get_item_count())
 		m.connect("id_pressed", self, "_sts_" + str(speeches[j]))
 		popupmenu.add_child(m)
 		popupmenu.add_submenu_item(str(speeches[j]), "menu" + str(speeches[j]))
@@ -163,7 +162,7 @@ func item_add(key:String, _types:Array)->void:
 #	for i in range(types.size()):
 ##			s += str(each[i]) + ", "
 #		s += speeches[types[i]] + ", "
-	s += speech_parse()
+	s += speech_parse_string()
 	var pos = data.keys().find(key)
 	if pos == -1:
 		itemlist.add_item(s)
@@ -214,7 +213,7 @@ func menu_add_speech(id: int)->void:
 		current_type_string.clear()
 		menu_update_speech()
 		return
-	print(id)
+#	print(id)
 	if not current_type_int[0].has(id):
 		current_type_string.append(speeches[id])
 		current_type_int[0].append(id)
@@ -222,12 +221,12 @@ func menu_add_speech(id: int)->void:
 		menu_update_speech()
 
 func menu_update_speech():
-	var s:String = speech_parse()
+	var s:String = speech_parse_string()
 	if s == "[]":
 		s = "Type"
 	speechmenu.text = s
 
-func speech_parse() -> String:
+func speech_parse_string() -> String:
 	var s:String
 	var types = current_type_int[0]
 	
@@ -277,7 +276,7 @@ func _on_Button_Push_pressed()->void:
 		return
 	item_add(key, current_type_int)
 	data[key] = current_type_int.duplicate()
-	print("Memasukkan " + key + " data " + str(current_type_int))
+	print("Memasukkan \"" + key + "\": " + speech_parse_string())
 	
 	current_type_int.clear()
 	current_type_int = [[]]
@@ -299,7 +298,7 @@ func type_int_to_string(types:Array)->Array:
 func editor_set(index:int):
 	line.text = data.keys()[index]
 	current_type_int = data.values()[index].duplicate()
-	print(current_type_int)
+#	print(current_type_int)
 #	current_type_string = type_int_to_string(current_type_int)
 	menu_update_speech()
 
@@ -320,6 +319,7 @@ func alert_show(msg):
 	alert.popup_centered(Vector2(200, 100))
 
 func alert_ready():
+	alert.window_title = "Peringatan!"
 	alert.rect_position = (OS.window_size - alert.rect_size) / 2
 
 func _on_FileDialogSave_file_selected(path):

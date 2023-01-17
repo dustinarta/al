@@ -1,0 +1,19 @@
+
+
+noun + verb
+noun + verb + noun
+
+adjective + noun + verb + noun
+noun + verb + adjective + noun
+adjective + noun + verb + adjective + noun
+
+noun + adverb + verb + noun
+noun + verb + adverb + adjective + noun
+line + adverb
+line + adverb + adverb
+
+line + preposition + noun
+preposition + noun, line
+
+line + conjunction + line
+conjunction + line, line

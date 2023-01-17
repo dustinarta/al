@@ -1,40 +1,56 @@
 object:
-    the weather has temperature
+	the weather has temperature
 
 
-
+Salesman extends job:
+	work(item, costumer) {
+		if no item or no costumer: cant do work; return false.
+		sell that item to that costumer;
+		return true.
+	}
 
 agent:
-    variable:
-        this weather is hot
-        my umbrella
-        my name is Steve
-        i am a human, male, and Seller [human + male + Seller = Salesman]
-        my job is a Salesman
-		Salesman:
-			work(item, costumer){
-				if no item or no costumer, cant do work
-				sell that item to that costumer
-			}
-    
-    function:
-        use(item) { 
+	variable:
+		this console
+		this weather is hot
+		my Bugatti:
+			self is a car
+			the color is Yellow
+		my umbrella
+		my name is Steve
+		i am a human, male, and Seller [human + male = man + Seller = Salesman]
+		my job is a Salesman
+		
 
-        }
-        cover() {
+	function:
+		use(item) { 
 
-        }
-    
-    main(args) {
-        if the weather is cold, use umbrella and cover yourself
-    }
+		}
+		cover() {
 
-test:
-    what is your name
-        Steve -> my name is Steve
+		}
+		say(sentence) {
+			write that sentence to this console.
+		}
+		work() {
+			if i have no job: say "i dont work"; return false.
+			work my job;
+			return true.
+		}
+	
+	main(sentence) {
+		if the weather is cold, use umbrella and cover yourself.
+	}
 
-    who are you
-        Salesman -> i am a Salesman
+test Q&A:
+	what is your name
+		Steve -> my name is Steve
 
-    how do you do your job
-        by selling item -> i work by selling the item to the costumer
+	who are you
+		Salesman -> i am a Salesman
+
+	how do you work
+		by selling item -> i work by selling the item to the costumer
+
+	what color is your Bugatti
+		Yellow -> my Bugatti color is Yellow

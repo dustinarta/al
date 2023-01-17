@@ -13,7 +13,7 @@ func _run():
 	
 	En.init()
 	
-	print(En.read(test_sentence[1]))
+	print(En.read(s))
 #	var a = En.PRONOUN
 #	var b = En.NOUN
 #	print(En.PRONOUN == En.PRONOUN)
