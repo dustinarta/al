@@ -17,7 +17,7 @@ var Preposition = En.Preposition
 var Interjection = En.Interjection
 
 func _init(speech_list):
-    self.speech_list = speech_list
+	self.speech_list = speech_list
 
 func _pharser(sentence)->Array:
 	var result:Array = []

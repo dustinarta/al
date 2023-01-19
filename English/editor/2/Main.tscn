@@ -65,21 +65,27 @@ margin_right = 780.0
 margin_bottom = 70.0
 rect_min_size = Vector2( 0, 30 )
 
+[node name="Button Find" type="Button" parent="Container/Editor"]
+margin_right = 39.0
+margin_bottom = 30.0
+text = "Find"
+
 [node name="LineEdit" type="LineEdit" parent="Container/Editor"]
-margin_right = 100.0
+margin_left = 43.0
+margin_right = 143.0
 margin_bottom = 30.0
 rect_min_size = Vector2( 100, 0 )
 
 [node name="Button Menu" type="MenuButton" parent="Container/Editor"]
-margin_left = 104.0
-margin_right = 146.0
+margin_left = 147.0
+margin_right = 189.0
 margin_bottom = 30.0
 text = "Type"
 icon_align = 1
 
 [node name="Button Push" type="Button" parent="Container/Editor"]
-margin_left = 150.0
-margin_right = 193.0
+margin_left = 193.0
+margin_right = 236.0
 margin_bottom = 30.0
 text = "push"
 
@@ -95,6 +101,7 @@ margin_right = 780.0
 margin_bottom = 500.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+select_mode = 1
 allow_reselect = true
 auto_height = true
 same_column_width = true
@@ -122,6 +129,7 @@ margin_bottom = 58.0
 [connection signal="pressed" from="Container/Menu/Button Save" to="." method="_on_Button_Save_pressed"]
 [connection signal="pressed" from="Container/Menu/Button Save As" to="." method="_on_Button_Save_As_pressed"]
 [connection signal="file_selected" from="Container/Menu/Button Save As/FileDialogSave" to="." method="_on_FileDialogSave_file_selected"]
+[connection signal="pressed" from="Container/Editor/Button Find" to="." method="_on_Button_Find_pressed"]
 [connection signal="pressed" from="Container/Editor/Button Push" to="." method="_on_Button_Push_pressed"]
 [connection signal="item_activated" from="Container/Content/ItemList" to="." method="_on_ItemList_item_activated"]
 [connection signal="nothing_selected" from="Container/Content/ItemList" to="." method="_on_ItemList_nothing_selected"]

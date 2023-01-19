@@ -34,6 +34,7 @@ enum PRONOUN {
 	Demonstrative
 	Possesive
 	Intensive
+	Second
 }
 
 enum VERB {
@@ -80,7 +81,6 @@ var speechlist = [NOUN.keys(), PRONOUN.keys(), VERB.keys(), ADJECTIVE.keys(), AD
 var data:Dictionary = {}
 var path:String = "res://English/dataset-key2.json"
 
-var current_type_string:Array
 var current_type_int:Array = [[]]
 
 # Called when the node enters the scene tree for the first time.
@@ -204,20 +204,22 @@ func save_file(path:String)->void:
 	OS.set_window_title(path)
 
 func _on_popupmenu_id_pressed(id: int)->void:
+	print("menu " + str(id))
 	menu_add_speech(id)
 	
-func menu_add_speech(id: int)->void:
+func menu_add_speech(id: float)->void:
+	print(current_type_int)
 	if id == 8:
 		current_type_int.clear()
 		current_type_int = [[]]
-		current_type_string.clear()
 		menu_update_speech()
 		return
 #	print(id)
 	if not current_type_int[0].has(id):
-		current_type_string.append(speeches[id])
 		current_type_int[0].append(id)
 		current_type_int.append([])
+		print(id)
+		print(current_type_int)
 		menu_update_speech()
 
 func menu_update_speech():
@@ -274,13 +276,13 @@ func _on_Button_Push_pressed()->void:
 	elif not is_valid_key(key):
 		alert_show("Gak bisa nulis \"" + key + "\"")
 		return
+	print(current_type_int)
 	item_add(key, current_type_int)
 	data[key] = current_type_int.duplicate()
 	print("Memasukkan \"" + key + "\": " + speech_parse_string())
 	
 	current_type_int.clear()
 	current_type_int = [[]]
-	current_type_string.clear()
 	speechmenu.text = "Type"
 	line.text = ""
 
@@ -328,51 +330,34 @@ func _on_FileDialogSave_file_selected(path):
 func _on_Button_Save_As_pressed():
 	file_save.popup_centered()
 
-func _sts_Noun(id:int):
-	var sid = 0
+func sts_add_menu(sid:float, id:float):
 	menu_add_speech(sid)
 	var pos: int = (current_type_int[0] as Array).find(sid)
 	var loc = current_type_int[pos + 1] as Array
 	if !loc.has(id):
 		loc.append(id)
 	menu_update_speech()
+
+func _sts_Noun(id:int):
+	var sid = 0
+	sts_add_menu(sid, id)
 
 func _sts_Pronoun(id:int):
 	var sid = 1
-	menu_add_speech(sid)
-	var pos: int = (current_type_int[0] as Array).find(sid)
-	var loc = current_type_int[pos + 1] as Array
-	if !loc.has(id):
-		loc.append(id)
-	menu_update_speech()
+	sts_add_menu(sid, id)
 
-func _sts_Verb(id:int):
+func _sts_Verb(id:float):
 	var sid = 2
-	menu_add_speech(sid)
-	var pos: int = (current_type_int[0] as Array).find(sid)
-	var loc = current_type_int[pos + 1] as Array
-	if !loc.has(id):
-		loc.append(id)
-	menu_update_speech()
+	sts_add_menu(sid, id)
 
 func _sts_Adjective(id:int):
 	var sid = 3
-	menu_add_speech(sid)
-	var pos: int = (current_type_int[0] as Array).find(sid)
-	var loc = current_type_int[pos + 1] as Array
-	if !loc.has(id):
-		loc.append(id)
-	menu_update_speech()
-	
+	sts_add_menu(sid, id)
+
 func _sts_Adverb(id:int):
 	var sid = 4
-	menu_add_speech(sid)
-	var pos: int = (current_type_int[0] as Array).find(sid)
-	var loc = current_type_int[pos + 1] as Array
-	if !loc.has(id):
-		loc.append(id)
-	menu_update_speech()
-	
+	sts_add_menu(sid, id)
+
 func _sts_Conjunction(id:int):
 	var sid = 5
 	menu_add_speech(sid)
@@ -384,18 +369,19 @@ func _sts_Conjunction(id:int):
 	
 func _sts_Preposition(id:int):
 	var sid = 6
-	menu_add_speech(sid)
-	var pos: int = (current_type_int[0] as Array).find(sid)
-	var loc = current_type_int[pos + 1] as Array
-	if !loc.has(id):
-		loc.append(id)
-	menu_update_speech()
-	
+	sts_add_menu(sid, id)
+
 func _sts_Interjection(id:int):
 	var sid = 7
-	menu_add_speech(sid)
-	var pos: int = (current_type_int[0] as Array).find(sid)
-	var loc = current_type_int[pos + 1] as Array
-	if !loc.has(id):
-		loc.append(id)
-	menu_update_speech()
+	sts_add_menu(sid, id)
+
+
+func _on_Button_Find_pressed():
+	var text = line.text
+	var index = data.keys().find(text)
+	
+	if index == -1:
+		alert_show("\"" + text + "\" tidak ditemukan!")
+	else:
+		itemlist.select(index)
+		editor_set(index)

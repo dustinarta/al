@@ -16,7 +16,7 @@ func read(sentence:String)->Array:
 	results.append(each)
 	results.append(find_speech(each))
 	
-	_pharser(results[-1])
+	_phraser(results[-1])
 #	report_null([each, results[1]])
 	
 	return results
@@ -38,12 +38,12 @@ class SP:
 	
 	func _init(s:String, o:Array):
 		self.speech = s
+		if o == []:
+			print("Undefined \"" + self.speech + "\"")
+			return
 		var my_o = o.duplicate(true)
 		self.type = my_o[0]
-		if self.type.size() != 0:
-			self.each_type = my_o.slice(1, self.type.size())
-		else:
-			print("Undefined \"" + self.speech + "\"")
+		self.each_type = my_o.slice(1, self.type.size())
 	
 	func _to_string():
 		var a = [type]
@@ -51,6 +51,12 @@ class SP:
 		var s:String = "SP: " + speech + " "
 		s += En.speech_parse_string(a)
 		return s
+
+class Phrase:
+	var speeches:Array = []
+
+	func _init():
+		pass
 
 func init(path = "res://English/dataset-key2.json"):
 	var f = File.new()
@@ -72,7 +78,8 @@ func find_speech(words:Array)->Array:
 		if data.has(key):
 			result[i] = SP.new(key, data[key])
 	#		result[i] = data[key]
-
+		else:
+			result[i] = SP.new(key, [])
 	return result
 
 func parse(sentence:String):
@@ -162,13 +169,13 @@ func _to_string():
 	return result
 	
 
-func _pharser(sentence)->Array:
+func _phraser(sentence)->Array:
 	var result:Array = []
 	var aux_pos = _find_auxilary(sentence)
 	print("Auxilary at " + str(aux_pos))
 	return result
 
-func _pharser_find(sentence:Array, speech:float)->Array:
+func _phraser_find(sentence:Array, speech:float)->Array:
 	var result:Array = []
 	var length = sentence.size()
 	for i in range(length):
@@ -185,24 +192,24 @@ func _pharser_find(sentence:Array, speech:float)->Array:
 	
 	return result
 
-func _pharser_find_type(sentence:Array, speech:float, type:float)->Array:
+func _phraser_find_type(sentence:Array, speech:float, type:float)->Array:
 	var result:Array = []
-	var speechs = _pharser_find(sentence, speech)
+	var speechs = _phraser_find(sentence, speech)
 	var length = speechs.size()
+	#each speech index
 	for i in range(length):
 		var index = speechs[i]
 		var sp = sentence[index] as SP
-		if sp.each_type.has(type):
-			result.append(index)
+		#each type of speech index
+		for j in range(sp.type.size()):
+			if sp.each_type[j].has(type):
+				result.append(index)
+				break
 	
 	return result
 
 func _find_auxilary(sentence:Array)->Array:
-	var result:Array = _pharser_find_type(sentence, SPEECH_TYPE.Verb, Verb.Auxiliary)
-	# var verbs = _pharser_find(sentence, SPEECH_TYPE.Verb)
-	# var length = verbs.size()
-	# for i in range(length):
-		
+	var result:Array = _phraser_find_type(sentence, float(SPEECH_TYPE.Verb), float(Verb.Auxiliary))
 	
 	return result
 
@@ -230,6 +237,7 @@ enum Pronoun {
 	Demonstrative
 	Possesive
 	Intensive
+	Second
 }
 
 enum Verb {
@@ -269,4 +277,12 @@ enum Preposition {
 
 enum Interjection {
 	Slang
+}
+
+enum PHRASE_TYPE {
+	Noun
+	Verb
+	Prepositional
+	Infinitive
+	Gerund
 }

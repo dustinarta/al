@@ -1,0 +1,44 @@
+
+
+Types:
+	Noun
+	Verb
+	Adjective
+	Adverb
+	Prepositional
+	Gerund
+	Infinitive
+
+Noun:
+	He likes fishing in the river	-> He
+	Po   V     Vg    Pe Adj   N
+	The black hat man is walking in the park	-> The black hat man
+	Adj  Adj  Adj  N  Va    Vg   Pe Adj  N
+	The man with a black hat is walking in the park	-> The man
+	Adj  N   Pe Adj Adj   N  Va    Vg   Pe Adj  N
+
+Verb:
+	She was being pushed away	-> was being pushed away
+	Po  Va   Vag    V    Adv
+
+Adjective:
+	The gold is very shiny	-> very shiny
+	Adj  N   Va Adv   Adj
+
+Adverb:
+	They run really fast	-> really fast
+	 Po   V   Adv   Adv
+
+Prepositional:
+	He likes fishing in the river	-> in the river
+	Po   V     Vg    Pe  A    N
+	He give his flower to me	-> to me
+	Po  V   Po    N    Pe Po
+
+Gerund:
+	Creating program needs a hard work	-> Creating program
+	   Vg       N      V  Adj Adv  V
+
+Infinitive:
+	We work together to win the game	-> to win the game
+	Po  V      Adv   Va  V  Adj  N

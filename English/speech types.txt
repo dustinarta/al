@@ -14,13 +14,14 @@ Types:
     Idea (Noun) : love, bad, bright
     Collective (Noun) : apples, cars, people, men
 
-    Personal (Pronoun) : i, you, he, she, it, we, they
-    Object (Pronoun) : me, you, him, her, it, us, them
-    Relative (Pronoun) : what, who, when, where, why, how, whom, which, whose
-    Indefinite (Pronoun) : anybody, anyone, somebody, someone, nobody, noone, all, much, enough
+    Personal (Pronoun) : 		i,		you,		he,			she,		it,		we,			they
+    Second (Pronoun) :			me,		you,		him,		her,		it,		us,			them
+    Possesive (Pronoun) :		my,		your,		his,		her,		its,	our,		their
+    Owner (Pronoun) :			mine,	yours,		his,		hers,				ours,		theirs
+    Intensive (Pronoun) :		myself,	yourself,	himself,	herself,	itself,	ourselves,	themselves
     Demonstrative (Pronoun) : this, that, these, those
-    Possesive (Pronoun) : my, your, his, her, it, our, their
-    Intensive (Pronoun) : myself, yourself, himself, herself, itself, ourselves, themselves
+    Relative (Pronoun) : what, who, when, where, why, how, whom, which, whose
+    Indefinite (Pronoun) : anybody, anyone, somebody, someone, nobody, noone, all
 
     Auxiliary (Verb) : be, is, are, do, does, have, has, being, doing, having, been
     Modal (Verb) : can, will, shall, may, could, would, should, must
@@ -30,7 +31,7 @@ Types:
     Comparative (Adjective) : taller, bigger
     Superlative (Adjective) : tallest, biggest
     Descriptive (Adjective) : nice, bad, big, hot
-    Determiner (Adjective) : all, some, only, every, four 
+    Determiner (Adjective) : all, some, only, every, four, much, enough
     Article (Adjective) : the, a, an
 
     Frequency (Adverb) : always, never, sometimes, often, once, twice
