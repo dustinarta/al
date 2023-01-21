@@ -21,60 +21,21 @@ enum SPEECH_TYPE {
 	Interjection = 7
 }
 
-enum NOUN {
-	Common
-	Proper
-	Idea
-	Collective
-}
+var NOUN = En.Noun
 
-enum PRONOUN {
-	Relative
-	Indefinite
-	Demonstrative
-	Possesive
-	Intensive
-	Second
-}
+var PRONOUN = En.Pronoun
 
-enum VERB {
-	Auxiliary
-	Modal
-	Action
-	State
-}
+var VERB = En.Verb
 
-enum ADJECTIVE {
-	Comparative
-	Superlative
-	Descriptive
-	Determiner 
-	Article
-}
+var ADJECTIVE  = En.Adjective
 
-enum ADVERB {
-	Frequency
-	Manner
-	Degree
-	Order
-}
+var ADVERB = En.Adverb
 
-enum CONJUNCTION {
-	Coordinating 
-	Subordinating
-	Correlative
-}
+var CONJUNCTION = En.Conjunction
 
-enum PREPOSITION {
-	Location
-	Time
-	Direction 
-	Instrument
-}
+var PREPOSITION = En.Preposition
 
-enum INTERJECTION {
-	
-}
+var INTERJECTION = En.Interjection
 
 var speeches = SPEECH_TYPE.keys()
 var speechlist = [NOUN.keys(), PRONOUN.keys(), VERB.keys(), ADJECTIVE.keys(), ADVERB.keys(), CONJUNCTION.keys(), PREPOSITION.keys(), INTERJECTION.keys()]

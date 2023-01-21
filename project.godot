@@ -45,7 +45,7 @@ _global_script_classes=[ {
 "path": "res://GLOBAL/thread server.gd"
 }, {
 "base": "Node",
-"class": "_pharser",
+"class": "_pharserxx",
 "language": "GDScript",
 "path": "res://English/src/pharser.gd"
 } ]
@@ -57,7 +57,7 @@ _global_script_class_icons={
 "NN": "",
 "Register": "",
 "ThreadServer": "",
-"_pharser": ""
+"_pharserxx": ""
 }
 
 [application]
@@ -67,7 +67,8 @@ run/main_scene="res://English/editor/2/Main.tscn"
 
 [autoload]
 
-En="*res://English/src/english.gd"
+En="*res://English/src/en.gd"
+English="*res://English/src/english.gd"
 
 [display]
 

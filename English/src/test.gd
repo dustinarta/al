@@ -3,18 +3,14 @@ extends EditorScript
 
 var test_sentence = [
 	"i have a car",
-	"if today is sunny, then i go to work",
-	"my friend is having a break"
+	"his friend is pushing his",
+	"if today is sunny, i go to work"
 ]
 
 func _run():
-	var s = "He is: running every morning"
+	var s = "He is running every morning"
 	
-#	print(English.get_method_list())
+	English.init()
 	
-	En.init()
+	print(English.read(test_sentence[1]))
 	
-	print(En.read(test_sentence[2]))
-#	var a = En.PRONOUN
-#	var b = En.NOUN
-#	print(En.PRONOUN == En.PRONOUN)

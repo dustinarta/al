@@ -6,8 +6,18 @@ This is a script for singleton of "English"
 """
 
 
-var speech_list = [Noun.keys(), Pronoun.keys(), Verb.keys(), Adjective.keys(), Adverb.keys(), Conjunction.keys(), Preposition.keys(), Interjection.keys()]
-var data :Dictionary = {}
+var speech_list = [
+	En.Noun.keys(), 
+	En.Pronoun.keys(), 
+	En.Verb.keys(), 
+	En.Adjective.keys(), 
+	En.Adverb.keys(), 
+	En.Conjunction.keys(), 
+	En.Preposition.keys(), 
+	En.Interjection.keys()
+	]
+
+var data:Dictionary = {}
 
 func read(sentence:String)->Array:
 	var each = parse(sentence.to_lower())
@@ -16,10 +26,12 @@ func read(sentence:String)->Array:
 	results.append(each)
 	results.append(find_speech(each))
 	
-	_phraser(results[-1])
+	print(_phraser(results[-1]))
 #	report_null([each, results[1]])
 	
 	return results
+
+
 
 class SC:
 	var c:String
@@ -51,12 +63,212 @@ class SP:
 		var s:String = "SP: " + speech + " "
 		s += En.speech_parse_string(a)
 		return s
+	
+	func pick_type(type:float) -> Array:
+		var i = self.type.find(type)
+		
+		if i != -1:
+			return self.each_type[i].duplicate(true)
+		else:
+			return []
 
 class Phrase:
-	var speeches:Array = []
-
+	var speech:Array = []
+	var speechtype:Array = []
+	var type = null
+	
 	func _init():
 		pass
+	
+	func is_empty() -> bool:
+		if type == null:
+			return true
+		else:
+			return false
+	
+	
+	func parse(sentence:Array, index:int):
+		var s = _next(sentence, index)
+		var typeis:float
+		
+		if s is SP:
+			var sp = s as SP
+			
+			
+			print(sp.type)
+			
+			#speech type is adjective
+			if sp.type.has(float(En.SPEECH_TYPE.Adjective)):
+				return _parse_adjective(sentence, index)
+			
+			#speech type is pronoun
+			if sp.type.has(float(En.SPEECH_TYPE.Pronoun)):
+				return _parse_pronoun(sentence, index)
+			
+			#speech type is verb
+			if sp.type.has(float(En.SPEECH_TYPE.Verb)):
+				return _parse_verb(sentence, index)
+			
+		elif s is SC:
+			pass
+			
+		
+		return -1
+	
+	func _parse_pronoun(sentence:Array, index:int):
+		var sp = sentence[index] as SP
+		var typeis = En.PHRASE_TYPE.Noun
+		var et = sp.pick_type(En.SPEECH_TYPE.Pronoun)
+		var next
+		
+		if et.has(float(En.Pronoun.Possesive)):
+			self.type = typeis
+			speech.append(sp.speech)
+			speechtype.append([En.SPEECH_TYPE.Pronoun, En.Pronoun.Possesive])
+			index += 1
+			next = _next(sentence, index)
+			
+			if next is SP:
+				var nextsp = next as SP
+				print("here")
+				if nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
+					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
+					speech.append(nextsp.speech)
+					speechtype.append([En.SPEECH_TYPE.Noun, nextet[0]])
+					return index + 1
+				else:
+					print("invalid english")
+		
+		if et.has(float(En.Pronoun.Owner)):
+			self.type = typeis
+			if speech.size() > 0:
+				speechtype[speech.size()-1][1] = En.Pronoun.Owner
+				return index
+			else:
+				speech.append(sp)
+				return index + 1
+		
+		else:
+			speech.append(sp)
+			return index + 1
+	
+	func _parse_verb(sentence:Array, index:int):
+		var sp = sentence[index] as SP
+		var typeis = En.PHRASE_TYPE.Verb
+		var et = sp.pick_type(En.SPEECH_TYPE.Verb)
+		var next
+		
+		if et.has(float(En.Verb.Modal)):
+			pass
+		elif et.has(float(En.Verb.Auxiliary)):
+			self.type = typeis
+			speech.append(sp.speech)
+			speechtype.append([En.SPEECH_TYPE.Verb, En.Verb.Auxiliary])
+			index += 1
+			next = _next(sentence, index)
+			if next is SP:
+				var nextsp = next as SP
+				
+				if nextsp.type.has(float(En.SPEECH_TYPE.Verb)):
+					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Verb))
+					speech.append(nextsp.speech)
+					speechtype.append([En.SPEECH_TYPE.Verb, nextet[0]])
+					return index + 1
+				else:
+					return index
+		else:
+			self.type = typeis
+			speech.append(sp)
+			return index + 1
+	
+	func _parse_adjective(sentence:Array, index:int):
+		var sp = sentence[index] as SP
+		var typeis = null
+		var et = sp.pick_type(En.SPEECH_TYPE.Adjective)
+		var next
+		# typeis = En.PHRASE_TYPE.Noun
+		
+		if et.has(float(En.Adjective.Article)):
+			typeis = En.PHRASE_TYPE.Noun
+			type = typeis
+			speech.append(sp.speech)
+			speechtype.append([En.SPEECH_TYPE.Adjective, En.Adjective.Article])
+			index += 1
+			next = _next(sentence, index)
+			if next is SP:
+				var nextsp = next as SP
+				
+				if nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
+					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
+					speech.append(nextsp.speech)
+					speechtype.append([En.SPEECH_TYPE.Noun, nextet.type[0]])
+					return index + 1
+				
+			else:
+				print("invalid english")
+	
+	func _next(sentence:Array, index:int):
+		if sentence.size() <= index:
+			return null
+		var s = sentence[index]
+		
+		if s is SP:
+			return s as SP
+		elif s is SC:
+			return s as SC
+		else:
+			return s
+	
+	func _find(sentence:Array, speech:float, limit := [])->Array:
+		var result:Array = []
+		var length = sentence.size()
+		for i in range(length):
+			var s = sentence[i]
+			if s is SC:
+				continue
+			elif s is SP:
+				var sp = s as SP
+				var pos = sp.type.find(speech)
+				if pos != -1:
+					result.append(i)
+			else:
+				print("Not Written")
+		
+		return result
+	
+	func _find_type(sentence:Array, speech:float, type:float, limit := [])->Array:
+		var result:Array = []
+		var speechs = _find(sentence, speech)
+		var length = speechs.size()
+		#each speech index
+		for i in range(length):
+			var index = speechs[i]
+			var sp = sentence[index] as SP
+			#each type of speech index
+			for j in range(sp.type.size()):
+				if sp.each_type[j].has(type):
+					result.append(index)
+					break
+		
+		return result
+		
+	func _to_string() -> String:
+		var s:String = "Phrase = { "
+		if self.type == null:
+			s += "NULL"
+		else:
+			var key = En.PHRASE_TYPE.keys()
+			s += "Type: " + str(key[int(self.type)])
+			s += ", Speech: [ " 
+			for i in range(self.speech.size()):
+				var type = self.speechtype[i]
+				s += self.speech[i] + " (" + En.SPEECH_TYPE.keys()[type[0]] + ", " + En.speech_list[type[0]][type[1]] +"), "
+#				s += str(self.speech[i].speech) + " "
+			s.erase(s.length()-1, " ".ord_at(0))
+			s.erase(s.length()-1, ",".ord_at(0))
+			s += " ]"
+		s += " }"
+		return s
 
 func init(path = "res://English/dataset-key2.json"):
 	var f = File.new()
@@ -137,42 +349,27 @@ func report_null(result)->void:
 	else:
 		print("Missing: " + str(missing))
 
-static func speech_parse_string(current_type_int) -> String:
-	var speech_list = [Noun.keys(), Pronoun.keys(), Verb.keys(), Adjective.keys(), Adverb.keys(), Conjunction.keys(), Preposition.keys(), Interjection.keys()]
-	var speech_type = SPEECH_TYPE.keys()
-	#print(current_type_int)
-	var s:String = ""
-	var types = current_type_int[0]
-	
-	s += "{"
-	for i in range(types.size()):
-		s += speech_type[types[i]]
-		var each_type = current_type_int[i + 1]
-		var etl = each_type.size()
-		for j in range(etl):
-			if j == 0:
-				s += "("
-			else:
-				s += ", "
-			s += str(speech_list[types[i]][each_type[j]])
-			if j == etl - 1:
-				s += ")"
-		if i != types.size()-1:
-			s += ", "
-	s += "}"
-	return s
-
 func _to_string():
 	var result = "English Singleton : {\n"
 	result += "\tword count = " + str(data.size())
 	result += "\n}"
 	return result
-	
 
 func _phraser(sentence)->Array:
 	var result:Array = []
-	var aux_pos = _find_auxilary(sentence)
-	print("Auxilary at " + str(aux_pos))
+	var i = 0
+	
+	var phrase = Phrase.new()
+	i = phrase.parse(sentence, i)
+	result.append(phrase)
+	
+	while i != -1:
+		phrase = Phrase.new()
+		i = phrase.parse(sentence, i)
+		if phrase.is_empty():
+			break
+		result.append(phrase)
+	
 	return result
 
 func _phraser_find(sentence:Array, speech:float)->Array:
@@ -209,80 +406,7 @@ func _phraser_find_type(sentence:Array, speech:float, type:float)->Array:
 	return result
 
 func _find_auxilary(sentence:Array)->Array:
-	var result:Array = _phraser_find_type(sentence, float(SPEECH_TYPE.Verb), float(Verb.Auxiliary))
+	var result:Array = _phraser_find_type(sentence, float(English.SPEECH_TYPE.Verb), float(English.Verb.Auxiliary))
 	
 	return result
 
-enum SPEECH_TYPE {
-	Noun = 0,
-	Pronoun = 1,
-	Verb = 2,
-	Adjective = 3,
-	Adverb = 4,
-	Conjunction = 5,
-	Preposition = 6,
-	Interjection = 7
-}
-
-enum Noun {
-	Common
-	Proper
-	Idea
-	Collective
-}
-
-enum Pronoun {
-	Relative
-	Indefinite
-	Demonstrative
-	Possesive
-	Intensive
-	Second
-}
-
-enum Verb {
-	Auxiliary = 0
-	Modal = 1
-	Action = 2
-	State = 3
-}
-
-enum Adjective {
-	Comparative
-	Superlative
-	Descriptive
-	Determiner 
-	Article
-}
-
-enum Adverb {
-	Frequency
-	Manner
-	Degree
-	Order
-}
-
-enum Conjunction {
-	Coordinating 
-	Subordinating
-	Correlative
-}
-
-enum Preposition {
-	Location
-	Time
-	Direction 
-	Instrument
-}
-
-enum Interjection {
-	Slang
-}
-
-enum PHRASE_TYPE {
-	Noun
-	Verb
-	Prepositional
-	Infinitive
-	Gerund
-}
