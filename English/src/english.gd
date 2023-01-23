@@ -86,16 +86,20 @@ class Phrase:
 		else:
 			return false
 	
+	func append(speech:String, speechtype:Array):
+		self.speech.append(speech)
+		self.speechtype.append(speechtype)
 	
 	func parse(sentence:Array, index:int):
 		var s = _next(sentence, index)
+#		print(index, s)
 		var typeis:float
 		
 		if s is SP:
 			var sp = s as SP
 			
 			
-			print(sp.type)
+#			print(sp.type)
 			
 			#speech type is adjective
 			if sp.type.has(float(En.SPEECH_TYPE.Adjective)):
@@ -111,20 +115,19 @@ class Phrase:
 			
 		elif s is SC:
 			pass
-			
+		else:
+			print("Full phrase")
 		
 		return -1
 	
 	func _parse_pronoun(sentence:Array, index:int):
 		var sp = sentence[index] as SP
-		var typeis = En.PHRASE_TYPE.Noun
+		type = En.PHRASE_TYPE.Noun
 		var et = sp.pick_type(En.SPEECH_TYPE.Pronoun)
 		var next
 		
 		if et.has(float(En.Pronoun.Possesive)):
-			self.type = typeis
-			speech.append(sp.speech)
-			speechtype.append([En.SPEECH_TYPE.Pronoun, En.Pronoun.Possesive])
+			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Possesive])
 			index += 1
 			next = _next(sentence, index)
 			
@@ -133,14 +136,12 @@ class Phrase:
 				print("here")
 				if nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
 					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
-					speech.append(nextsp.speech)
-					speechtype.append([En.SPEECH_TYPE.Noun, nextet[0]])
+					append(nextsp.speech, [En.SPEECH_TYPE.Noun, nextet[0]])
 					return index + 1
 				else:
 					print("invalid english")
 		
 		if et.has(float(En.Pronoun.Owner)):
-			self.type = typeis
 			if speech.size() > 0:
 				speechtype[speech.size()-1][1] = En.Pronoun.Owner
 				return index
@@ -149,21 +150,21 @@ class Phrase:
 				return index + 1
 		
 		else:
-			speech.append(sp)
+			append(sp.speech, [En.SPEECH_TYPE.Pronoun, sp.each_type[0][0]])
 			return index + 1
+		
+		return -1
 	
-	func _parse_verb(sentence:Array, index:int):
+	func _parse_verb(sentence:Array, index:int) -> int:
 		var sp = sentence[index] as SP
-		var typeis = En.PHRASE_TYPE.Verb
+		type = En.PHRASE_TYPE.Verb
 		var et = sp.pick_type(En.SPEECH_TYPE.Verb)
 		var next
 		
 		if et.has(float(En.Verb.Modal)):
 			pass
 		elif et.has(float(En.Verb.Auxiliary)):
-			self.type = typeis
-			speech.append(sp.speech)
-			speechtype.append([En.SPEECH_TYPE.Verb, En.Verb.Auxiliary])
+			append(sp.speech, [En.SPEECH_TYPE.Verb, En.Verb.Auxiliary])
 			index += 1
 			next = _next(sentence, index)
 			if next is SP:
@@ -171,46 +172,100 @@ class Phrase:
 				
 				if nextsp.type.has(float(En.SPEECH_TYPE.Verb)):
 					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Verb))
-					speech.append(nextsp.speech)
-					speechtype.append([En.SPEECH_TYPE.Verb, nextet[0]])
+					append(nextsp.speech, [En.SPEECH_TYPE.Verb, nextet[0]])
 					return index + 1
 				else:
 					return index
 		else:
-			self.type = typeis
-			speech.append(sp)
+			append(sp.speech, [En.SPEECH_TYPE.Verb, sp.type[0]])
 			return index + 1
+			
+		return -1
 	
-	func _parse_adjective(sentence:Array, index:int):
+	func _parse_adjective(sentence:Array, index:int) -> int:
 		var sp = sentence[index] as SP
-		var typeis = null
+		type = null
 		var et = sp.pick_type(En.SPEECH_TYPE.Adjective)
 		var next
 		# typeis = En.PHRASE_TYPE.Noun
 		
 		if et.has(float(En.Adjective.Article)):
-			typeis = En.PHRASE_TYPE.Noun
-			type = typeis
-			speech.append(sp.speech)
-			speechtype.append([En.SPEECH_TYPE.Adjective, En.Adjective.Article])
+			type = En.PHRASE_TYPE.Noun
+			append(sp.speech, [En.SPEECH_TYPE.Adjective, En.Adjective.Article])
+			
+			var running = true
+			while running:
+				index += 1
+				next = _next(sentence, index)
+				if next is SP:
+					var nextsp = next as SP
+					
+					if nextsp.type.has(float(En.SPEECH_TYPE.Adjective)):
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Adjective))
+						append(nextsp.speech, [En.SPEECH_TYPE.Adjective, nextet[0]])
+						continue
+					
+					elif nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
+						append(nextsp.speech, [En.SPEECH_TYPE.Noun, nextet[0]])
+						continue
+						
+					else:
+						break
+					
+					print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
+				else:
+					break
+			return index
+		else:
+			type = En.PHRASE_TYPE.Adjective
+			append(sp.speech, [En.SPEECH_TYPE.Adjective, et[0]])
 			index += 1
 			next = _next(sentence, index)
 			if next is SP:
 				var nextsp = next as SP
 				
 				if nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
+					type = En.PHRASE_TYPE.Noun
 					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
-					speech.append(nextsp.speech)
-					speechtype.append([En.SPEECH_TYPE.Noun, nextet.type[0]])
+					append(nextsp.speech, [En.SPEECH_TYPE.Noun, nextet[0]])
 					return index + 1
-				
-			else:
-				print("invalid english")
+			return index + 1
+		
+		return -1
 	
-	func _next(sentence:Array, index:int):
-		if sentence.size() <= index:
+	func _parse_adverb(sentence:Array, index:int) -> int:
+		var sp = sentence[index] as SP
+		type = En.PHRASE_TYPE.Adverb
+		var et = sp.pick_type(En.SPEECH_TYPE.Adverb)
+		var next
+		
+		if et.has([[[]]]):
+			pass
+		elif et.has(float(En.Verb.Auxiliary)):
+#			self.type = typeis
+			append(sp.speech, [En.SPEECH_TYPE.Verb, En.Verb.Auxiliary])
+			index += 1
+			next = _next(sentence, index)
+			if next is SP:
+				var nextsp = next as SP
+				
+				if nextsp.type.has(float(En.SPEECH_TYPE.Verb)):
+					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Verb))
+					append(nextsp.speech, [En.SPEECH_TYPE.Verb, nextet[0]])
+					return index + 1
+				else:
+					return index
+		else:
+			append(sp.speech, [En.SPEECH_TYPE.Verb, sp.type[0]])
+			return index + 1
+			
+		return -1
+	
+	func _next(collection:Array, index:int):
+		if collection.size() <= index:
 			return null
-		var s = sentence[index]
+		var s = collection[index]
 		
 		if s is SP:
 			return s as SP
@@ -365,6 +420,7 @@ func _phraser(sentence)->Array:
 	
 	while i != -1:
 		phrase = Phrase.new()
+#		print(sentence, " ", i)
 		i = phrase.parse(sentence, i)
 		if phrase.is_empty():
 			break

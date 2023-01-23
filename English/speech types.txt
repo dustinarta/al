@@ -34,13 +34,13 @@ Types:
 	Descriptive (Adjective) : nice, bad, big, hot
 	Determiner (Adjective) : all, some, only, every, four, much, enough
 	Article (Adjective) : the, a, an
+	Order (Adjective) : first, second, last
 	
-	Frequency (Adverb) : always, never, sometimes, often, once, twice
-	Manner (Adverb) : slowly, entirely, calmly
-	Degree (Adverb) : very, almost, less, totally, far
-	Order (Adverb) : first, second, last
-	Time (Adverb) : now, soon, today, tomorrow, yesterday
 	Place (Adverb) : here, somewhere, anywhere, nowhere, outside, inside, wherever, elsewhere, left, right, north, east, south, west
+	Time (Adverb) : now, soon, today, tomorrow, yesterday
+	Frequency (Adverb) : always, never, sometimes, often, once, twice
+	Manner (Adverb) : slowly, calmly, easily
+	Degree (Adverb) : very, almost, less, far, totally, entirely
 	
 	Coordinating (Conjunction) : for, and, not, but, or, yet, so
 	Subordinating (Conjunction) : as, if, after, before, because, when, where, while, wherever, whenever, until, unless
@@ -49,5 +49,5 @@ Types:
 	Place (Preposition) : in, on, at, above, below, middle, over, under, next
 	Time (Preposition) : in, on, at
 	Direction (Preposition) : in, on, at, into, to, from, up, down, left, right
-	Instrument (Preposition) : by, with, of, for
+	Instrument (Preposition) : by, with, of, for, than
     

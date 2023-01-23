@@ -2,9 +2,11 @@ tool
 extends EditorScript
 
 var test_sentence = [
-	"i have a car",
+	"i have a his car",
 	"his friend is pushing his",
-	"if today is sunny, i go to work"
+	"i have a big good car",
+	"they slowly push the cart",
+	"i go to work if today is sunny"
 ]
 
 func _run():
@@ -12,5 +14,5 @@ func _run():
 	
 	English.init()
 	
-	print(English.read(test_sentence[1]))
+	print(English.read(test_sentence[2]))
 	

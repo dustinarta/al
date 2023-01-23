@@ -43,13 +43,15 @@ enum Adjective {
 	Descriptive
 	Determiner 
 	Article
+	Order
 }
 
 enum Adverb {
+	Place
+	Time
 	Frequency
 	Manner
 	Degree
-	Order
 }
 
 enum Conjunction {
@@ -59,7 +61,7 @@ enum Conjunction {
 }
 
 enum Preposition {
-	Location
+	Place
 	Time
 	Direction 
 	Instrument
@@ -73,6 +75,7 @@ enum PHRASE_TYPE {
 	Noun
 	Verb
 	Adjective
+	Adverb
 	Prepositional
 	Infinitive
 	Gerund
