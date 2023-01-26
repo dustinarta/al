@@ -15,8 +15,6 @@ enum SPEECH_TYPE {
 enum Noun {
 	Common
 	Proper
-	Idea
-	Collective
 }
 
 enum Pronoun {
@@ -52,6 +50,10 @@ enum Adverb {
 	Frequency
 	Manner
 	Degree
+	Modify
+	Point
+	Conjunctive
+	Order
 }
 
 enum Conjunction {
@@ -61,9 +63,8 @@ enum Conjunction {
 }
 
 enum Preposition {
-	Place
-	Time
-	Direction 
+	Place_And_Time
+	Direction
 	Instrument
 }
 
@@ -76,6 +77,7 @@ enum PHRASE_TYPE {
 	Verb
 	Adjective
 	Adverb
+	Conjunctive
 	Prepositional
 	Infinitive
 	Gerund

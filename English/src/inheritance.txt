@@ -16,6 +16,7 @@ thing{
 	},
 	idea{
 		property{
+			name,
 			mass, length, height, width,
 			weight{
 				heavy, light
@@ -26,6 +27,12 @@ thing{
 			color{
 				red, yellow, green, blue, bright, dark
 			}
+		},
+		action{
+
+		},
+		state{
+
 		},
 		emotion{
 			joy, pain, brave, fear
@@ -43,23 +50,4 @@ thing{
 			religion
 		}
 	}
-}
-
-subject{
-	//define subject definition
-	_ds{
-		//definition from source
-		by{}
-	},
-	//define subject action
-	do{
-		//what subject do now
-		now{},
-		//what subject do by non time relative
-		is{}
-	},
-	//define subject parent
-	instance{},
-	//member of subject
-	...{}
 }

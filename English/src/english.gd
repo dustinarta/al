@@ -26,8 +26,11 @@ func read(sentence:String)->Array:
 	results.append(each)
 	results.append(find_speech(each))
 	
+	if report_null([each, results[1]]):
+		return []
+	
 	print(_phraser(results[-1]))
-#	report_null([each, results[1]])
+#	
 	
 	return results
 
@@ -86,9 +89,16 @@ class Phrase:
 		else:
 			return false
 	
-	func append(speech:String, speechtype:Array):
-		self.speech.append(speech)
-		self.speechtype.append(speechtype)
+	func append(speech:String, speechtype:Array, index:int = -1):
+		if index == -1:
+			self.speech.append(speech)
+			self.speechtype.append(speechtype)
+		else:
+			self.speech[index] = speech
+			self.speechtype[index] = speechtype
+	
+	func last()->Array:
+		return [speech[-1], speechtype[-1]]
 	
 	func parse(sentence:Array, index:int):
 		var s = _next(sentence, index)
@@ -101,13 +111,29 @@ class Phrase:
 			
 #			print(sp.type)
 			
+			#speech type is conjunction
+			if sp.type.has(float(En.SPEECH_TYPE.Preposition)):
+				return _parse_preposition(sentence, index)
+			
+			#speech type is adverb
+			if sp.type.has(float(En.SPEECH_TYPE.Adverb)):
+				return _parse_adverb(sentence, index)
+			
 			#speech type is adjective
 			if sp.type.has(float(En.SPEECH_TYPE.Adjective)):
 				return _parse_adjective(sentence, index)
 			
+			#speech type is conjunction
+			if sp.type.has(float(En.SPEECH_TYPE.Conjunction)):
+				return _parse_conjunction(sentence, index)
+			
 			#speech type is pronoun
 			if sp.type.has(float(En.SPEECH_TYPE.Pronoun)):
 				return _parse_pronoun(sentence, index)
+			
+			#speech type is noun
+			if sp.type.has(float(En.SPEECH_TYPE.Noun)):
+				return _parse_noun(sentence, index)
 			
 			#speech type is verb
 			if sp.type.has(float(En.SPEECH_TYPE.Verb)):
@@ -120,6 +146,42 @@ class Phrase:
 		
 		return -1
 	
+	func _parse_noun(sentence:Array, index:int):
+		var sp = sentence[index] as SP
+		type = En.PHRASE_TYPE.Noun
+		var et = sp.pick_type(En.SPEECH_TYPE.Noun)
+		var next
+		
+		if et.has(float(En.Noun.Proper)):
+			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Possesive])
+			
+			var running = true
+			while running:
+				index += 1
+				next = _next(sentence, index)
+				if next is SP:
+					var nextsp = next as SP
+					if nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
+						if nextet.has(float(En.Noun.Proper)):
+							append(nextsp.speech, [En.SPEECH_TYPE.Noun, En.Noun.Proper])
+						continue
+						break
+					else:
+						print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
+				break
+			return index
+#		elif et.has(float(En.Pronoun.Owner)):
+#			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Owner])
+#			return index + 1
+#
+		else:
+			print("else noun")
+			append(sp.speech, [En.SPEECH_TYPE.Noun, et[0]])
+			return index + 1
+		
+		return -1
+	
 	func _parse_pronoun(sentence:Array, index:int):
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Noun
@@ -128,29 +190,28 @@ class Phrase:
 		
 		if et.has(float(En.Pronoun.Possesive)):
 			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Possesive])
+			
 			index += 1
 			next = _next(sentence, index)
-			
 			if next is SP:
 				var nextsp = next as SP
-				print("here")
 				if nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
+					
 					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
 					append(nextsp.speech, [En.SPEECH_TYPE.Noun, nextet[0]])
 					return index + 1
 				else:
-					print("invalid english")
-		
-		if et.has(float(En.Pronoun.Owner)):
-			if speech.size() > 0:
-				speechtype[speech.size()-1][1] = En.Pronoun.Owner
-				return index
-			else:
-				speech.append(sp)
-				return index + 1
+					print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
+			if et.size() > 1:
+				et.erase(float(En.Pronoun.Possesive))
+				speechtype[speech.size()-1][1] = et[0]
+		elif et.has(float(En.Pronoun.Owner)):
+			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Owner])
+			return index + 1
 		
 		else:
-			append(sp.speech, [En.SPEECH_TYPE.Pronoun, sp.each_type[0][0]])
+			print("else pronoun")
+			append(sp.speech, [En.SPEECH_TYPE.Pronoun, et[0]])
 			return index + 1
 		
 		return -1
@@ -205,6 +266,14 @@ class Phrase:
 						append(nextsp.speech, [En.SPEECH_TYPE.Adjective, nextet[0]])
 						continue
 					
+					elif nextsp.type.has(float(En.SPEECH_TYPE.Adverb)):
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Adverb))
+						if nextet.has(float(En.Adverb.Modify)):
+							append(nextsp.speech, [En.SPEECH_TYPE.Adverb, En.Adverb.Modify])
+							continue
+						else:
+							print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
+					
 					elif nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
 						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
 						append(nextsp.speech, [En.SPEECH_TYPE.Noun, nextet[0]])
@@ -235,16 +304,110 @@ class Phrase:
 		return -1
 	
 	func _parse_adverb(sentence:Array, index:int) -> int:
+#		print("adverb not complete")
+#		return -1
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Adverb
 		var et = sp.pick_type(En.SPEECH_TYPE.Adverb)
 		var next
+		var afterverb = false
 		
-		if et.has([[[]]]):
-			pass
-		elif et.has(float(En.Verb.Auxiliary)):
-#			self.type = typeis
-			append(sp.speech, [En.SPEECH_TYPE.Verb, En.Verb.Auxiliary])
+		#checking if its after a verb
+		if index > 0:
+			var prev = _next(sentence, index-1)
+			if prev is SP:
+				var prevsp = prev as SP
+				
+				if prevsp.type.has(float(En.SPEECH_TYPE.Verb)):
+					afterverb = true
+		
+		if et.has(float(En.Adverb.Modify)):
+			
+			append(sp.speech, [En.SPEECH_TYPE.Adverb, En.Adverb.Modify])
+			
+			var running = true
+			while running:
+				index += 1
+				next = _next(sentence, index)
+				if next is SP:
+					var nextsp = next as SP
+					
+					if nextsp.type.has(float(En.SPEECH_TYPE.Adverb)):
+						if type != En.PHRASE_TYPE.Adverb:
+							print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Adverb))
+						append(nextsp.speech, [En.SPEECH_TYPE.Adverb, nextet[0]])
+						continue
+					elif nextsp.type.has(float(En.SPEECH_TYPE.Adjective)):
+						type = En.PHRASE_TYPE.Adjective
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Adjective))
+						append(nextsp.speech, [En.SPEECH_TYPE.Adjective, nextet[0]])
+						continue
+					elif nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
+						if type != En.PHRASE_TYPE.Adjective:
+							print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
+						type = En.PHRASE_TYPE.Noun
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
+						append(nextsp.speech, [En.SPEECH_TYPE.Noun, nextet[0]])
+						continue
+					else:
+						return index
+		elif et.has(float(En.Adverb.Degree)) or et.has(float(En.Adverb.Manner)):
+			
+			index += 1
+			next = _next(sentence, index)
+			append(sp.speech, [En.SPEECH_TYPE.Adverb, et[0]])
+			if next is SP:
+				var nextsp = next as SP
+				
+				if nextsp.type.has(float(En.SPEECH_TYPE.Verb)):
+					type = En.PHRASE_TYPE.Verb
+					speechtype[speechtype.size()-1][1] = En.Adverb.Degree
+					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Verb))
+					append(nextsp.speech, [En.SPEECH_TYPE.Verb, nextet[0]])
+					return index + 1
+			return index + 1
+		else:
+			print("else adverb")
+			append(sp.speech, [En.SPEECH_TYPE.Adverb, et[0]])
+			var running = true
+			while running:
+				index += 1
+				next = _next(sentence, index)
+				if next is SP:
+					var nextsp = next as SP
+					
+					if nextsp.type.has(float(En.SPEECH_TYPE.Adverb)):
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Adverb))
+						append(nextsp.speech, [En.SPEECH_TYPE.Adverb, nextet[0]])
+						continue
+					elif nextsp.type.has(float(En.SPEECH_TYPE.Adjective)):
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Adjective))
+						append(nextsp.speech, [En.SPEECH_TYPE.Adjective, nextet[0]])
+						continue
+					elif nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
+						append(nextsp.speech, [En.SPEECH_TYPE.Noun, nextet[0]])
+						continue
+					else:
+						break
+					
+					print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
+				else:
+					break
+			return index
+			
+		return -1
+	
+	func _parse_conjunction(sentence:Array, index:int) -> int:
+		var sp = sentence[index] as SP
+		type = En.PHRASE_TYPE.Conjunctive
+		var et = sp.pick_type(En.SPEECH_TYPE.Conjunction)
+		var next
+		
+		if et.has(float(En.Conjunction.Subordinating)):
+			append(sp.speech, [En.SPEECH_TYPE.Conjunction, En.Conjunction.Subordinating])
+			return index + 1
 			index += 1
 			next = _next(sentence, index)
 			if next is SP:
@@ -262,8 +425,29 @@ class Phrase:
 			
 		return -1
 	
+	func _parse_preposition(sentence:Array, index:int):
+		var sp = sentence[index] as SP
+		type = En.PHRASE_TYPE.Prepositional
+		var et = sp.pick_type(En.SPEECH_TYPE.Preposition)
+		var next
+		
+		if et.has(float(En.Preposition.Place_And_Time)):
+			append(sp.speech, [En.SPEECH_TYPE.Preposition, En.Preposition.Place_And_Time])
+			
+			return index + 1
+#		elif et.has(float(En.Pronoun.Owner)):
+#			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Owner])
+#			return index + 1
+#
+		else:
+			print("else preposition")
+			append(sp.speech, [En.SPEECH_TYPE.Preposition, et[0]])
+			return index + 1
+		
+		return -1
+	
 	func _next(collection:Array, index:int):
-		if collection.size() <= index:
+		if index >= collection.size():
 			return null
 		var s = collection[index]
 		
@@ -384,7 +568,7 @@ func parse(sentence:String):
 		
 	return res
 
-func report_null(result)->void:
+func report_null(result)->bool:
 	var words = result[0] as Array
 	var type = result[1] as Array
 	var size = words.size()
@@ -401,8 +585,10 @@ func report_null(result)->void:
 			
 	if missing.size() == 0:
 		print("No missing")
+		return false
 	else:
 		print("Missing: " + str(missing))
+		return true
 
 func _to_string():
 	var result = "English Singleton : {\n"

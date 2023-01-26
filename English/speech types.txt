@@ -11,8 +11,10 @@ Types:
 	
 	Common (Noun) : car, dog, fruit
 	Proper (Noun) : Honda, Jack, London
-	Idea (Noun) : love, bad, bright
-	Collective (Noun) : apples, cars, people, men
+	#Idea (Noun) : love, bad, bright
+	#Collective (Noun) : apples, cars, people, men
+	#Compoun (Noun) : swimming pool
+	#Material (Noun) : silver ring
 	
 	Personal (Pronoun) :		i,		you,		he,			she,		it,		we,			they
 	Second (Pronoun) :			me,		you,		him,		her,		it,		us,			them
@@ -32,22 +34,26 @@ Types:
 	Comparative (Adjective) : taller, bigger
 	Superlative (Adjective) : tallest, biggest
 	Descriptive (Adjective) : nice, bad, big, hot
-	Determiner (Adjective) : all, some, only, every, four, much, enough
+	Determiner (Adjective) : all, some, only, every, four, much, enough, no
 	Article (Adjective) : the, a, an
 	Order (Adjective) : first, second, last
 	
 	Place (Adverb) : here, somewhere, anywhere, nowhere, outside, inside, wherever, elsewhere, left, right, north, east, south, west
 	Time (Adverb) : now, soon, today, tomorrow, yesterday
-	Frequency (Adverb) : always, never, sometimes, often, once, twice
-	Manner (Adverb) : slowly, calmly, easily
-	Degree (Adverb) : very, almost, less, far, totally, entirely
+	Frequency (Adverb) : always usually, sometimes, often, rarely, once, twice, never
+	Manner (Adverb) : slowly, calmly, easily, totally, entirely, quickly, slow, fast, more, less
+	Degree (Adverb) : almost, entirely, quickly, completely
+	Modify (Adverb) : very, too, so, more, less, not
+	Point (Adverb) : already, still, just, yet
+	Conjunctive (Adverb) : also, before, besides, however, therefore, hence, otherwise, nevertheless, eventually, thus, accordingly, meanwhile, after all, consequently, moreover, still, furthermore, likewise, finally
+	Order (Adverb) : first, second, last
 	
-	Coordinating (Conjunction) : for, and, not, but, or, yet, so
+	Coordinating (Conjunction) : for, and, nor, but, or, yet, so
 	Subordinating (Conjunction) : as, if, after, before, because, when, where, while, wherever, whenever, until, unless
-	Correlative (Conjunction) : either
+	Correlative (Conjunction) : either/or, neither/or, whether/or, both/and, not only/but also, so/as
 	
-	Place (Preposition) : in, on, at, above, below, middle, over, under, next
-	Time (Preposition) : in, on, at
-	Direction (Preposition) : in, on, at, into, to, from, up, down, left, right
+	Place and Time (Preposition) : in, on, at
+	Position (Preposition) : over, under, next, after, before, around
+	Direction (Preposition) : into, onto, to, from, up, down, left, right
 	Instrument (Preposition) : by, with, of, for, than
     

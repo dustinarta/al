@@ -1,0 +1,6 @@
+
+
+noun {
+    is collective
+}
+

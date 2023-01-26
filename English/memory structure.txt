@@ -1,0 +1,13 @@
+{
+    inheritance : {},
+    variables : {
+
+    },
+    function : {},
+    statement : {}
+}
+
+variables {
+    name: String
+    extends
+}
