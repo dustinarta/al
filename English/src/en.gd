@@ -64,8 +64,8 @@ enum Conjunction {
 
 enum Preposition {
 	Place_And_Time
-	Direction
 	Instrument
+	Direction
 }
 
 enum Interjection {
@@ -73,7 +73,9 @@ enum Interjection {
 }
 
 enum PHRASE_TYPE {
+	Undefined
 	Noun
+	Relative
 	Verb
 	Adjective
 	Adverb

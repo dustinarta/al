@@ -1,0 +1,10 @@
+{
+    "_v" : "how and what data type is stored (Directory, Array, int, float, bool, String)",
+    "_h" : "hierarchy of the thing (Object)",
+    "_cis" : "access to instance (bool)",
+    "_grp" : "individual or group (bool: {false = individual})",
+    "_on" : "source from collective thing (Object)",
+    "do" : "activity (Directory)",
+    "_ha" : "member of thing (Array)",
+    "_p" : "property of thing (Array)"
+}

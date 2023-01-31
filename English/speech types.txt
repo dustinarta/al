@@ -53,7 +53,7 @@ Types:
 	Correlative (Conjunction) : either/or, neither/or, whether/or, both/and, not only/but also, so/as
 	
 	Place and Time (Preposition) : in, on, at
+	Instrument (Preposition) : by, with, of, for, than
 	Position (Preposition) : over, under, next, after, before, around
 	Direction (Preposition) : into, onto, to, from, up, down, left, right
-	Instrument (Preposition) : by, with, of, for, than
     

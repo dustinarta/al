@@ -30,10 +30,10 @@ func _find_auxilary(sentence:Array)->Array:
 	var length = sentence.size()
 	for i in range(length):
 		var s = sentence[i]
-		if s is En.SC:
+		if s is English.SC:
 			continue
-		elif s is En.SP:
-			var sp = s as En.SP
+		elif s is English.SP:
+			var sp = s as English.SP
 			var pos = sp.type.find(float(SPEECH_TYPE.Verb))
 			if pos != -1:
 				var et = sp.each_type[pos]

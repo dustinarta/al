@@ -3,10 +3,10 @@ extends EditorScript
 
 
 func _run():
-	var nn = NeuralNetwork.new("my model", 1)
-	nn.add_layer(4, NeuralNetwork.ACTIVATION.TANH)
-	nn.add_layer(4, NeuralNetwork.ACTIVATION.TANH)
-	nn.add_layer(4, NeuralNetwork.ACTIVATION.SIGMOID)
+	var nn = NN.new(1)
+	nn.add_layer(4, NN.ACTIVATION.TANH)
+	nn.add_layer(4, NN.ACTIVATION.TANH)
+	nn.add_layer(4, NN.ACTIVATION.SIGMOID)
 	nn.init_weight()
 	nn.init_bias_all(1.0)
 #	print(nn)

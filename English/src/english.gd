@@ -19,22 +19,14 @@ var speech_list = [
 
 var data:Dictionary = {}
 
-func read(sentence:String)->Array:
-	var each = parse(sentence.to_lower())
-	var results:Array = []
-	results.append("\"" + str(sentence) + "\"")
-	results.append(each)
-	results.append(find_speech(each))
+class UNDEFINED:
+	var speech:String
 	
-	if report_null([each, results[1]]):
-		return []
+	func _init(s:String):
+		speech = s
 	
-	print(_phraser(results[-1]))
-#	
-	
-	return results
-
-
+	func _to_string():
+		return "UNDEFINED: {" + speech + "}"
 
 class SC:
 	var c:String
@@ -79,6 +71,7 @@ class Phrase:
 	var speech:Array = []
 	var speechtype:Array = []
 	var type = null
+	var count
 	
 	func _init():
 		pass
@@ -89,7 +82,13 @@ class Phrase:
 		else:
 			return false
 	
-	func append(speech:String, speechtype:Array, index:int = -1):
+	func steal(phrase:Phrase) -> void:
+		var speech = phrase.speech
+		var speechtype = phrase.speechtype
+		for i in range(phrase.speech.size()):
+			append(speech[i], speechtype[i].duplicate(true))
+	
+	func append(speech:String, speechtype:Array, index:int = -1) -> void:
 		if index == -1:
 			self.speech.append(speech)
 			self.speechtype.append(speechtype)
@@ -97,63 +96,161 @@ class Phrase:
 			self.speech[index] = speech
 			self.speechtype[index] = speechtype
 	
-	func last()->Array:
+	func last() -> Array:
 		return [speech[-1], speechtype[-1]]
 	
-	func parse(sentence:Array, index:int):
+	func _next(collection:Array, index:int):
+		if index >= collection.size():
+			return null
+		var s = collection[index]
+		
+		if s is SP:
+			return s as SP
+		elif s is SC:
+			return s as SC
+		else:
+			return s
+	
+	func find_speech(speech:float, from := 0) -> int:
+		if from == -1:
+			return -1
+		for i in range(from, count):
+			if self.speechtype[i][0] == speech:
+				return i
+		return -1
+	
+	func find_speech_type(speech:float, speechtype:float, from := 0) -> int:
+		var speechpos:Array
+		var pos:int = from
+		while true:
+			pos = find_speech(speech, pos)
+			if pos == -1:
+				break
+			speechpos.append(pos)
+			pos += 1
+		print(typeof(speechpos[0]), typeof(speechtype), speechpos[0], speechtype)
+		for i in range(speechpos.size()):
+			if self.speechtype[speechpos[i]][1] == speechtype:
+				return i
+		return -1
+	
+	func _find(sentence:Array, speech:float, limit := [])->Array:
+		var result:Array = []
+		var length = sentence.size()
+		for i in range(length):
+			var s = sentence[i]
+			if s is SC:
+				continue
+			elif s is SP:
+				var sp = s as SP
+				var pos = sp.type.find(speech)
+				if pos != -1:
+					result.append(i)
+			else:
+				print("Not Written")
+		
+		return result
+	
+	func _find_type(sentence:Array, speech:float, type:float, limit := [])->Array:
+		var result:Array = []
+		var speechs = _find(sentence, speech)
+		var length = speechs.size()
+		#each speech index
+		for i in range(length):
+			var index = speechs[i]
+			var sp = sentence[index] as SP
+			#each type of speech index
+			for j in range(sp.type.size()):
+				if sp.each_type[j].has(type):
+					result.append(index)
+					break
+		
+		return result
+	
+	func _to_string() -> String:
+		var s:String = "Phrase = { "
+		if self.type == null:
+			s += "NULL"
+		elif self.type == En.PHRASE_TYPE.Undefined:
+			s += "Type: Undefined" 
+			s += ", Speech: " + self.speech[0] + ""
+		else:
+			var key = En.PHRASE_TYPE.keys()
+			s += "Type: " + str(key[int(self.type)])
+			s += ", Count: " + str(self.count)
+			s += ", Speech: [ " 
+			for i in range(self.speech.size()):
+				var type = self.speechtype[i]
+				s += self.speech[i] + " (" + En.SPEECH_TYPE.keys()[type[0]] + ", " + En.speech_list[type[0]][type[1]] +"), "
+#				s += str(self.speech[i].speech) + " "
+			s.erase(s.length()-1, " ".ord_at(0))
+			s.erase(s.length()-1, ",".ord_at(0))
+			s += " ]"
+		s += " }"
+		return s
+	
+	func parse(sentence:Array, index:int, prev = null) -> int:
 		var s = _next(sentence, index)
-#		print(index, s)
 		var typeis:float
+		var result = -1
 		
 		if s is SP:
 			var sp = s as SP
 			
-			
-#			print(sp.type)
-			
-			#speech type is conjunction
+			#speech type is preposition
 			if sp.type.has(float(En.SPEECH_TYPE.Preposition)):
-				return _parse_preposition(sentence, index)
+				result = _parse_preposition(sentence, index, prev)
 			
 			#speech type is adverb
-			if sp.type.has(float(En.SPEECH_TYPE.Adverb)):
-				return _parse_adverb(sentence, index)
+			elif sp.type.has(float(En.SPEECH_TYPE.Adverb)):
+				result = _parse_adverb(sentence, index, prev)
 			
 			#speech type is adjective
-			if sp.type.has(float(En.SPEECH_TYPE.Adjective)):
-				return _parse_adjective(sentence, index)
+			elif sp.type.has(float(En.SPEECH_TYPE.Adjective)):
+				result = _parse_adjective(sentence, index, prev)
 			
 			#speech type is conjunction
-			if sp.type.has(float(En.SPEECH_TYPE.Conjunction)):
-				return _parse_conjunction(sentence, index)
+			elif sp.type.has(float(En.SPEECH_TYPE.Conjunction)):
+				result = _parse_conjunction(sentence, index, prev)
 			
 			#speech type is pronoun
-			if sp.type.has(float(En.SPEECH_TYPE.Pronoun)):
-				return _parse_pronoun(sentence, index)
+			elif sp.type.has(float(En.SPEECH_TYPE.Pronoun)):
+				result = _parse_pronoun(sentence, index, prev)
 			
 			#speech type is noun
-			if sp.type.has(float(En.SPEECH_TYPE.Noun)):
-				return _parse_noun(sentence, index)
+			elif sp.type.has(float(En.SPEECH_TYPE.Noun)):
+				result = _parse_noun(sentence, index, prev)
 			
 			#speech type is verb
-			if sp.type.has(float(En.SPEECH_TYPE.Verb)):
-				return _parse_verb(sentence, index)
+			elif sp.type.has(float(En.SPEECH_TYPE.Verb)):
+				result = _parse_verb(sentence, index, prev)
+			
+			else:
+				print("Unexpected type ", sp.type)
+			
+			count = speech.size()
 			
 		elif s is SC:
 			pass
+		elif s is UNDEFINED:
+			var und = s as UNDEFINED
+			print("Undefined: ", und.speech)
+			type = En.PHRASE_TYPE.Undefined
+			append(und.speech, [0, 0])
+			result = index + 1
 		else:
 			print("Full phrase")
 		
-		return -1
+		return result
 	
-	func _parse_noun(sentence:Array, index:int):
+	func _parse_noun(sentence:Array, index:int, prev_phrase = null) -> int:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Noun
 		var et = sp.pick_type(En.SPEECH_TYPE.Noun)
 		var next
 		
 		if et.has(float(En.Noun.Proper)):
-			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Possesive])
+			append(sp.speech, [En.SPEECH_TYPE.Noun, En.Noun.Proper])
 			
 			var running = true
 			while running:
@@ -168,7 +265,8 @@ class Phrase:
 						continue
 						break
 					else:
-						print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
+						pass
+#						print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
 				break
 			return index
 #		elif et.has(float(En.Pronoun.Owner)):
@@ -182,29 +280,42 @@ class Phrase:
 		
 		return -1
 	
-	func _parse_pronoun(sentence:Array, index:int):
+	func _parse_pronoun(sentence:Array, index:int, prev_phrase = null) -> int:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Noun
 		var et = sp.pick_type(En.SPEECH_TYPE.Pronoun)
 		var next
+		var nextphrase:Phrase = Phrase.new()
 		
 		if et.has(float(En.Pronoun.Possesive)):
 			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Possesive])
 			
 			index += 1
+			nextphrase.parse(sentence, index)
+			if nextphrase.type == En.PHRASE_TYPE.Noun:
+				#print(nextphrase)
+				steal(nextphrase)
+				return index + 1
+			elif nextphrase.type == En.PHRASE_TYPE.Adjective:
+				return index
+			else:
+				print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
+			
+		elif et.has(float(En.Pronoun.Demonstrative)):
+			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Demonstrative])
+			
+			index += 1
 			next = _next(sentence, index)
-			if next is SP:
-				var nextsp = next as SP
-				if nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
-					
-					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
-					append(nextsp.speech, [En.SPEECH_TYPE.Noun, nextet[0]])
-					return index + 1
-				else:
-					print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
-			if et.size() > 1:
-				et.erase(float(En.Pronoun.Possesive))
-				speechtype[speech.size()-1][1] = et[0]
+			nextphrase.parse(sentence, index)
+			if nextphrase.type == En.PHRASE_TYPE.Noun:
+				#print(nextphrase)
+				steal(nextphrase)
+				return index + 1
+			return index
+		elif et.has(float(En.Pronoun.Relative)):
+			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Relative])
+			type = En.PHRASE_TYPE.Relative
+			return index + 1
 		elif et.has(float(En.Pronoun.Owner)):
 			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Owner])
 			return index + 1
@@ -216,7 +327,7 @@ class Phrase:
 		
 		return -1
 	
-	func _parse_verb(sentence:Array, index:int) -> int:
+	func _parse_verb(sentence:Array, index:int, prev_phrase = null) -> int:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Verb
 		var et = sp.pick_type(En.SPEECH_TYPE.Verb)
@@ -243,9 +354,9 @@ class Phrase:
 			
 		return -1
 	
-	func _parse_adjective(sentence:Array, index:int) -> int:
+	func _parse_adjective(sentence:Array, index:int, prev_phrase = null) -> int:
 		var sp = sentence[index] as SP
-		type = null
+		type = En.PHRASE_TYPE.Adjective
 		var et = sp.pick_type(En.SPEECH_TYPE.Adjective)
 		var next
 		# typeis = En.PHRASE_TYPE.Noun
@@ -289,21 +400,33 @@ class Phrase:
 		else:
 			type = En.PHRASE_TYPE.Adjective
 			append(sp.speech, [En.SPEECH_TYPE.Adjective, et[0]])
-			index += 1
-			next = _next(sentence, index)
-			if next is SP:
-				var nextsp = next as SP
-				
-				if nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
-					type = En.PHRASE_TYPE.Noun
-					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
-					append(nextsp.speech, [En.SPEECH_TYPE.Noun, nextet[0]])
-					return index + 1
-			return index + 1
+			
+			var running = true
+			while running:
+				index += 1
+				next = _next(sentence, index)
+				if next is SP:
+					var nextsp = next as SP
+					
+					if nextsp.type.has(float(En.SPEECH_TYPE.Adjective)):
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Adjective))
+						if nextet.has(float(En.Adjective.Article)):
+							print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
+							return -1
+						append(nextsp.speech, [En.SPEECH_TYPE.Adjective, nextet[0]])
+						continue
+					elif nextsp.type.has(float(En.SPEECH_TYPE.Noun)):
+						type = En.PHRASE_TYPE.Noun
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Noun))
+						append(nextsp.speech, [En.SPEECH_TYPE.Noun, nextet[0]])
+						return index
+				else:
+					running = false
+			return index
 		
 		return -1
 	
-	func _parse_adverb(sentence:Array, index:int) -> int:
+	func _parse_adverb(sentence:Array, index:int, prev_phrase = null) -> int:
 #		print("adverb not complete")
 #		return -1
 		var sp = sentence[index] as SP
@@ -399,7 +522,7 @@ class Phrase:
 			
 		return -1
 	
-	func _parse_conjunction(sentence:Array, index:int) -> int:
+	func _parse_conjunction(sentence:Array, index:int, prev_phrase = null) -> int:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Conjunctive
 		var et = sp.pick_type(En.SPEECH_TYPE.Conjunction)
@@ -425,7 +548,7 @@ class Phrase:
 			
 		return -1
 	
-	func _parse_preposition(sentence:Array, index:int):
+	func _parse_preposition(sentence:Array, index:int, prev_phrase = null) -> int:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Prepositional
 		var et = sp.pick_type(En.SPEECH_TYPE.Preposition)
@@ -435,89 +558,94 @@ class Phrase:
 			append(sp.speech, [En.SPEECH_TYPE.Preposition, En.Preposition.Place_And_Time])
 			
 			return index + 1
-#		elif et.has(float(En.Pronoun.Owner)):
-#			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Owner])
-#			return index + 1
-#
+		#elif et.has(float(En.Pronoun.Owner)):
+		#	append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Owner])
+		#	return index + 1
 		else:
 			print("else preposition")
 			append(sp.speech, [En.SPEECH_TYPE.Preposition, et[0]])
 			return index + 1
 		
 		return -1
+
+class Clause:
+	var phrases:Array
+	var count:int setget _setsize
 	
-	func _next(collection:Array, index:int):
-		if index >= collection.size():
-			return null
-		var s = collection[index]
+	func _setsize(value:int):
+		printerr("Size are not allowed to set!")
+	
+	func _init(_phrases:Array):
 		
-		if s is SP:
-			return s as SP
-		elif s is SC:
-			return s as SC
-		else:
-			return s
-	
-	func _find(sentence:Array, speech:float, limit := [])->Array:
-		var result:Array = []
-		var length = sentence.size()
-		for i in range(length):
-			var s = sentence[i]
-			if s is SC:
+		for i in range(_phrases.size()):
+			if _phrases[i] is Phrase:
 				continue
-			elif s is SP:
-				var sp = s as SP
-				var pos = sp.type.find(speech)
-				if pos != -1:
-					result.append(i)
-			else:
-				print("Not Written")
-		
-		return result
+			print("wrong data type ", _phrases[i])
+			break
+		phrases = _phrases.duplicate(true)
+		count = _phrases.size()
 	
-	func _find_type(sentence:Array, speech:float, type:float, limit := [])->Array:
-		var result:Array = []
-		var speechs = _find(sentence, speech)
-		var length = speechs.size()
-		#each speech index
-		for i in range(length):
-			var index = speechs[i]
-			var sp = sentence[index] as SP
-			#each type of speech index
-			for j in range(sp.type.size()):
-				if sp.each_type[j].has(type):
-					result.append(index)
-					break
+	func _to_string():
+		var s = "Clause: { Count = " + str(count)
+		s += ", Phrases = "
 		
-		return result
-		
-	func _to_string() -> String:
-		var s:String = "Phrase = { "
-		if self.type == null:
-			s += "NULL"
-		else:
-			var key = En.PHRASE_TYPE.keys()
-			s += "Type: " + str(key[int(self.type)])
-			s += ", Speech: [ " 
-			for i in range(self.speech.size()):
-				var type = self.speechtype[i]
-				s += self.speech[i] + " (" + En.SPEECH_TYPE.keys()[type[0]] + ", " + En.speech_list[type[0]][type[1]] +"), "
-#				s += str(self.speech[i].speech) + " "
-			s.erase(s.length()-1, " ".ord_at(0))
-			s.erase(s.length()-1, ",".ord_at(0))
-			s += " ]"
+		if count != 0:
+			s += str(phrases)
 		s += " }"
 		return s
-
-func init(path = "res://English/dataset-key2.json"):
-	var f = File.new()
-	f.open(path, File.READ)
-	var s = f.get_as_text()
-	data = JSON.parse(s).result as Dictionary
 	
-	f.close()
+	func find_type(type:int, from:int = -1):
+		
+		for i in range(count):
+			if (phrases[i] as Phrase).type == type:
+				return i
+		
+		return -1
 
-func find_speech(words:Array)->Array:
+var path = "res://English/dataset-key2.json"
+
+var _has_init = false
+func init(path = "res://English/dataset-key2.json"):
+	if _has_init == true:
+		return
+	
+	load_data(path)
+	
+	_has_init = true
+
+func read(sentence:String) -> Clause:
+	var each = parse(sentence.to_lower())
+	var results:Array = []
+	results.append("\"" + str(sentence) + "\"")
+	results.append(each)
+	results.append(find_speech(each))
+	
+	if report_null([each, results[2]]):
+		pass
+	
+	results.append(_phraser(results[-1]))
+	
+	return Clause.new(results[-1].duplicate(true))
+
+func _phraser(sentence) -> Array:
+	var result:Array = []
+	var i = 0
+	
+	var phrase = Phrase.new()
+	i = phrase.parse(sentence, i)
+	result.append(phrase)
+	
+	while i != -1:
+		phrase = Phrase.new()
+		#print(sentence, " ", i)
+		i = phrase.parse(sentence, i)
+		if phrase.is_empty():
+			break
+		result.append(phrase)
+	
+	return result
+
+func find_speech(words:Array) -> Array:
 	var result = []
 	result.resize(words.size())
 	
@@ -530,7 +658,7 @@ func find_speech(words:Array)->Array:
 			result[i] = SP.new(key, data[key])
 	#		result[i] = data[key]
 		else:
-			result[i] = SP.new(key, [])
+			result[i] = UNDEFINED.new(key)
 	return result
 
 func parse(sentence:String):
@@ -568,20 +696,16 @@ func parse(sentence:String):
 		
 	return res
 
-func report_null(result)->bool:
+func report_null(result) -> bool:
 	var words = result[0] as Array
 	var type = result[1] as Array
 	var size = words.size()
 	
 	var missing:Array = []
 	var pos:int = 0
-	while(pos < size):
-		pos = type.find(null, pos)
-		if pos == -1:
-			break
-		else:
-			missing.push_back(words[pos])
-			pos += 1
+	for i in range(size):
+		if type[i] is UNDEFINED:
+			missing.append(type[i].speech)
 			
 	if missing.size() == 0:
 		print("No missing")
@@ -590,31 +714,37 @@ func report_null(result)->bool:
 		print("Missing: " + str(missing))
 		return true
 
+func add_data(speech:String, type1:float, type2:float):
+	var k = data[speech]
+	
+	if !data.has(speech):
+		data[speech] = [[type1], [type2]]
+	else:
+		data[speech][0].append(type1)
+		data[speech][1].append(type2)
+	
+
+func save_data(path = ""):
+	var f = File.new()
+	f.open(path, File.WRITE)
+	f.store_string(JSON.print(data, "\t"))
+	f.close()
+
+func load_data(path):
+	var f = File.new()
+	f.open(path, File.READ)
+	var s = f.get_as_text()
+	f.close()
+	
+	data = JSON.parse(s).result as Dictionary
+
 func _to_string():
 	var result = "English Singleton : {\n"
 	result += "\tword count = " + str(data.size())
 	result += "\n}"
 	return result
 
-func _phraser(sentence)->Array:
-	var result:Array = []
-	var i = 0
-	
-	var phrase = Phrase.new()
-	i = phrase.parse(sentence, i)
-	result.append(phrase)
-	
-	while i != -1:
-		phrase = Phrase.new()
-#		print(sentence, " ", i)
-		i = phrase.parse(sentence, i)
-		if phrase.is_empty():
-			break
-		result.append(phrase)
-	
-	return result
-
-func _phraser_find(sentence:Array, speech:float)->Array:
+func _phraser_find(sentence:Array, speech:float) -> Array:
 	var result:Array = []
 	var length = sentence.size()
 	for i in range(length):
@@ -631,7 +761,7 @@ func _phraser_find(sentence:Array, speech:float)->Array:
 	
 	return result
 
-func _phraser_find_type(sentence:Array, speech:float, type:float)->Array:
+func _phraser_find_type(sentence:Array, speech:float, type:float) -> Array:
 	var result:Array = []
 	var speechs = _phraser_find(sentence, speech)
 	var length = speechs.size()
@@ -646,9 +776,3 @@ func _phraser_find_type(sentence:Array, speech:float, type:float)->Array:
 				break
 	
 	return result
-
-func _find_auxilary(sentence:Array)->Array:
-	var result:Array = _phraser_find_type(sentence, float(English.SPEECH_TYPE.Verb), float(English.Verb.Auxiliary))
-	
-	return result
-

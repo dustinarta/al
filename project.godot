@@ -9,11 +9,6 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Object",
-"class": "BSA",
-"language": "GDScript",
-"path": "res://Sentence Based Algorithm/sba.gd"
-}, {
 "base": "Reference",
 "class": "DL",
 "language": "GDScript",
@@ -50,7 +45,6 @@ _global_script_classes=[ {
 "path": "res://English/src/pharser.gd"
 } ]
 _global_script_class_icons={
-"BSA": "",
 "DL": "",
 "Matrix": "",
 "Mind": "",
@@ -63,12 +57,13 @@ _global_script_class_icons={
 [application]
 
 config/name="al"
-run/main_scene="res://Sentence Based Algorithm/Inheritance Editor/main.tscn"
+run/main_scene="res://English/editor/2/Main.tscn"
 
 [autoload]
 
 En="*res://English/src/en.gd"
 English="*res://English/src/english.gd"
+SBA="*res://Sentence Based Algorithm/sba.gd"
 
 [display]
 

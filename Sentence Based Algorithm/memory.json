@@ -1,0 +1,109 @@
+{
+	"hierarchy" : {
+		"_meta" : "classes of the hierarchy for instancing",
+		"car" : {
+			"_h" : "vehicle",
+			"_p" : [],
+			"_ha" : ["window", "door", "wheel", "engine"]
+		},
+		"object" : {
+			"_h" : "real",
+			"_p" : [],
+			"_ha": []
+		},
+		"fruit" : {
+			"_h" : "alive",
+			"_p": [],
+			"_ha": []
+		},
+		"human" : {
+			"_h" : "alive",
+			"_p": [],
+			"_ha": []
+		},
+		"alive" : {
+			"_h" : "real",
+			"_p" : ["age", "food", "gender"],
+			"_ha": []
+		},
+		"real": {
+			"_h" : "thing",
+			"_p": [],
+			"_ha": []
+		},
+		"speech": {
+			"_h" : "thing",
+			"_p": [],
+			"_ha": []
+		},
+		"age": {
+			"_h" : "idea",
+			"_p" : ["child", "adult"],
+			"_ha": []
+		},
+		"gender": {
+			"_h" : "idea",
+			"_p" : ["male", "female"],
+			"_ha": []
+		},
+		"color": {
+			"_h" : "idea",
+			"_p" : ["white", "black"],
+			"_ha": []
+		},
+		"idea": {
+			"_h" : "thing",
+			"_p": [],
+			"_ha": []
+		},
+		"property": {
+			"_h" : "thing",
+			"_p" : ["name: String"],
+			"_ha": []
+		},
+		"thing": {
+			"_h" : null,
+			"_p": [],
+			"_ha" : ["name"]
+		}
+	},
+	"value":{
+		"man" : {
+			"_h" : "human",
+			"gender" : "male",
+			"age" : "adult"
+		},
+		"woman" : {
+			"_h" : "human",
+			"gender" : "female",
+			"age" : "adult"
+		},
+		"person" : {
+			"_h" : "human"
+		},
+		"people" : {
+			"_h" : "human",
+			"_grp" : true
+		}
+	},
+	"compund": {
+		"single" : [
+			"silver", "gold", "iron"
+		],
+		"multiple" : [
+			["swimming", "pool"]
+		]
+	},
+	"me": {
+		"name" : "bot"
+	},
+	"variable" : [
+		{
+			"_h" : "human",
+			"name": ["andy"]
+		}
+	],
+	"key":{
+		
+	}
+}

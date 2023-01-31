@@ -1,0 +1,50 @@
+"hierarchy" : {
+    "human" : [
+		"alive",
+		[],
+		[]
+	],
+    "alive" : [
+		"real",
+		["age", "food", "gender"],
+		[]
+	],
+	"real": [
+		"thing",
+		[],
+		[]
+	],
+    "gender":[
+		"idea",
+		["male", "female"],
+		[]
+	],
+	"color":[
+		"idea",
+		["white", "black"],
+		[]
+	],
+    "idea":[
+		"thing",
+		[],
+		[]
+	],
+    "property":[
+		"thing",
+		["name: String", "hierarchy"],
+		[]
+	],
+    "thing": [
+		null,
+		[],
+		["name" = _n, "hierarchy" = _h]
+	]
+}
+
+
+variable example
+{
+    name : "andy",
+    gender : "male"
+    _h : "human"
+}
