@@ -1,0 +1,9 @@
+
+
+
+name is Andy
+var name = "Andy"
+
+if Andy is an adult then Andy is a man
+if Andy.equal(adult):
+    Andy

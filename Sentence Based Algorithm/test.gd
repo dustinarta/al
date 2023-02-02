@@ -3,6 +3,10 @@ extends EditorScript
 
 
 func _run():
-	English.init()
+	English.init(English.path)
 	SBA.init()
-	SBA.push("andy is a man")
+	
+#	SBA.push("lynda melinda is a woman")
+#	SBA.push("herry is a man")
+	
+	

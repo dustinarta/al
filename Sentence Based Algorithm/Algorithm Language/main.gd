@@ -10,7 +10,7 @@ func _ready():
 	OS.window_size = Vector2(600, 400)
 	var node = Node.new()
 	
-	English.init()
+	English.init(English.path)
 
 func read(s:String):
 	if lineedit.text == "":

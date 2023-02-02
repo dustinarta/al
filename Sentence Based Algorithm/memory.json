@@ -1,109 +1,205 @@
 {
-	"hierarchy" : {
-		"_meta" : "classes of the hierarchy for instancing",
-		"car" : {
-			"_h" : "vehicle",
-			"_p" : [],
-			"_ha" : ["window", "door", "wheel", "engine"]
+	"class": {
+		"_meta": "classes of the hierarchy for instancing",
+		"car": {
+			"_c": "vehicle",
+			"_p": [
+
+			],
+			"_ha": [
+				"window",
+				"door",
+				"wheel",
+				"engine"
+			]
 		},
-		"object" : {
-			"_h" : "real",
-			"_p" : [],
-			"_ha": []
+		"vehicle": {
+			"_c": "object",
+			"_p": [
+
+			],
+			"_ha": [
+
+			]
 		},
-		"fruit" : {
-			"_h" : "alive",
-			"_p": [],
-			"_ha": []
+		"object": {
+			"_c": "real",
+			"_p": [
+
+			],
+			"_ha": [
+
+			]
 		},
-		"human" : {
-			"_h" : "alive",
-			"_p": [],
-			"_ha": []
+		"fruit": {
+			"_c": "alive",
+			"_p": [
+
+			],
+			"_ha": [
+
+			]
 		},
-		"alive" : {
-			"_h" : "real",
-			"_p" : ["age", "food", "gender"],
-			"_ha": []
+		"human": {
+			"_c": "alive",
+			"_p": [
+
+			],
+			"_ha": [
+
+			]
+		},
+		"alive": {
+			"_c": "real",
+			"_p": [
+				"age",
+				"food",
+				"gender"
+			],
+			"_ha": [
+
+			]
 		},
 		"real": {
-			"_h" : "thing",
-			"_p": [],
-			"_ha": []
+			"_c": "thing",
+			"_p": [
+
+			],
+			"_ha": [
+
+			]
 		},
 		"speech": {
-			"_h" : "thing",
-			"_p": [],
-			"_ha": []
+			"_c": "thing",
+			"_p": [
+
+			],
+			"_ha": [
+
+			]
 		},
 		"age": {
-			"_h" : "idea",
-			"_p" : ["child", "adult"],
-			"_ha": []
+			"_c": "idea",
+			"_p": [
+				"child",
+				"adult"
+			],
+			"_ha": [
+
+			]
 		},
 		"gender": {
-			"_h" : "idea",
-			"_p" : ["male", "female"],
-			"_ha": []
+			"_c": "idea",
+			"_p": [
+				"male",
+				"female"
+			],
+			"_ha": [
+
+			]
 		},
 		"color": {
-			"_h" : "idea",
-			"_p" : ["white", "black"],
-			"_ha": []
+			"_c": "idea",
+			"_p": [
+				"white",
+				"black"
+			],
+			"_ha": [
+
+			]
 		},
 		"idea": {
-			"_h" : "thing",
-			"_p": [],
-			"_ha": []
+			"_c": "thing",
+			"_p": [
+
+			],
+			"_ha": [
+
+			]
 		},
 		"property": {
-			"_h" : "thing",
-			"_p" : ["name: String"],
-			"_ha": []
+			"_c": "thing",
+			"_p": [
+				"name: String"
+			],
+			"_ha": [
+
+			]
 		},
 		"thing": {
-			"_h" : null,
-			"_p": [],
-			"_ha" : ["name"]
+			"_c": null,
+			"_p": [
+
+			],
+			"_ha": [
+				"name"
+			]
 		}
 	},
-	"value":{
-		"man" : {
-			"_h" : "human",
-			"gender" : "male",
-			"age" : "adult"
+	"value": {
+		"man": {
+			"_c": "human",
+			"gender": "male",
+			"age": "adult"
 		},
-		"woman" : {
-			"_h" : "human",
-			"gender" : "female",
-			"age" : "adult"
+		"woman": {
+			"_c": "human",
+			"gender": "female",
+			"age": "adult"
 		},
-		"person" : {
-			"_h" : "human"
+		"person": {
+			"_c": "human"
 		},
-		"people" : {
-			"_h" : "human",
-			"_grp" : true
+		"people": {
+			"_c": "human",
+			"_grp": true
 		}
 	},
 	"compund": {
-		"single" : [
-			"silver", "gold", "iron"
+		"single": [
+			"silver",
+			"gold",
+			"iron"
 		],
-		"multiple" : [
-			["swimming", "pool"]
+		"multiple": [
+			[
+				"swimming",
+				"pool"
+			]
 		]
 	},
 	"me": {
-		"name" : "bot"
+		"name": "bot"
 	},
-	"variable" : [
+	"variable": [
 		{
-			"_h" : "human",
-			"name": ["andy"]
+			"_c": "human",
+			"name": [
+				"andy"
+			]
+		},
+		{
+			"name": [
+				"lynda",
+				"melinda"
+			],
+			"_c": "human",
+			"gender": "female",
+			"age": "adult"
+		},
+		{
+			"_c": "human",
+			"name": [
+				"herry"
+			],
+			"gender": "male",
+			"age": "adult"
 		}
 	],
-	"key":{
-		
-	}
+	"key": {
+
+	},
+	"statement": [
+
+	]
 }

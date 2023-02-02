@@ -71,7 +71,7 @@ class Phrase:
 	var speech:Array = []
 	var speechtype:Array = []
 	var type = null
-	var count
+	var count:int
 	
 	func _init():
 		pass
@@ -128,11 +128,31 @@ class Phrase:
 				break
 			speechpos.append(pos)
 			pos += 1
-		print(typeof(speechpos[0]), typeof(speechtype), speechpos[0], speechtype)
+#		print(typeof(speechpos[0]), typeof(speechtype), speechpos[0], speechtype)
 		for i in range(speechpos.size()):
 			if self.speechtype[speechpos[i]][1] == speechtype:
-				return i
+				return speechpos[i]
 		return -1
+	
+	func find_speech_all(speech:float, from := 0) -> Array:
+		var result = []
+		if from == -1:
+			return []
+		for i in range(from, count):
+			if self.speechtype[i][0] == speech:
+				result.append(i)
+		return result
+	
+	func find_speech_type_all(speech:float, speechtype:float, from := 0) -> Array:
+		var speechpos:Array
+		var result:Array = []
+		var pos:int = from
+		speechpos = find_speech_all(speech, pos)
+#		print(typeof(speechpos[0]), typeof(speechtype), speechpos[0], speechtype)
+		for i in range(speechpos.size()):
+			if self.speechtype[speechpos[i]][1] == speechtype:
+				result.append(speechpos[i])
+		return result
 	
 	func _find(sentence:Array, speech:float, limit := [])->Array:
 		var result:Array = []
@@ -173,7 +193,14 @@ class Phrase:
 			s += "NULL"
 		elif self.type == En.PHRASE_TYPE.Undefined:
 			s += "Type: Undefined" 
-			s += ", Speech: " + self.speech[0] + ""
+			s += ", Count: " + str(self.count)
+			s += ", Speech: [ "
+			for i in range(self.speech.size()):
+				var type = self.speechtype[i]
+				s += self.speech[i] + ", "
+			s.erase(s.length()-1, " ".ord_at(0))
+			s.erase(s.length()-1, ",".ord_at(0))
+			s += " ]"
 		else:
 			var key = En.PHRASE_TYPE.keys()
 			s += "Type: " + str(key[int(self.type)])
@@ -196,7 +223,7 @@ class Phrase:
 		
 		if s is SP:
 			var sp = s as SP
-			
+			print("sp ", sp.type)
 			#speech type is preposition
 			if sp.type.has(float(En.SPEECH_TYPE.Preposition)):
 				result = _parse_preposition(sentence, index, prev)
@@ -234,10 +261,21 @@ class Phrase:
 			pass
 		elif s is UNDEFINED:
 			var und = s as UNDEFINED
-			print("Undefined: ", und.speech)
 			type = En.PHRASE_TYPE.Undefined
-			append(und.speech, [0, 0])
-			result = index + 1
+			var running = true
+			
+			while running:
+				print("Undefined: ", und.speech)
+				append(und.speech, [0, 0])
+				count += 1
+				index += 1
+				s = _next(sentence, index)
+				if s is UNDEFINED:
+					und = s as UNDEFINED
+					continue
+				break
+			 
+			result = index
 		else:
 			print("Full phrase")
 		
@@ -300,7 +338,6 @@ class Phrase:
 				return index
 			else:
 				print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
-			
 		elif et.has(float(En.Pronoun.Demonstrative)):
 			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Demonstrative])
 			
@@ -476,10 +513,12 @@ class Phrase:
 					else:
 						return index
 		elif et.has(float(En.Adverb.Degree)) or et.has(float(En.Adverb.Manner)):
-			
+			print(self.speechtype)
 			index += 1
 			next = _next(sentence, index)
 			append(sp.speech, [En.SPEECH_TYPE.Adverb, et[0]])
+			print(self.speechtype)
+			print(self)
 			if next is SP:
 				var nextsp = next as SP
 				
@@ -605,7 +644,7 @@ class Clause:
 var path = "res://English/dataset-key2.json"
 
 var _has_init = false
-func init(path = "res://English/dataset-key2.json"):
+func init(path:String):
 	if _has_init == true:
 		return
 	
@@ -715,16 +754,18 @@ func report_null(result) -> bool:
 		return true
 
 func add_data(speech:String, type1:float, type2:float):
-	var k = data[speech]
 	
 	if !data.has(speech):
 		data[speech] = [[type1], [type2]]
 	else:
-		data[speech][0].append(type1)
-		data[speech][1].append(type2)
-	
+		var pos = data[speech][0].find(type1)
+		if pos != -1:
+			data[speech][pos + 1].append(type2)
+		else:
+			data[speech][0].append(type1)
+			data[speech].append([type2])
 
-func save_data(path = ""):
+func save_data():
 	var f = File.new()
 	f.open(path, File.WRITE)
 	f.store_string(JSON.print(data, "\t"))
