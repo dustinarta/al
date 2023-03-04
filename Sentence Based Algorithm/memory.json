@@ -1,6 +1,9 @@
 {
+	"_meta": {
+		"class": "classes of the hierarchy for instancing",
+		"value": "adjective for variable"
+	},
 	"class": {
-		"_meta": "classes of the hierarchy for instancing",
 		"car": {
 			"_c": "vehicle",
 			"_p": [
@@ -53,8 +56,8 @@
 			"_c": "real",
 			"_p": [
 				"age",
-				"food",
-				"gender"
+				"gender",
+				"alive"
 			],
 			"_ha": [
 
@@ -79,33 +82,28 @@
 			]
 		},
 		"age": {
-			"_c": "idea",
-			"_p": [
-				"child",
-				"adult"
-			],
-			"_ha": [
-
-			]
+			"_c": "property"
 		},
 		"gender": {
-			"_c": "idea",
-			"_p": [
-				"male",
-				"female"
-			],
-			"_ha": [
-
-			]
+			"_c": "property"
 		},
 		"color": {
 			"_c": "idea",
 			"_p": [
-				"white",
-				"black"
+				"red",
+				"green",
+				"blue",
+				"aplha"
 			],
 			"_ha": [
 
+			]
+		},
+		"job":{
+			"_c": "idea",
+			"_p": [
+				"salary",
+				"workplace"
 			]
 		},
 		"idea": {
@@ -120,7 +118,7 @@
 		"property": {
 			"_c": "thing",
 			"_p": [
-				"name: String"
+				"name"
 			],
 			"_ha": [
 
@@ -129,31 +127,104 @@
 		"thing": {
 			"_c": null,
 			"_p": [
-
-			],
-			"_ha": [
 				"name"
 			]
 		}
 	},
 	"value": {
+		"human":{
+			"_c": "alive"
+		},
 		"man": {
 			"_c": "human",
-			"gender": "male",
-			"age": "adult"
+			"_p": {
+				"gender": {
+					"_v": "male"
+				},
+				"age": {
+					"_v": null,
+					"_aj": "adult",
+					"_st": "age is over 18"
+				}
+			},
+			"_st":[
+				"man is human and male"
+			],
+			"for": {
+
+			}
 		},
 		"woman": {
 			"_c": "human",
-			"gender": "female",
-			"age": "adult"
+			"_p": {
+				"gender": {
+					"_v": "female"
+				},
+				"age": {
+					"_v": null,
+					"_aj": "adult",
+					"_st": "age is over 18"
+				}
+			}
 		},
 		"person": {
 			"_c": "human"
 		},
-		"people": {
-			"_c": "human",
-			"_grp": true
+		"male": {
+			"_p": {
+				"gender":{
+					"_v": "male"
+				}
+			}
+		},
+		"female": {
+			"_p": {
+				"gender":{
+					"_v": "female"
+				}
+			}
+		},
+		"adult" : {
+			"_p": {
+				"age": {
+					"_v": null,
+					"_st": "age is over 18"
+				}
+			}
+		},
+		"young" : {
+			"_p": {
+				"age":{
+					"_v": null,
+					"_st": "age is below 18"
+				}
+			}
 		}
+	},
+	"variable": [
+		{
+			"_c": "human",
+			"_p": {
+				"name": {
+					"_v": [
+						"herry"
+					]
+				},
+				"gender": {
+					"_v": "male"
+				},
+				"age": {
+					"_v": null,
+					"_aj": "adult"
+				},
+				"alive": {
+					"_v": true
+				}
+			}
+		}
+	],
+	"collective": {
+
 	},
 	"compund": {
 		"single": [
@@ -171,31 +242,6 @@
 	"me": {
 		"name": "bot"
 	},
-	"variable": [
-		{
-			"_c": "human",
-			"name": [
-				"andy"
-			]
-		},
-		{
-			"name": [
-				"lynda",
-				"melinda"
-			],
-			"_c": "human",
-			"gender": "female",
-			"age": "adult"
-		},
-		{
-			"_c": "human",
-			"name": [
-				"herry"
-			],
-			"gender": "male",
-			"age": "adult"
-		}
-	],
 	"key": {
 
 	},

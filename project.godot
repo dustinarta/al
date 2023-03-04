@@ -6,63 +6,18 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
-
-_global_script_classes=[ {
-"base": "Reference",
-"class": "DL",
-"language": "GDScript",
-"path": "res://Neural Network/dl.gd"
-}, {
-"base": "Reference",
-"class": "Matrix",
-"language": "GDScript",
-"path": "res://GLOBAL/matrix.gd"
-}, {
-"base": "Resource",
-"class": "Mind",
-"language": "GDScript",
-"path": "res://Quest Model/src/mind.gd"
-}, {
-"base": "Reference",
-"class": "NN",
-"language": "GDScript",
-"path": "res://Neural Network/nn.gd"
-}, {
-"base": "Reference",
-"class": "Register",
-"language": "GDScript",
-"path": "res://runtime code system/register class.gd"
-}, {
-"base": "Reference",
-"class": "ThreadServer",
-"language": "GDScript",
-"path": "res://GLOBAL/thread server.gd"
-}, {
-"base": "Node",
-"class": "_pharserxx",
-"language": "GDScript",
-"path": "res://English/src/pharser.gd"
-} ]
-_global_script_class_icons={
-"DL": "",
-"Matrix": "",
-"Mind": "",
-"NN": "",
-"Register": "",
-"ThreadServer": "",
-"_pharserxx": ""
-}
+config_version=5
 
 [application]
 
 config/name="al"
 run/main_scene="res://English/editor/2/Main.tscn"
+config/features=PackedStringArray("4.0")
 
 [autoload]
 
-En="*res://English/src/en.gd"
 English="*res://English/src/english.gd"
+En="*res://English/src/en.gd"
 SBA="*res://Sentence Based Algorithm/sba.gd"
 
 [display]

@@ -95,6 +95,7 @@ class Phrase:
 		else:
 			self.speech[index] = speech
 			self.speechtype[index] = speechtype
+		count += 1
 	
 	func last() -> Array:
 		return [speech[-1], speechtype[-1]]
@@ -223,7 +224,7 @@ class Phrase:
 		
 		if s is SP:
 			var sp = s as SP
-			print("sp ", sp.type)
+#			print(sp.speech, sp.each_type, sp.type)
 			#speech type is preposition
 			if sp.type.has(float(En.SPEECH_TYPE.Preposition)):
 				result = _parse_preposition(sentence, index, prev)
@@ -255,8 +256,6 @@ class Phrase:
 			else:
 				print("Unexpected type ", sp.type)
 			
-			count = speech.size()
-			
 		elif s is SC:
 			pass
 		elif s is UNDEFINED:
@@ -267,7 +266,6 @@ class Phrase:
 			while running:
 				print("Undefined: ", und.speech)
 				append(und.speech, [0, 0])
-				count += 1
 				index += 1
 				s = _next(sentence, index)
 				if s is UNDEFINED:
@@ -350,6 +348,7 @@ class Phrase:
 				return index + 1
 			return index
 		elif et.has(float(En.Pronoun.Relative)):
+#			print("relative")
 			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Relative])
 			type = En.PHRASE_TYPE.Relative
 			return index + 1
@@ -464,13 +463,18 @@ class Phrase:
 		return -1
 	
 	func _parse_adverb(sentence:Array, index:int, prev_phrase = null) -> int:
-#		print("adverb not complete")
-#		return -1
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Adverb
 		var et = sp.pick_type(En.SPEECH_TYPE.Adverb)
 		var next
 		var afterverb = false
+		
+		#continue the previous adverb
+		if prev_phrase != null:
+			if prev_phrase.type == En.PHRASE_TYPE.Adverb:
+				prev_phrase.append(sp.speech, [En.SPEECH_TYPE.Adverb, et[0]])
+				type = null
+				return index + 1
 		
 		#checking if its after a verb
 		if index > 0:
@@ -513,12 +517,12 @@ class Phrase:
 					else:
 						return index
 		elif et.has(float(En.Adverb.Degree)) or et.has(float(En.Adverb.Manner)):
-			print(self.speechtype)
+#			print(self.speechtype)
 			index += 1
 			next = _next(sentence, index)
 			append(sp.speech, [En.SPEECH_TYPE.Adverb, et[0]])
-			print(self.speechtype)
-			print(self)
+#			print(self.speechtype)
+#			print(self)
 			if next is SP:
 				var nextsp = next as SP
 				
@@ -528,7 +532,7 @@ class Phrase:
 					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Verb))
 					append(nextsp.speech, [En.SPEECH_TYPE.Verb, nextet[0]])
 					return index + 1
-			return index + 1
+			return index
 		else:
 			print("else adverb")
 			append(sp.speech, [En.SPEECH_TYPE.Adverb, et[0]])
@@ -539,7 +543,12 @@ class Phrase:
 				if next is SP:
 					var nextsp = next as SP
 					
-					if nextsp.type.has(float(En.SPEECH_TYPE.Adverb)):
+					if nextsp.type.has(float(En.SPEECH_TYPE.Verb)):
+						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Verb))
+						append(nextsp.speech, [En.SPEECH_TYPE.Verb, nextet[0]])
+						type = En.PHRASE_TYPE.Verb
+						return index + 1
+					elif nextsp.type.has(float(En.SPEECH_TYPE.Adverb)):
 						var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Adverb))
 						append(nextsp.speech, [En.SPEECH_TYPE.Adverb, nextet[0]])
 						continue
@@ -610,6 +619,7 @@ class Phrase:
 class Clause:
 	var phrases:Array
 	var count:int setget _setsize
+	var conjunction:String
 	
 	func _setsize(value:int):
 		printerr("Size are not allowed to set!")
@@ -677,7 +687,7 @@ func _phraser(sentence) -> Array:
 	while i != -1:
 		phrase = Phrase.new()
 		#print(sentence, " ", i)
-		i = phrase.parse(sentence, i)
+		i = phrase.parse(sentence, i, result.back())
 		if phrase.is_empty():
 			break
 		result.append(phrase)

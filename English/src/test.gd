@@ -16,7 +16,7 @@ var test_sentence = [
 func _run():
 	var s = "He is running every morning"
 	
-	English.init()
+	English.init(English.path)
 #	English.read(test_sentence[5])
 	print(English.read(test_sentence[5]))
 	

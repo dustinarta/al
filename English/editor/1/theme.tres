@@ -1,7 +1,7 @@
-[gd_resource type="Theme" format=2]
+[gd_resource type="Theme" format=3 uid="uid://ixlc2xbw33u3"]
 
 [resource]
-ItemList/colors/font_color_selected = Color( 1, 0.941176, 0.784314, 1 )
+ItemList/colors/font_color_selected = Color(1, 0.941176, 0.784314, 1)
 ItemList/constants/hseparation = 4
 ItemList/constants/icon_margin = 4
 ItemList/constants/line_separation = 2

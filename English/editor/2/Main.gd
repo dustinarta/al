@@ -1,14 +1,14 @@
 extends Control
 
-onready var speechmenu:MenuButton = $"Container/Editor/Button Menu"
-onready var speechtypemenu:MenuButton = $"Container/Editor/Type Menu"
-onready var popupmenu:Popup = speechmenu.get_popup()
-onready var content_list:VBoxContainer = $Container/Content_f/VBox
-onready var line:LineEdit = $Container/Editor/LineEdit
-onready var itemlist:ItemList = $Container/Content/ItemList
-onready var file_open:FileDialog = $"Container/Menu/Button Open/FileDialogOpen"
-onready var file_save:FileDialog = $"Container/Menu/Button Save As/FileDialogSave"
-onready var alert:AcceptDialog = $Alert
+@onready var speechmenu:MenuButton = $"Container/Editor/Button Menu"
+@onready var speechtypemenu:MenuButton = $"Container/Editor/Type Menu"
+@onready var popupmenu:Popup = speechmenu.get_popup()
+@onready var content_list:VBoxContainer = $Container/Content_f/VBox
+@onready var line:LineEdit = $Container/Editor/LineEdit
+@onready var itemlist:ItemList = $Container/Content/ItemList
+@onready var file_open:FileDialog = $"Container/Menu/Button Open/FileDialogOpen"
+@onready var file_save:FileDialog = $"Container/Menu/Button Save As/FileDialogSave"
+@onready var alert:AcceptDialog = $Alert
 
 enum SPEECH_TYPE {
 	Noun = 0,
@@ -43,22 +43,32 @@ var data:Dictionary = {}
 var path:String = "res://English/dataset-key2.json"
 
 var current_type_int:Array = [[]]
+var window:Window
 
 # Called when the node enters the scene tree for the first time.
 func _ready()->void:
-	OS.window_size = Vector2(600, 400)
-	OS.set_window_title("(*)")
+	window = get_window()
+	window.size = Vector2(800, 600)
+	window.title = "(*)"
+#	OS.window_size = Vector2(600, 400)
+#	OS.set_window_title("(*)")
 	alert_ready()
 	menu_ready()
 	popupmenu.add_item("[Empty]")
-	popupmenu.connect("id_pressed", self, "_on_popupmenu_id_pressed")
+	popupmenu.connect("id_pressed", _on_popupmenu_id_pressed)
 	
-	file_open.rect_size.y = 400
-	file_save.rect_size.y = 400
+	file_open.size.y = 400
+	file_save.size.y = 400
 	
 	load_file(path)
 	item_ready()
 #	print(data)
+	
+#	var new_window = Window.new()
+#	self.add_child(new_window)
+#	new_window.position = Vector2(100, 0)
+#	new_window.size = Vector2(200, 200)
+#	new_window.show()
 	
 
 func menu_ready():
@@ -76,7 +86,8 @@ func menu_ready():
 		for i in range(speech.size()):
 			m.add_item(speech[i])
 #		print(m.get_item_count())
-		m.connect("id_pressed", self, "_sts_" + str(speeches[j]))
+		var callable = Callable(self, "_sts_" + str(speeches[j]))
+		m.connect("id_pressed", callable)
 		popupmenu.add_child(m)
 		popupmenu.add_submenu_item(str(speeches[j]), "menu" + str(speeches[j]))
 
@@ -134,16 +145,18 @@ func load_file(path:String)->void:
 	if not path.ends_with(".json"):
 		alert_show("Bukan file json bodoh!")
 		return
-	var f = File.new()
-	f.open(path, File.READ)
+	
+	var f = FileAccess.open(path, FileAccess.READ)
+	
 	if not f.is_open():
 		alert_show("File gak bisa dibuka : \"" + path + "\"")
 #		printerr("File not found \"" + path + "\"")
 		path = ""
 		return
-	data = JSON.parse(f.get_as_text()).result as Dictionary
+	
+	data = JSON.parse_string(f.get_as_text()) as Dictionary
 	f.close()
-	OS.set_window_title(path)
+	window.title = path
 
 func save_file(path:String)->void:
 	if data.size() == 0:
@@ -153,16 +166,16 @@ func save_file(path:String)->void:
 		alert_show("Bukan file json!")
 		return
 	
-	var json = JSON.print(data, "\t")
-	var f = File.new()
-	f.open(path, File.WRITE)
+	var json = JSON.stringify(data, "\t")
+	var f = FileAccess.open(path, FileAccess.WRITE)
+	
 	if not f.is_open():
 		alert_show("File gak bisa dibuka : \"" + path + "\"")
 		return
 	f.store_string(json)
 	f.close()
 	self.path = path
-	OS.set_window_title(path)
+	window.title = path
 
 func _on_popupmenu_id_pressed(id: int)->void:
 	print("menu " + str(id))
@@ -231,7 +244,7 @@ func _on_Button_Push_pressed()->void:
 	
 	if key == "":
 		return
-	elif current_type_int[0].empty():
+	elif current_type_int[0].is_empty():
 		alert_show("Tipe tidak boleh kosong!")
 		return
 	elif not is_valid_key(key):
@@ -282,8 +295,8 @@ func alert_show(msg):
 	alert.popup_centered(Vector2(200, 100))
 
 func alert_ready():
-	alert.window_title = "Peringatan!"
-	alert.rect_position = (OS.window_size - alert.rect_size) / 2
+	alert.title = "Peringatan!"
+	alert.position = (window.size - alert.size) / 2
 
 func _on_FileDialogSave_file_selected(path):
 	save_file(path)

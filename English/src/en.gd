@@ -1,4 +1,4 @@
-tool
+@tool
 extends Node
 
 enum SPEECH_TYPE {
@@ -13,58 +13,58 @@ enum SPEECH_TYPE {
 }
 
 enum Noun {
-	Common
-	Proper
+	Common = 0,
+	Proper = 1
 }
 
 enum Pronoun {
-	Personal
-	Second
-	Possesive
-	Owner
-	Intensive
-	Demonstrative
-	Indefinite
+	Personal,
+	Second,
+	Possesive,
+	Owner,
+	Intensive,
+	Demonstrative,
+	Indefinite,
 	Relative
 }
 
 enum Verb {
-	Auxiliary = 0
-	Modal = 1
-	Action = 2
+	Auxiliary = 0,
+	Modal = 1,
+	Action = 2,
 	State = 3
 }
 
 enum Adjective {
-	Comparative
-	Superlative
-	Descriptive
-	Determiner 
-	Article
+	Comparative,
+	Superlative,
+	Descriptive,
+	Determiner ,
+	Article,
 	Order
 }
 
 enum Adverb {
-	Place
-	Time
-	Frequency
-	Manner
-	Degree
-	Modify
-	Point
-	Conjunctive
+	Place,
+	Time,
+	Frequency,
+	Manner,
+	Degree,
+	Modify,
+	Point,
+	Conjunctive,
 	Order
 }
 
 enum Conjunction {
-	Coordinating 
-	Subordinating
+	Coordinating ,
+	Subordinating,
 	Correlative
 }
 
 enum Preposition {
-	Place_And_Time
-	Instrument
+	Place_And_Time,
+	Instrument,
 	Direction
 }
 
@@ -73,16 +73,21 @@ enum Interjection {
 }
 
 enum PHRASE_TYPE {
-	Undefined
-	Noun
-	Relative
-	Verb
-	Adjective
-	Adverb
-	Conjunctive
-	Prepositional
-	Infinitive
+	Undefined,
+	Noun,
+	Relative,
+	Verb,
+	Adjective,
+	Adverb,
+	Conjunctive,
+	Prepositional,
+	Infinitive,
 	Gerund
+}
+
+enum CLAUSE_TYPE {
+	Independent,
+	Dependent
 }
 
 var speech_list = [Noun.keys(), Pronoun.keys(), Verb.keys(), Adjective.keys(), Adverb.keys(), Conjunction.keys(), Preposition.keys(), Interjection.keys()]
