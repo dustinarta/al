@@ -1,4 +1,4 @@
-tool
+@tool
 extends Node
 
 var data
@@ -14,9 +14,8 @@ func init(path:String = self.path):
 	English.init(English.path)
 	print(English._has_init)
 	
-	var f:File = File.new()
-	f.open(path, File.READ)
-	data = JSON.parse(f.get_as_text()).result as Dictionary
+	var f = FileAccess.open(path, FileAccess.READ)
+	data = JSON.parse_string(f.get_as_text()) as Dictionary
 	f.close()
 	
 	variable = data["variable"]
@@ -24,9 +23,8 @@ func init(path:String = self.path):
 	_has_init = true
 
 func save(path:String = ""):
-	var f:File = File.new()
-	f.open(path, File.WRITE)
-	f.store_string(JSON.print(data, "\t"))
+	var f = FileAccess.open(path, FileAccess.WRITE)
+	f.store_string(JSON.stringify(data, "\t"))
 	f.close()
 
 func push(s:String):
@@ -43,6 +41,7 @@ func push(s:String):
 	print(clause)
 	
 	var running = true
+	var pos_last:int = pos
 	while running:
 		phrase = clause.phrases[pos]
 		print("pos ", pos, " ", phrase)
@@ -73,7 +72,13 @@ func push(s:String):
 				subject.append(entity)
 			else:
 				print("Undefined object at ", pos)
-		
+		else:
+			printerr("Unwritten phrase type \"", En.PHRASE_TYPE.keys()[phrase.type], "\"")
+#			pos += 1
+		if pos == pos_last:
+			printerr("Loop detected!")
+			return null
+		pos_last = pos
 		if pos >= limit:
 			running = false
 	
@@ -114,7 +119,7 @@ class Entity:
 						for i in range(proper.size()):
 							proper_name.append(phrase.speech[i])
 					data = SBA.find_variable_by_name(proper_name)
-					if data.empty():
+					if data.is_empty():
 						printerr("For ", proper_name, ", English dataset is exist but not in SBA!")
 						return -1
 					print("data of proper is ", data)
@@ -129,6 +134,12 @@ class Entity:
 					type = result[0]
 					return index + 1
 				print("non existance ", phrase.speech)
+			elif phrase.find_speech(float(En.SPEECH_TYPE.Pronoun)) != -1:
+				var protype = phrase.find_speech_type_all(float(En.SPEECH_TYPE.Pronoun), float(En.Noun.Proper))
+				name.append_array(phrase.speech)
+				data = {}
+				type = ENTITY_TYPE.Relative
+				return index + 1
 		elif phrase.type == En.PHRASE_TYPE.Relative:
 			name.append_array(phrase.speech)
 			data = {}
@@ -147,17 +158,18 @@ class Entity:
 		pass
 	
 	enum ENTITY_TYPE {
-		Undefined
-		Class
-		Relative
-		Variable
+		Undefined,
+		Class,
+		Relative,
+		Variable,
 		Value
 	}
 	
 	func _to_string():
+		print("entity ", Entity.ENTITY_TYPE.keys())
 		var s = "Entity: { "
-		s += "Name = " + str((self.name as PoolStringArray).join(" "))
-		s += ", Type = " + ENTITY_TYPE.keys()[self.type]
+		s += "Name = " + str((" ").join(self.name as PackedStringArray))
+		s += ", Type = " + Entity.ENTITY_TYPE.keys()[self.type]
 		s += " }"
 		
 		return s
@@ -191,8 +203,8 @@ class Task:
 	
 	func _to_string():
 		var s = "Task: { "
-		s += "Verb = " + str((self.verb as PoolStringArray).join(" "))
-		s += ", Front = " + str([(self.adverb_front as PoolStringArray).join(" ")])
+		s += "Verb = " + str((" ").join(self.verb as PackedStringArray))
+		s += ", Front = " + str([(" ").join(self.adverb_front as PackedStringArray)])
 		s += " }"
 		
 		return s
@@ -226,8 +238,9 @@ class Adverb:
 		s += "Adverb = ["
 		for i in range(count):
 			s += str(self.adverb[i]) + " (" + str(En.Adverb.keys()[self.adverbtype[i]]) + "), "
-		s.erase(s.length() - 1, " ".ord_at(0))
-		s.erase(s.length() - 1, ",".ord_at(0))
+		s = s.substr(0, s.length()-2)
+#		s.erase(s.length() - 1, " ".unicode_at(0))
+#		s.erase(s.length() - 1, ",".unicode_at(0))
 		s += "] }"
 		
 		return s
@@ -262,7 +275,7 @@ func execute(subject:Array, do:Task, object:Array, prepositions:Array = []):
 					if relative == "who":
 						print("object ", object[0].data)
 						var res:Array = equal_to_value(object[0].data)
-						var answer:String = (object[0].name as PoolStringArray).join(" ")
+						var answer:String = " ".join(object[0].name as PackedStringArray)
 						answer += " is " + collect_speech(res, "and")
 						return answer
 		elif do.has("are"):
@@ -310,13 +323,13 @@ func find_all_by_name(name:String) -> Array:
 	var res:Dictionary = {}
 	
 	res = find_class_by_name(name)
-	if !res.empty():
+	if !res.is_empty():
 		return [Entity.ENTITY_TYPE.Class, res]
 	res = find_variable_by_name(name)
-	if !res.empty():
+	if !res.is_empty():
 		return [Entity.ENTITY_TYPE.Variable, res]
 	res = find_value_by_name(name)
-	if !res.empty():
+	if !res.is_empty():
 		return [Entity.ENTITY_TYPE.Value, res]
 	
 	return [Entity.ENTITY_TYPE.Undefined, {}]
@@ -413,7 +426,7 @@ func is_least_value(thing:Dictionary, value) -> bool:
 	var vkeys:Array
 	var vval:Array
 	
-	if thing.empty():
+	if thing.is_empty():
 		return false
 	
 	if value is String:
@@ -494,7 +507,7 @@ func has_similar(entities:Array):
 func collect_speech(speeches:Array, connector:String) -> String:
 	var s:String
 	
-	if speeches.empty():
+	if speeches.is_empty():
 		return "none"
 	
 	if "aiueo".find(str(speeches[0])[0]) == -1:

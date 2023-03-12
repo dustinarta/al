@@ -1,54 +1,54 @@
 explained{
-    @ is variabel with value
-    $ is value
-    # is an index of line(start from 1)
-    % is a line
+	@ is variabel with value
+	$ is value
+	# is an index of line(start from 1)
+	% is a line
 }
 
 
 sba:
-    set @ to ($) = @
-    do @ with ... = $
-    if ($) then %
-    goto #
-    add ($) with ($) = $
-    sub ($) with ($) = $
-    mul ($) with ($) = $
-    div ($) with ($) = $
-    mod ($) with ($) = $
+	set @ to ($) = @
+	do @ with ... = $
+	if ($) then %
+	goto #
+	add ($) with ($) = $
+	sub ($) with ($) = $
+	mul ($) with ($) = $
+	div ($) with ($) = $
+	mod ($) with ($) = $
 
 
 gd {
-    var num = 10
-    var name = "Andy"
-    if (num == 10 and name == "Andy"):
-        var distance = walking(25)
-        sleep(5)
-    num += 15
-    return
+	var num = 10
+	var name = "Andy"
+	if (num == 10 and name == "Andy"):
+		var distance = walking(25)
+		sleep(5)
+	num += 15
+	return
 } sba {
-    1: set num to 10
-    2: if num is 10 and name is Andy, then goto 5
-    3: set num to (add num with 15)
-    4: return
-    5: set distance to (do walking with 25)
-    6: do sleep with 5
-    7: goto 3
+	1: set num to 10
+	2: if num is 10 and name is Andy, then goto 5
+	3: set num to (add num with 15)
+	4: return
+	5: set distance to (do walking with 25)
+	6: do sleep with 5
+	7: goto 3
 }
 
 gd{
-    class Person:
-        var name:String
-        var age:int
+	class Person:
+		var name:String
+		var age:int
 
-        func walk(len := 10):
-            print(name + " walk around" + str(len) + " miles")
+		func walk(len := 10):
+			print(name + " walk around" + str(len) + " miles")
 
-    func _run():
-        var me = Person.new()
-        me.name = "Jackson"
-        me.age = 21
-        me.walk(100)
+	func _run():
+		var me = Person.new()
+		me.name = "Jackson"
+		me.age = 21
+		me.walk(100)
 } sba {
-    create class Person 
+	create class Person 
 }

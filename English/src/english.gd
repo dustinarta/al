@@ -1,4 +1,4 @@
-tool
+@tool
 extends Node
 
 """
@@ -49,8 +49,12 @@ class SP:
 			print("Undefined \"" + self.speech + "\"")
 			return
 		var my_o = o.duplicate(true)
+#		print("creating ", s, " ", o)
 		self.type = my_o[0]
-		self.each_type = my_o.slice(1, self.type.size())
+		self.each_type = my_o.slice(1)
+#		print(self.type.size())
+#		print(self.type)
+#		print(self.each_type)
 	
 	func _to_string():
 		var a = [type]
@@ -61,7 +65,7 @@ class SP:
 	
 	func pick_type(type:float) -> Array:
 		var i = self.type.find(type)
-		
+		print("pick type ", self.speech, self.each_type)
 		if i != -1:
 			return self.each_type[i].duplicate(true)
 		else:
@@ -199,8 +203,9 @@ class Phrase:
 			for i in range(self.speech.size()):
 				var type = self.speechtype[i]
 				s += self.speech[i] + ", "
-			s.erase(s.length()-1, " ".ord_at(0))
-			s.erase(s.length()-1, ",".ord_at(0))
+			s = s.substr(0, s.length()-2)
+#			s.erase(s.length()-1, " ".unicode_at(0))
+#			s.erase(s.length()-1, ",".unicode_at(0))
 			s += " ]"
 		else:
 			var key = En.PHRASE_TYPE.keys()
@@ -211,14 +216,16 @@ class Phrase:
 				var type = self.speechtype[i]
 				s += self.speech[i] + " (" + En.SPEECH_TYPE.keys()[type[0]] + ", " + En.speech_list[type[0]][type[1]] +"), "
 #				s += str(self.speech[i].speech) + " "
-			s.erase(s.length()-1, " ".ord_at(0))
-			s.erase(s.length()-1, ",".ord_at(0))
+			s = s.substr(0, s.length()-2)
+#			s.erase(s.length()-1, " ".ord_at(0))
+#			s.erase(s.length()-1, ",".ord_at(0))
 			s += " ]"
 		s += " }"
 		return s
-	
+
 	func parse(sentence:Array, index:int, prev = null) -> int:
 		var s = _next(sentence, index)
+		print(s)
 		var typeis:float
 		var result = -1
 		
@@ -231,6 +238,7 @@ class Phrase:
 			
 			#speech type is adverb
 			elif sp.type.has(float(En.SPEECH_TYPE.Adverb)):
+				print("go to adverb")
 				result = _parse_adverb(sentence, index, prev)
 			
 			#speech type is adjective
@@ -256,6 +264,9 @@ class Phrase:
 			else:
 				print("Unexpected type ", sp.type)
 			
+			if result != -1:
+				pass
+			
 		elif s is SC:
 			pass
 		elif s is UNDEFINED:
@@ -264,16 +275,20 @@ class Phrase:
 			var running = true
 			
 			while running:
+				print("index first, ", index)
 				print("Undefined: ", und.speech)
 				append(und.speech, [0, 0])
 				index += 1
+				print("index before, ", index)
 				s = _next(sentence, index)
+				print("index after, ", index)
 				if s is UNDEFINED:
 					und = s as UNDEFINED
 					continue
 				break
-			 
+			
 			result = index
+			
 		else:
 			print("Full phrase")
 		
@@ -387,7 +402,8 @@ class Phrase:
 		else:
 			append(sp.speech, [En.SPEECH_TYPE.Verb, sp.type[0]])
 			return index + 1
-			
+		
+		
 		return -1
 	
 	func _parse_adjective(sentence:Array, index:int, prev_phrase = null) -> int:
@@ -601,7 +617,16 @@ class Phrase:
 		type = En.PHRASE_TYPE.Prepositional
 		var et = sp.pick_type(En.SPEECH_TYPE.Preposition)
 		var next
+		var nextphrase = Phrase.new()
 		
+		if sp.speech == "to":
+			var newindex = nextphrase.parse(sentence, index+1, null)
+			if nextphrase.type == En.PHRASE_TYPE.Verb:
+				append(sp.speech, [En.SPEECH_TYPE.Preposition, En.Preposition.Direction])
+				print(nextphrase)
+				steal(nextphrase)
+				type = En.PHRASE_TYPE.Infinitive
+				return newindex + 1
 		if et.has(float(En.Preposition.Place_And_Time)):
 			append(sp.speech, [En.SPEECH_TYPE.Preposition, En.Preposition.Place_And_Time])
 			
@@ -618,11 +643,12 @@ class Phrase:
 
 class Clause:
 	var phrases:Array
-	var count:int setget _setsize
+	var count:int
 	var conjunction:String
 	
 	func _setsize(value:int):
 		printerr("Size are not allowed to set!")
+		print_stack()
 	
 	func _init(_phrases:Array):
 		
@@ -683,11 +709,17 @@ func _phraser(sentence) -> Array:
 	var phrase = Phrase.new()
 	i = phrase.parse(sentence, i)
 	result.append(phrase)
+	print("first i is, ", i)
+	
+	var bugcounter = 0
 	
 	while i != -1:
+		bugcounter += 1
 		phrase = Phrase.new()
 		#print(sentence, " ", i)
 		i = phrase.parse(sentence, i, result.back())
+		print("i is, ", i)
+		if bugcounter >= 6: break
 		if phrase.is_empty():
 			break
 		result.append(phrase)
@@ -776,18 +808,16 @@ func add_data(speech:String, type1:float, type2:float):
 			data[speech].append([type2])
 
 func save_data():
-	var f = File.new()
-	f.open(path, File.WRITE)
-	f.store_string(JSON.print(data, "\t"))
+	var f = FileAccess.open(path, FileAccess.WRITE)
+	f.store_string(JSON.stringify(data, "\t"))
 	f.close()
 
 func load_data(path):
-	var f = File.new()
-	f.open(path, File.READ)
+	var f = FileAccess.open(path, FileAccess.READ)
 	var s = f.get_as_text()
 	f.close()
 	
-	data = JSON.parse(s).result as Dictionary
+	data = JSON.parse_string(s) as Dictionary
 
 func _to_string():
 	var result = "English Singleton : {\n"
