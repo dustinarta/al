@@ -57,13 +57,13 @@ enum Adverb {
 }
 
 enum Conjunction {
-	Coordinating ,
+	Coordinating,
 	Subordinating,
 	Correlative
 }
 
 enum Preposition {
-	Place_And_Time,
+	Specification,
 	Instrument,
 	Direction
 }
@@ -76,6 +76,7 @@ enum PHRASE_TYPE {
 	Undefined,
 	Noun,
 	Relative,
+	Pronoun,
 	Verb,
 	Adjective,
 	Adverb,
@@ -86,8 +87,12 @@ enum PHRASE_TYPE {
 }
 
 enum CLAUSE_TYPE {
+	none,
 	Independent,
-	Dependent
+	Dependent,
+	Question,
+	Noun,
+	Adjective
 }
 
 var speech_list = [Noun.keys(), Pronoun.keys(), Verb.keys(), Adjective.keys(), Adverb.keys(), Conjunction.keys(), Preposition.keys(), Interjection.keys()]

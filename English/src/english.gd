@@ -222,10 +222,13 @@ class Phrase:
 			s += " ]"
 		s += " }"
 		return s
-
+	
+	func get_speech_line() -> String:
+		return "".join(self.speech as PackedStringArray)
+	
 	func parse(sentence:Array, index:int, prev = null) -> int:
 		var s = _next(sentence, index)
-		print(s)
+		print("working on == ", s)
 		var typeis:float
 		var result = -1
 		
@@ -259,6 +262,7 @@ class Phrase:
 			
 			#speech type is verb
 			elif sp.type.has(float(En.SPEECH_TYPE.Verb)):
+				print("verb on ", sp.speech)
 				result = _parse_verb(sentence, index, prev)
 			
 			else:
@@ -294,7 +298,7 @@ class Phrase:
 		
 		return result
 	
-	func _parse_noun(sentence:Array, index:int, prev_phrase = null) -> int:
+	func _parse_noun(sentence:Array, index:int, prev_phrase) -> int:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Noun
 		var et = sp.pick_type(En.SPEECH_TYPE.Noun)
@@ -319,21 +323,19 @@ class Phrase:
 						pass
 #						print("invalid english \"", sentence[index-1].speech, " ", sentence[index].speech, "\"")
 				break
-			return index
-#		elif et.has(float(En.Pronoun.Owner)):
-#			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Owner])
-#			return index + 1
-#
-		else:
+			
+		elif et.has(float(En.Noun.Common)):
 			print("else noun")
-			append(sp.speech, [En.SPEECH_TYPE.Noun, et[0]])
-			return index + 1
+			append(sp.speech, [En.SPEECH_TYPE.Noun, En.Noun.Common])
+			index += 1
+		else:
+			return -1
 		
-		return -1
+		return index
 	
-	func _parse_pronoun(sentence:Array, index:int, prev_phrase = null) -> int:
+	func _parse_pronoun(sentence:Array, index:int, prev_phrase) -> int:
 		var sp = sentence[index] as SP
-		type = En.PHRASE_TYPE.Noun
+		type = En.PHRASE_TYPE.Pronoun
 		var et = sp.pick_type(En.SPEECH_TYPE.Pronoun)
 		var next
 		var nextphrase:Phrase = Phrase.new()
@@ -370,7 +372,14 @@ class Phrase:
 		elif et.has(float(En.Pronoun.Owner)):
 			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Owner])
 			return index + 1
-		
+		elif et.has(float(En.Pronoun.Personal)):
+			if prev_phrase != null:
+				append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Second])
+				return index + 1
+#			print("SP at ", index, " ", sentence[index].speech)
+#			print("SP at ", index+1, " ", sentence[index+1].speech)
+			append(sp.speech, [En.SPEECH_TYPE.Pronoun, En.Pronoun.Personal])
+			return index + 1
 		else:
 			print("else pronoun")
 			append(sp.speech, [En.SPEECH_TYPE.Pronoun, et[0]])
@@ -378,7 +387,7 @@ class Phrase:
 		
 		return -1
 	
-	func _parse_verb(sentence:Array, index:int, prev_phrase = null) -> int:
+	func _parse_verb(sentence:Array, index:int, prev_phrase) -> int:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Verb
 		var et = sp.pick_type(En.SPEECH_TYPE.Verb)
@@ -400,13 +409,13 @@ class Phrase:
 				else:
 					return index
 		else:
+			print("verb success on ", sp.speech)
 			append(sp.speech, [En.SPEECH_TYPE.Verb, sp.type[0]])
 			return index + 1
-		
-		
+		print("verb exit")
 		return -1
 	
-	func _parse_adjective(sentence:Array, index:int, prev_phrase = null) -> int:
+	func _parse_adjective(sentence:Array, index:int, prev_phrase) -> int:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Adjective
 		var et = sp.pick_type(En.SPEECH_TYPE.Adjective)
@@ -478,7 +487,7 @@ class Phrase:
 		
 		return -1
 	
-	func _parse_adverb(sentence:Array, index:int, prev_phrase = null) -> int:
+	func _parse_adverb(sentence:Array, index:int, prev_phrase) -> int:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Adverb
 		var et = sp.pick_type(En.SPEECH_TYPE.Adverb)
@@ -586,7 +595,7 @@ class Phrase:
 			
 		return -1
 	
-	func _parse_conjunction(sentence:Array, index:int, prev_phrase = null) -> int:
+	func _parse_conjunction(sentence:Array, index:int, prev_phrase) -> int:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Conjunctive
 		var et = sp.pick_type(En.SPEECH_TYPE.Conjunction)
@@ -612,13 +621,14 @@ class Phrase:
 			
 		return -1
 	
-	func _parse_preposition(sentence:Array, index:int, prev_phrase = null) -> int:
+	func _parse_preposition(sentence:Array, index:int, prev_phrase) -> int:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Prepositional
 		var et = sp.pick_type(En.SPEECH_TYPE.Preposition)
 		var next
 		var nextphrase = Phrase.new()
 		
+		#special case for infinitive
 		if sp.speech == "to":
 			var newindex = nextphrase.parse(sentence, index+1, null)
 			if nextphrase.type == En.PHRASE_TYPE.Verb:
@@ -626,9 +636,10 @@ class Phrase:
 				print(nextphrase)
 				steal(nextphrase)
 				type = En.PHRASE_TYPE.Infinitive
-				return newindex + 1
-		if et.has(float(En.Preposition.Place_And_Time)):
-			append(sp.speech, [En.SPEECH_TYPE.Preposition, En.Preposition.Place_And_Time])
+				return newindex
+		
+		if et.has(float(En.Preposition.Specification)):
+			append(sp.speech, [En.SPEECH_TYPE.Preposition, En.Preposition.Specification])
 			
 			return index + 1
 		#elif et.has(float(En.Pronoun.Owner)):
@@ -641,10 +652,9 @@ class Phrase:
 		
 		return -1
 
-class Clause:
-	var phrases:Array
+class Collection:
+	var elements:Array
 	var count:int
-	var conjunction:String
 	
 	func _setsize(value:int):
 		printerr("Size are not allowed to set!")
@@ -652,30 +662,44 @@ class Clause:
 	
 	func _init(_phrases:Array):
 		
-		for i in range(_phrases.size()):
-			if _phrases[i] is Phrase:
-				continue
-			print("wrong data type ", _phrases[i])
-			break
-		phrases = _phrases.duplicate(true)
+#		for i in range(_phrases.size()):
+#			if _phrases[i] is Phrase:
+#				continue
+#			print("wrong data type ", _phrases[i])
+#			break
+		elements = _phrases.duplicate(true)
 		count = _phrases.size()
 	
 	func _to_string():
-		var s = "Clause: { Count = " + str(count)
+		var s = "Collection: { Count = " + str(count)
 		s += ", Phrases = "
 		
 		if count != 0:
-			s += str(phrases)
+			s += str(elements)
 		s += " }"
 		return s
 	
-	func find_type(type:int, from:int = -1):
-		
+	func print()->String:
+		var str:String
 		for i in range(count):
-			if (phrases[i] as Phrase).type == type:
-				return i
-		
-		return -1
+			if elements[i] is Phrase:
+				for j in range(elements[i].speech.size()):
+					str += elements[i].speech[j] + " "
+				str = str.substr(0, str.length()-1)
+			elif elements[i] is SC:
+				str = str.substr(0, str.length()-1)
+				str += elements[i].c
+			str += " "
+		str = str.substr(0, str.length()-1)
+		return str
+	
+#	func find_type(type:int, from:int = -1):
+#
+#		for i in range(count):
+#			if (phrases[i] as Phrase).type == type:
+#				return i
+#
+#		return -1
 
 var path = "res://English/dataset-key2.json"
 
@@ -688,7 +712,7 @@ func init(path:String):
 	
 	_has_init = true
 
-func read(sentence:String) -> Clause:
+func read(sentence:String) -> Collection:
 	var each = parse(sentence.to_lower())
 	var results:Array = []
 	results.append("\"" + str(sentence) + "\"")
@@ -700,29 +724,40 @@ func read(sentence:String) -> Clause:
 	
 	results.append(_phraser(results[-1]))
 	
-	return Clause.new(results[-1].duplicate(true))
+	return Collection.new(results[-1].duplicate(true))
 
 func _phraser(sentence) -> Array:
 	var result:Array = []
 	var i = 0
+	var limit = sentence.size()
 	
-	var phrase = Phrase.new()
-	i = phrase.parse(sentence, i)
-	result.append(phrase)
-	print("first i is, ", i)
+	var phrase
 	
-	var bugcounter = 0
+	var counterindex = 0
+	var counterlimit = 20
 	
 	while i != -1:
-		bugcounter += 1
+		counterindex += 1
+		
+#		print("before")
+		if sentence[i] is SC:
+			result.append(sentence[i])
+			i += 1
+			continue
 		phrase = Phrase.new()
 		#print(sentence, " ", i)
-		i = phrase.parse(sentence, i, result.back())
+		i = phrase.parse(sentence, i, result.back() if result.size() else null)
+#		print("after")
 		print("i is, ", i)
-		if bugcounter >= 6: break
+		if counterindex >= counterlimit:
+			printerr("Break at loop bug! in counter ", counterlimit)
+			break
 		if phrase.is_empty():
 			break
 		result.append(phrase)
+		
+		if i >= limit:
+			break
 	
 	return result
 

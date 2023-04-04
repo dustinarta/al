@@ -3,7 +3,7 @@
 		"class": "classes of the hierarchy for instancing",
 		"value": "adjective for variable"
 	},
-	"class": {
+	"_class": {
 		"car": {
 			"_c": "vehicle",
 			"_p": [
@@ -81,6 +81,9 @@
 
 			]
 		},
+		"place": {
+			
+		},
 		"age": {
 			"_c": "property"
 		},
@@ -131,11 +134,16 @@
 			]
 		}
 	},
-	"value": {
+	"class": {
 		"human":{
-			"_c": "alive"
+			"_n": "human",
+			"_c": "alive",
+			"_p": {
+
+			}
 		},
 		"man": {
+			"_n": "man",
 			"_c": "human",
 			"_p": {
 				"gender": {
@@ -155,6 +163,7 @@
 			}
 		},
 		"woman": {
+			"_n": "woman",
 			"_c": "human",
 			"_p": {
 				"gender": {
@@ -199,6 +208,41 @@
 					"_st": "age is below 18"
 				}
 			}
+		},
+		"alive": {
+			"_n": "alive",
+			"_c": "real",
+			"_p": {
+				"dead":{
+					"_v": false
+				},
+				"gender": {
+					"_v": "female"
+				},
+				"age": {
+					"_v": null,
+					"_aj": "adult",
+					"_st": "age is over 18"
+				}
+			}
+		},
+		"real":{
+			"_n": "real",
+			"_c": "thing",
+			"_p": {
+				"size":{
+					"_v": null
+				}
+			}
+		},
+		"thing": {
+			"_n": "thing",
+			"_c": null,
+			"_p": {
+				"name":{
+					"_v": []
+				}
+			}
 		}
 	},
 	"variable": [
@@ -207,7 +251,7 @@
 			"_p": {
 				"name": {
 					"_v": [
-						"herry"
+						["herry"]
 					]
 				},
 				"gender": {
@@ -219,6 +263,13 @@
 				},
 				"alive": {
 					"_v": true
+				}
+			},
+			"_do": {
+				"run": {
+					"status": "done",
+					"start": "2023-03-22 10:49:58",
+					"finish": "2023-03-22 10:51:00"
 				}
 			}
 		}
@@ -244,6 +295,34 @@
 	},
 	"key": {
 
+	},
+	"verb": {
+		"run": {
+			"base" : null,
+			"tense": "base",
+			"ed": "ran",
+			"en": "run",
+			"ing": "running"
+		},
+		"ran": {
+			"base" : "run"
+		},
+		"running": {
+			"base" : "run"
+		},
+		"sleep": {
+			"base": null,
+			"tense": "base",
+			"ed": "slept",
+			"en": "slept",
+			"ing": "sleeping"
+		},
+		"slept": {
+			"base" : "sleep"
+		},
+		"sleeping": {
+			"base" : "sleep"
+		}
 	},
 	"statement": [
 

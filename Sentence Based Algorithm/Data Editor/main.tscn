@@ -1,0 +1,45 @@
+[gd_scene load_steps=2 format=3 uid="uid://d2h2t34phne0g"]
+
+[ext_resource type="Script" path="res://Sentence Based Algorithm/Data Editor/main.gd" id="1_xagvk"]
+
+[node name="main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xagvk")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Menu" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Button Open" type="Button" parent="VBoxContainer/Menu"]
+layout_mode = 2
+text = "Open"
+
+[node name="FileDialogOpen" type="FileDialog" parent="VBoxContainer/Menu/Button Open"]
+size = Vector2i(312, 157)
+access = 2
+show_hidden_files = true
+
+[node name="Button Save" type="Button" parent="VBoxContainer/Menu"]
+layout_mode = 2
+text = "Save"
+
+[node name="Button Save As" type="Button" parent="VBoxContainer/Menu"]
+layout_mode = 2
+text = "Save As"
+
+[node name="FileDialogSave" type="FileDialog" parent="VBoxContainer/Menu/Button Save As"]
+size = Vector2i(312, 157)
+access = 2
+show_hidden_files = true

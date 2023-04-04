@@ -1,7 +1,7 @@
 extends PanelContainer
 
-onready var label_type = $VBoxContainer/Label
-onready var label_speech = $VBoxContainer/Label2
+@onready var label_type = $VBoxContainer/Label
+@onready var label_speech = $VBoxContainer/Label2
 
 
 func _ready():

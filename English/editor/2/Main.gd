@@ -188,7 +188,7 @@ func menu_add_speech(id: float)->void:
 		current_type_int = [[]]
 		menu_update_speech()
 		return
-#	print(id)
+	var j
 	if not current_type_int[0].has(id):
 		current_type_int[0].append(id)
 		current_type_int.append([])
@@ -334,12 +334,7 @@ func _sts_Adverb(id:int):
 
 func _sts_Conjunction(id:int):
 	var sid = 5
-	menu_add_speech(sid)
-	var pos: int = (current_type_int[0] as Array).find(sid)
-	var loc = current_type_int[pos + 1] as Array
-	if !loc.has(id):
-		loc.append(id)
-	menu_update_speech()
+	sts_add_menu(sid, id)
 	
 func _sts_Preposition(id:int):
 	var sid = 6
