@@ -212,8 +212,11 @@ class Phrase:
 			s += "Type: " + str(key[int(self.type)])
 			s += ", Count: " + str(self.count)
 			s += ", Speech: [ " 
+			print(speech, speech.size())
 			for i in range(self.speech.size()):
 				var type = self.speechtype[i]
+#				print("type 0 ", type[0])
+#				print("type 1 ", type[1])
 				s += self.speech[i] + " (" + En.SPEECH_TYPE.keys()[type[0]] + ", " + En.speech_list[type[0]][type[1]] +"), "
 #				s += str(self.speech[i].speech) + " "
 			s = s.substr(0, s.length()-2)
@@ -406,8 +409,8 @@ class Phrase:
 					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Verb))
 					append(nextsp.speech, [En.SPEECH_TYPE.Verb, nextet[0]])
 					return index + 1
-				else:
-					return index
+					
+			return index
 		else:
 			print("verb success on ", sp.speech)
 			append(sp.speech, [En.SPEECH_TYPE.Verb, sp.type[0]])
@@ -599,26 +602,11 @@ class Phrase:
 		var sp = sentence[index] as SP
 		type = En.PHRASE_TYPE.Conjunctive
 		var et = sp.pick_type(En.SPEECH_TYPE.Conjunction)
-		var next
 		
-		if et.has(float(En.Conjunction.Subordinating)):
-			append(sp.speech, [En.SPEECH_TYPE.Conjunction, En.Conjunction.Subordinating])
-			return index + 1
-			index += 1
-			next = _next(sentence, index)
-			if next is SP:
-				var nextsp = next as SP
-				
-				if nextsp.type.has(float(En.SPEECH_TYPE.Verb)):
-					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Verb))
-					append(nextsp.speech, [En.SPEECH_TYPE.Verb, nextet[0]])
-					return index + 1
-				else:
-					return index
-		else:
-			append(sp.speech, [En.SPEECH_TYPE.Verb, sp.type[0]])
-			return index + 1
-			
+		append(sp.speech, [En.SPEECH_TYPE.Conjunction, et[0]])
+		print("after conjunctive is ", sentence[index + 1].speech)
+		return index + 1
+		
 		return -1
 	
 	func _parse_preposition(sentence:Array, index:int, prev_phrase) -> int:
@@ -731,6 +719,8 @@ func _phraser(sentence) -> Array:
 	var i = 0
 	var limit = sentence.size()
 	
+	print("phrasing ", sentence)
+	
 	var phrase
 	
 	var counterindex = 0
@@ -831,7 +821,7 @@ func report_null(result) -> bool:
 		return true
 
 func add_data(speech:String, type1:float, type2:float):
-	
+	print("adding english data ", speech)
 	if !data.has(speech):
 		data[speech] = [[type1], [type2]]
 	else:

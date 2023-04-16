@@ -3,328 +3,253 @@
 		"class": "classes of the hierarchy for instancing",
 		"value": "adjective for variable"
 	},
-	"_class": {
-		"car": {
-			"_c": "vehicle",
-			"_p": [
-
-			],
-			"_ha": [
-				"window",
-				"door",
-				"wheel",
-				"engine"
-			]
-		},
-		"vehicle": {
-			"_c": "object",
-			"_p": [
-
-			],
-			"_ha": [
-
-			]
-		},
-		"object": {
-			"_c": "real",
-			"_p": [
-
-			],
-			"_ha": [
-
-			]
-		},
-		"fruit": {
-			"_c": "alive",
-			"_p": [
-
-			],
-			"_ha": [
-
-			]
-		},
-		"human": {
-			"_c": "alive",
-			"_p": [
-
-			],
-			"_ha": [
-
-			]
-		},
-		"alive": {
-			"_c": "real",
-			"_p": [
-				"age",
-				"gender",
-				"alive"
-			],
-			"_ha": [
-
-			]
-		},
-		"real": {
-			"_c": "thing",
-			"_p": [
-
-			],
-			"_ha": [
-
-			]
-		},
-		"speech": {
-			"_c": "thing",
-			"_p": [
-
-			],
-			"_ha": [
-
-			]
-		},
-		"place": {
-			
-		},
-		"age": {
-			"_c": "property"
-		},
-		"gender": {
-			"_c": "property"
-		},
-		"color": {
-			"_c": "idea",
-			"_p": [
-				"red",
-				"green",
-				"blue",
-				"aplha"
-			],
-			"_ha": [
-
-			]
-		},
-		"job":{
-			"_c": "idea",
-			"_p": [
-				"salary",
-				"workplace"
-			]
-		},
-		"idea": {
-			"_c": "thing",
-			"_p": [
-
-			],
-			"_ha": [
-
-			]
-		},
-		"property": {
-			"_c": "thing",
-			"_p": [
-				"name"
-			],
-			"_ha": [
-
-			]
-		},
-		"thing": {
-			"_c": null,
-			"_p": [
-				"name"
-			]
-		}
-	},
 	"class": {
-		"human":{
-			"_n": "human",
-			"_c": "alive",
-			"_p": {
-
-			}
-		},
-		"man": {
-			"_n": "man",
-			"_c": "human",
-			"_p": {
-				"gender": {
-					"_v": "male"
-				},
-				"age": {
-					"_v": null,
-					"_aj": "adult",
-					"_st": "age is over 18"
-				}
-			},
-			"_st":[
-				"man is human and male"
+		"adult": {
+			"_c": "age",
+			"_n": "adult",
+			"_p": [
+				"age"
 			],
-			"for": {
-
-			}
-		},
-		"woman": {
-			"_n": "woman",
-			"_c": "human",
-			"_p": {
-				"gender": {
-					"_v": "female"
-				},
+			"_v": {
 				"age": {
-					"_v": null,
-					"_aj": "adult",
-					"_st": "age is over 18"
-				}
-			}
-		},
-		"person": {
-			"_c": "human"
-		},
-		"male": {
-			"_p": {
-				"gender":{
-					"_v": "male"
-				}
-			}
-		},
-		"female": {
-			"_p": {
-				"gender":{
-					"_v": "female"
-				}
-			}
-		},
-		"adult" : {
-			"_p": {
-				"age": {
-					"_v": null,
-					"_st": "age is over 18"
-				}
-			}
-		},
-		"young" : {
-			"_p": {
-				"age":{
-					"_v": null,
-					"_st": "age is below 18"
-				}
-			}
-		},
-		"alive": {
-			"_n": "alive",
-			"_c": "real",
-			"_p": {
-				"dead":{
-					"_v": false
-				},
-				"gender": {
-					"_v": "female"
-				},
-				"age": {
-					"_v": null,
-					"_aj": "adult",
-					"_st": "age is over 18"
-				}
-			}
-		},
-		"real":{
-			"_n": "real",
-			"_c": "thing",
-			"_p": {
-				"size":{
+					"_st": "age is over 18",
 					"_v": null
 				}
 			}
 		},
-		"thing": {
-			"_n": "thing",
-			"_c": null,
-			"_p": {
-				"name":{
-					"_v": []
+		"age": {
+			"_c": "property",
+			"_n": "age",
+			"_p": [],
+			"_v": {
+				"age": {
+					"_v": null
 				}
 			}
-		}
-	},
-	"variable": [
-		{
+		},
+		"alive": {
+			"_c": "real",
+			"_n": "alive",
+			"_p": [
+				"dead",
+				"gender",
+				"age"
+			],
+			"_v": {
+				"dead": {
+					"_v": false
+				}
+			}
+		},
+		"female": {
+			"_c": "gender",
+			"_n": "female",
+			"_p": [],
+			"_v": {
+				"gender": {
+					"_v": "female"
+				}
+			}
+		},
+		"gender": {
+			"_c": "property",
+			"_n": "gender",
+			"_p": [
+				"gender"
+			],
+			"_v": {
+
+			}
+		},
+		"human": {
+			"_c": "alive",
+			"_n": "human",
+			"_p": [
+
+			],
+			"_v": {
+
+			}
+		},
+		"male": {
+			"_c": "gender",
+			"_n": "male",
+			"_p": [],
+			"_v": {
+				"gender": {
+					"_v": "male"
+				}
+			}
+		},
+		"man": {
 			"_c": "human",
-			"_p": {
-				"name": {
-					"_v": [
-						["herry"]
-					]
+			"_n": "man",
+			"_p": [],
+			"_st": [
+				"man is human and male"
+			],
+			"_v": {
+				"age": {
+					"_st": "age is over 18",
+					"_v": "adult"
 				},
 				"gender": {
 					"_v": "male"
-				},
-				"age": {
-					"_v": null,
-					"_aj": "adult"
-				},
-				"alive": {
-					"_v": true
 				}
 			},
-			"_do": {
-				"run": {
-					"status": "done",
-					"start": "2023-03-22 10:49:58",
-					"finish": "2023-03-22 10:51:00"
+			"for": {
+
+			}
+		},
+		"person": {
+			"_c": "human",
+			"_n": "person",
+			"_p": [
+
+			],
+			"_v": {
+
+			}
+		},
+		"property": {
+			"_c": "thing",
+			"_n": "property",
+			"_p": [
+
+			],
+			"_v": {
+
+			}
+		},
+		"real": {
+			"_c": "thing",
+			"_n": "real",
+			"_p": [
+				"size"
+			],
+			"_v": {
+
+			}
+		},
+		"thing": {
+			"_c": null,
+			"_n": "thing",
+			"_p": [
+				"name"
+			],
+			"_v": {
+
+			}
+		},
+		"woman": {
+			"_c": "human",
+			"_n": "woman",
+			"_p": [
+
+			],
+			"_v": {
+				"age": {
+					"_st": "age is over 18",
+					"_v": "adult"
+				},
+				"gender": {
+					"_v": "female"
+				}
+			}
+		},
+		"young": {
+			"_c": "age",
+			"_n": "young",
+			"_p": [
+
+			],
+			"_v": {
+				"age": {
+					"_st": "age is below 18",
+					"_v": "young"
 				}
 			}
 		}
-	],
-	"collective": {
-
 	},
 	"compund": {
-		"single": [
-			"silver",
-			"gold",
-			"iron"
-		],
 		"multiple": [
 			[
 				"swimming",
 				"pool"
 			]
+		],
+		"single": [
+			"silver",
+			"gold",
+			"iron"
 		]
-	},
-	"me": {
-		"name": "bot"
 	},
 	"key": {
 
 	},
-	"verb": {
-		"run": {
-			"base" : null,
-			"tense": "base",
-			"ed": "ran",
-			"en": "run",
-			"ing": "running"
-		},
-		"ran": {
-			"base" : "run"
-		},
-		"running": {
-			"base" : "run"
-		},
-		"sleep": {
-			"base": null,
-			"tense": "base",
-			"ed": "slept",
-			"en": "slept",
-			"ing": "sleeping"
-		},
-		"slept": {
-			"base" : "sleep"
-		},
-		"sleeping": {
-			"base" : "sleep"
-		}
+	"me": {
+		"name": "bot"
 	},
 	"statement": [
 
-	]
+	],
+	"variable": [
+		{
+			"_c": "human",
+			"_do": {
+				"run": {
+					"finish": "2023-03-22 10:51:00",
+					"start": "2023-03-22 10:49:58",
+					"status": "done"
+				}
+			},
+			"_v": {
+				"age": {
+					"_aj": "adult",
+					"_v": null
+				},
+				"alive": {
+					"_v": true
+				},
+				"gender": {
+					"_v": "male"
+				},
+				"name": {
+					"_v": [
+						[
+							"herry"
+						]
+					]
+				}
+			}
+		}
+	],
+	"verb": {
+		"ran": {
+			"base": "run"
+		},
+		"run": {
+			"base": null,
+			"ed": "ran",
+			"en": "run",
+			"ing": "running",
+			"tense": "base"
+		},
+		"running": {
+			"base": "run"
+		},
+		"sleep": {
+			"base": null,
+			"ed": "slept",
+			"en": "slept",
+			"ing": "sleeping",
+			"tense": "base"
+		},
+		"sleeping": {
+			"base": "sleep"
+		},
+		"slept": {
+			"base": "sleep"
+		}
+	}
 }
