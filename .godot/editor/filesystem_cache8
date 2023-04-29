@@ -1,5 +1,5 @@
 2a60927148abd1d33b818b535e306557
-::res://::1681627489
+::res://::1682761977
 ai logo.png::CompressedTexture2D::2774366399910235203::1668783325::1677829033::1::::<><>::
 ai logo.svg::CompressedTexture2D::8187573020341992674::1668782914::1677829033::1::::<><>::
 dataset-key2.json::JSON::-1::1675419991::0::1::::<><>::
@@ -11,6 +11,7 @@ main.tscn::PackedScene::-1::1666778727::0::1::::<><>::
 prime numbers.txt::TextFile::-1::1678712635::0::1::::<><>::
 README.md::TextFile::-1::1673239066::0::1::::<><>::
 system.gd::GDScript::-1::1659327038::0::1::::<>Node<>::
+test2.gd::GDScript::-1::1682606124::0::1::::<>EditorScript<>::
 ::res://Database Editor/::1665324690
 Database Editor.gd::GDScript::-1::1661331476::0::1::::<>Control<>::
 Database Editor.tscn::PackedScene::-1::1665231086::0::1::::<><>::res://Database Editor/Database Editor.gd<>res://Database Editor/Editor.gd<>res://Database Editor/Noun.tscn<>res://Database Editor/Pronoun.tscn
@@ -50,7 +51,7 @@ phrase types.txt::TextFile::-1::1674046325::0::1::::<><>::
 sentence.txt::TextFile::-1::1672472770::0::1::::<><>::
 speech types.txt::TextFile::-1::1679455231::0::1::::<><>::
 ::res://English/editor/::1673319534
-::res://English/editor/1/::1681627297
+::res://English/editor/1/::1682658840
 combiner.gd::GDScript::-1::1669027950::0::1::::<>RefCounted<>::
 converter.gd::GDScript::-1::1668772411::0::1::::<>RefCounted<>::
 Main array.gd::GDScript::-1::1668772508::0::1::::<>Control<>::
@@ -58,14 +59,14 @@ Main.gd::GDScript::-1::1669016338::0::1::::<>Control<>::
 Main.tscn::PackedScene::-1::1673319589::0::1::::<><>::res://English/editor/1/Main.gd<>res://English/editor/1/theme.tres
 test pop up.gd::GDScript::-1::1669016338::0::1::::<>Control<>::
 test pop up.tscn::PackedScene::-1::1669015735::0::1::::<><>::res://English/editor/test pop up.gd
-theme.tres::Theme::609664349692798676::1681627297::0::1::::<><>::
-::res://English/editor/2/::1681627459
+theme.tres::Theme::609664349692798676::1682658840::0::1::::<><>::
+::res://English/editor/2/::1682680007
 combine.gd::GDScript::-1::1673756699::0::1::::<>RefCounted<>::
 convert.gd::GDScript::-1::1673594854::0::1::::<>RefCounted<>::
 Main.gd::GDScript::-1::1678755815::0::1::::<>Control<>::
-Main.tscn::PackedScene::3485712110275720417::1681627458::0::1::::<><>::res://English/editor/2/Main.gd<>uid://ixlc2xbw33u3
-::res://English/src/::1680677313
-en.gd::GDScript::-1::1680593821::0::1::::<>Node<>::
+Main.tscn::PackedScene::3485712110275720417::1682680007::0::1::::<><>::res://English/editor/2/Main.gd<>uid://ixlc2xbw33u3
+::res://English/src/::1681808213
+en.gd::GDScript::-1::1681808213::0::1::::<>Node<>::
 english.gd::GDScript::-1::1680677313::0::1::::<>Node<>::
 hierarchy.txt::TextFile::-1::1674706412::0::1::::<><>::
 pharser.gd::GDScript::-1::1674873237::0::1::::_pharserxx<>Node<>::
@@ -119,21 +120,22 @@ design.txt::TextFile::-1::1672396012::0::1::::<><>::
 expression runner.gd::GDScript::-1::1666697162::0::1::::<>Reference<>::
 register class.gd::GDScript::-1::1666698130::0::1::::Register<>Reference<>::
 test.gd::GDScript::-1::1666698176::0::1::::<>RefCounted<>::
-::res://Sentence Based Algorithm/::1681627459
+::res://Sentence Based Algorithm/::1682740856
 assembly design.txt::TextFile::-1::1672458944::0::1::::<><>::
 convert.gd::GDScript::-1::1681206753::0::1::::<>EditorScript<>::
 design.txt::TextFile::-1::1675049380::0::1::::<><>::
 example.txt::TextFile::-1::1673781408::0::1::::<><>::
 goal.txt::TextFile::-1::1673319373::0::1::::<><>::
 memory copy.json::JSON::-1::1680764011::0::1::::<><>::
-memory.json::JSON::-1::1681283910::0::1::::<><>::
+memory.json::JSON::-1::1682679066::0::1::::<><>::
 new_script.gd::GDScript::-1::1679994137::0::1::::<>EditorScript<>::
+noun type.txt::TextFile::-1::1682674995::0::1::::<><>::
 operation.txt::TextFile::-1::1675169143::0::1::::<><>::
-sba.gd::GDScript::-1::1681627459::0::1::::<>Node<>::
+sba.gd::GDScript::-1::1682740856::0::1::::<>Node<>::
 sba.txt::TextFile::-1::1677903498::0::1::::<><>::
 sentence structure.txt::TextFile::-1::1673756487::0::1::::<><>::
 structure.json::JSON::-1::1680165687::0::1::::<><>::
-test.gd::GDScript::-1::1681549068::0::1::::<>EditorScript<>::
+test.gd::GDScript::-1::1682680007::0::1::::<>EditorScript<>::
 value inheritance.txt::TextFile::-1::1673581337::0::1::::<><>::
 variable strucutre.txt::TextFile::-1::1675052480::0::1::::<><>::
 ::res://Sentence Based Algorithm/Algorithm Language/::1680160217
@@ -142,9 +144,9 @@ main.gd::GDScript::-1::1678841821::0::1::::<>Control<>::
 main.tscn::PackedScene::1733539987632503058::1679899525::0::1::::<><>::res://Sentence Based Algorithm/Algorithm Language/main.gd
 result.gd::GDScript::-1::1678840139::0::1::::<>PanelContainer<>::
 ::res://Sentence Based Algorithm/assembly in c/::1674725857
-::res://Sentence Based Algorithm/Data Editor/::1681543594
+::res://Sentence Based Algorithm/Data Editor/::1682326797
 main.gd::GDScript::-1::1681463550::0::1::::<>Control<>::
-main.tscn::PackedScene::9070486278618017760::1681543594::0::1::::<><>::uid://ixlc2xbw33u3<>res://Sentence Based Algorithm/Data Editor/main.gd
+main.tscn::PackedScene::9070486278618017760::1682326797::0::1::::<><>::uid://ixlc2xbw33u3<>res://Sentence Based Algorithm/Data Editor/main.gd
 Tree.gd::GDScript::-1::1680974388::0::1::::<>Tree<>::
 ::res://Sentence Based Algorithm/Editor/::1675420955
 ::res://Sentence Based Algorithm/Editor/Value/::1675424626

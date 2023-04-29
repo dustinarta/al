@@ -92,7 +92,8 @@ enum CLAUSE_TYPE {
 	Dependent,
 	Question,
 	Noun,
-	Adjective
+	Adjective,
+	Preposition
 }
 
 var speech_list = [Noun.keys(), Pronoun.keys(), Verb.keys(), Adjective.keys(), Adverb.keys(), Conjunction.keys(), Preposition.keys(), Interjection.keys()]

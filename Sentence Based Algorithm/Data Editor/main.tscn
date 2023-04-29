@@ -219,7 +219,7 @@ size_flags_vertical = 3
 
 [node name="Class Tree" type="Tree" parent="VBoxContainer/Data Editor/Content/ScrollContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 160)
+custom_minimum_size = Vector2(240, 160)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3

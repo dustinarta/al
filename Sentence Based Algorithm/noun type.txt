@@ -1,0 +1,22 @@
+Class {
+	
+},
+Variable {
+	Pronoun
+}
+
+Example:
+	Class:
+		man
+		woman
+		kids
+	Variable:
+		Ryan Renolds
+		Andy
+	Pronoun:
+		he
+		she
+		it
+		this man
+	Relative:
+		who
