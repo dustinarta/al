@@ -1,0 +1,22 @@
+
+
+S:
+    ricco lives in Bontang 
+Q:
+    where is ricco live : in Bontang
+    who live in Bontang : ricco
+
+S:
+    he push the table to move it
+Q:
+    what does he push : tha table
+    who push the table : he does
+    why does he push the table : to move the table
+    how does he move the table : by pushing the table
+
+S:
+    if i have a car, i will go to another country
+Q:
+    what happen if i have a car : i will go to another country
+    what will i do if a have a car : i will go to another country
+    when will i go to another country : if i have a car

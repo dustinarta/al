@@ -1,5 +1,6 @@
 {
-	"_n" : "name of data(String)",
+	"_n" : "name of data (String)",
+	"_t" : "class type (String)",
 	"_v" : "data that stored (Dictionary, Array, int, float, bool, String)",
 	"_vt" : "data type of value (int)",
 	"_vc" : "count of data (int)",

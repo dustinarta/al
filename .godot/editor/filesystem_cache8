@@ -1,5 +1,5 @@
 2a60927148abd1d33b818b535e306557
-::res://::1682761977
+::res://::1683519564
 ai logo.png::CompressedTexture2D::2774366399910235203::1668783325::1677829033::1::::<><>::
 ai logo.svg::CompressedTexture2D::8187573020341992674::1668782914::1677829033::1::::<><>::
 dataset-key2.json::JSON::-1::1675419991::0::1::::<><>::
@@ -37,7 +37,7 @@ why2.txt::TextFile::-1::1668006662::0::1::::<><>::
 adjective-adverb with conjunction.txt::TextFile::-1::1669633583::0::1::::<><>::
 dataset2.json::JSON::-1::1669004280::0::1::::<><>::
 dataset3.json::JSON::-1::1669017283::0::1::::<><>::
-dataset-key2.json::JSON::-1::1680512853::0::1::::<><>::
+dataset-key2.json::JSON::-1::1682762420::0::1::::<><>::
 dataset-key.json::JSON::-1::1673320296::0::1::::<><>::
 dataset.json::JSON::-1::1668773479::0::1::::<><>::
 example.txt::TextFile::-1::1672496214::0::1::::<><>::
@@ -51,7 +51,7 @@ phrase types.txt::TextFile::-1::1674046325::0::1::::<><>::
 sentence.txt::TextFile::-1::1672472770::0::1::::<><>::
 speech types.txt::TextFile::-1::1679455231::0::1::::<><>::
 ::res://English/editor/::1673319534
-::res://English/editor/1/::1682658840
+::res://English/editor/1/::1683171660
 combiner.gd::GDScript::-1::1669027950::0::1::::<>RefCounted<>::
 converter.gd::GDScript::-1::1668772411::0::1::::<>RefCounted<>::
 Main array.gd::GDScript::-1::1668772508::0::1::::<>Control<>::
@@ -59,15 +59,15 @@ Main.gd::GDScript::-1::1669016338::0::1::::<>Control<>::
 Main.tscn::PackedScene::-1::1673319589::0::1::::<><>::res://English/editor/1/Main.gd<>res://English/editor/1/theme.tres
 test pop up.gd::GDScript::-1::1669016338::0::1::::<>Control<>::
 test pop up.tscn::PackedScene::-1::1669015735::0::1::::<><>::res://English/editor/test pop up.gd
-theme.tres::Theme::609664349692798676::1682658840::0::1::::<><>::
-::res://English/editor/2/::1682680007
+theme.tres::Theme::609664349692798676::1683171660::0::1::::<><>::
+::res://English/editor/2/::1683172495
 combine.gd::GDScript::-1::1673756699::0::1::::<>RefCounted<>::
 convert.gd::GDScript::-1::1673594854::0::1::::<>RefCounted<>::
-Main.gd::GDScript::-1::1678755815::0::1::::<>Control<>::
-Main.tscn::PackedScene::3485712110275720417::1682680007::0::1::::<><>::res://English/editor/2/Main.gd<>uid://ixlc2xbw33u3
-::res://English/src/::1681808213
-en.gd::GDScript::-1::1681808213::0::1::::<>Node<>::
-english.gd::GDScript::-1::1680677313::0::1::::<>Node<>::
+Main.gd::GDScript::-1::1683076594::0::1::::<>Control<>::
+Main.tscn::PackedScene::3485712110275720417::1683172495::0::1::::<><>::res://English/editor/2/Main.gd<>uid://ixlc2xbw33u3
+::res://English/src/::1683076594
+en.gd::GDScript::-1::1683076594::0::1::::<>Node<>::
+english.gd::GDScript::-1::1683076594::0::1::::<>Node<>::
 hierarchy.txt::TextFile::-1::1674706412::0::1::::<><>::
 pharser.gd::GDScript::-1::1674873237::0::1::::_pharserxx<>Node<>::
 test2.gd::GDScript::-1::1673173855::0::1::::<>RefCounted<>::
@@ -120,22 +120,22 @@ design.txt::TextFile::-1::1672396012::0::1::::<><>::
 expression runner.gd::GDScript::-1::1666697162::0::1::::<>Reference<>::
 register class.gd::GDScript::-1::1666698130::0::1::::Register<>Reference<>::
 test.gd::GDScript::-1::1666698176::0::1::::<>RefCounted<>::
-::res://Sentence Based Algorithm/::1682740856
+::res://Sentence Based Algorithm/::1683172495
 assembly design.txt::TextFile::-1::1672458944::0::1::::<><>::
-convert.gd::GDScript::-1::1681206753::0::1::::<>EditorScript<>::
+convert.gd::GDScript::-1::1683076594::0::1::::<>EditorScript<>::
 design.txt::TextFile::-1::1675049380::0::1::::<><>::
 example.txt::TextFile::-1::1673781408::0::1::::<><>::
 goal.txt::TextFile::-1::1673319373::0::1::::<><>::
 memory copy.json::JSON::-1::1680764011::0::1::::<><>::
-memory.json::JSON::-1::1682679066::0::1::::<><>::
+memory.json::JSON::-1::1683124813::0::1::::<><>::
 new_script.gd::GDScript::-1::1679994137::0::1::::<>EditorScript<>::
-noun type.txt::TextFile::-1::1682674995::0::1::::<><>::
+noun type.txt::TextFile::-1::1683076594::0::1::::<><>::
 operation.txt::TextFile::-1::1675169143::0::1::::<><>::
-sba.gd::GDScript::-1::1682740856::0::1::::<>Node<>::
+sba.gd::GDScript::-1::1683172455::0::1::::<>Node<>::
 sba.txt::TextFile::-1::1677903498::0::1::::<><>::
 sentence structure.txt::TextFile::-1::1673756487::0::1::::<><>::
-structure.json::JSON::-1::1680165687::0::1::::<><>::
-test.gd::GDScript::-1::1682680007::0::1::::<>EditorScript<>::
+structure.json::JSON::-1::1682819175::0::1::::<><>::
+test.gd::GDScript::-1::1683172495::0::1::::<>EditorScript<>::
 value inheritance.txt::TextFile::-1::1673581337::0::1::::<><>::
 variable strucutre.txt::TextFile::-1::1675052480::0::1::::<><>::
 ::res://Sentence Based Algorithm/Algorithm Language/::1680160217
@@ -144,9 +144,9 @@ main.gd::GDScript::-1::1678841821::0::1::::<>Control<>::
 main.tscn::PackedScene::1733539987632503058::1679899525::0::1::::<><>::res://Sentence Based Algorithm/Algorithm Language/main.gd
 result.gd::GDScript::-1::1678840139::0::1::::<>PanelContainer<>::
 ::res://Sentence Based Algorithm/assembly in c/::1674725857
-::res://Sentence Based Algorithm/Data Editor/::1682326797
-main.gd::GDScript::-1::1681463550::0::1::::<>Control<>::
-main.tscn::PackedScene::9070486278618017760::1682326797::0::1::::<><>::uid://ixlc2xbw33u3<>res://Sentence Based Algorithm/Data Editor/main.gd
+::res://Sentence Based Algorithm/Data Editor/::1683076594
+main.gd::GDScript::-1::1683076594::0::1::::<>Control<>::
+main.tscn::PackedScene::9070486278618017760::1682818658::0::1::::<><>::uid://ixlc2xbw33u3<>res://Sentence Based Algorithm/Data Editor/main.gd
 Tree.gd::GDScript::-1::1680974388::0::1::::<>Tree<>::
 ::res://Sentence Based Algorithm/Editor/::1675420955
 ::res://Sentence Based Algorithm/Editor/Value/::1675424626

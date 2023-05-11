@@ -10,6 +10,7 @@
 			"_p": [
 				"age"
 			],
+			"_t": "value",
 			"_v": {
 				"age": {
 					"_st": "age is over 18",
@@ -23,6 +24,7 @@
 			"_p": [
 
 			],
+			"_t": "class",
 			"_v": {
 				"age": {
 					"_v": null
@@ -35,6 +37,7 @@
 			"_p": [
 				"city"
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -45,6 +48,7 @@
 			"_p": [
 				"continent"
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -55,6 +59,7 @@
 			"_p": [
 				"country"
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -65,6 +70,7 @@
 			"_p": [
 
 			],
+			"_t": "value",
 			"_v": {
 				"gender": {
 					"_v": "female"
@@ -77,6 +83,7 @@
 			"_p": [
 				"gender"
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -87,6 +94,7 @@
 			"_p": [
 
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -97,6 +105,7 @@
 			"_p": [
 
 			],
+			"_t": "value",
 			"_v": {
 				"gender": {
 					"_v": "male"
@@ -112,6 +121,7 @@
 			"_st": [
 				"man is human and male"
 			],
+			"_t": "value",
 			"_v": {
 				"age": {
 					"_st": "age is over 18",
@@ -133,6 +143,7 @@
 				"gender",
 				"age"
 			],
+			"_t": "class",
 			"_v": {
 				"dead": {
 					"_v": false
@@ -145,6 +156,7 @@
 			"_p": [
 
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -155,6 +167,7 @@
 			"_p": [
 
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -165,6 +178,7 @@
 			"_p": [
 				"planet"
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -175,6 +189,7 @@
 			"_p": [
 
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -183,8 +198,10 @@
 			"_c": "thing",
 			"_n": "real",
 			"_p": [
-				"size"
+				"size",
+				"position"
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -195,6 +212,7 @@
 			"_p": [
 				"name"
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -205,6 +223,7 @@
 			"_p": [
 
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -215,6 +234,7 @@
 			"_p": [
 
 			],
+			"_t": "value",
 			"_v": {
 				"age": {
 					"_st": "age is over 18",
@@ -231,6 +251,7 @@
 			"_p": [
 				"world"
 			],
+			"_t": "class",
 			"_v": {
 
 			}
@@ -241,6 +262,7 @@
 			"_p": [
 
 			],
+			"_t": "value",
 			"_v": {
 				"age": {
 					"_st": "age is below 18",
@@ -288,12 +310,7 @@
 		{
 			"_c": "human",
 			"_do": {
-				"run": {
-					"finish": "",
-					"long": "",
-					"start": "",
-					"status": "do"
-				}
+
 			},
 			"_p": {
 				"age": {
@@ -308,8 +325,11 @@
 				},
 				"name": {
 					"_v": [
-						"ricco"
+						"yoel"
 					]
+				},
+				"position": {
+					"_v": null
 				},
 				"size": {
 					"_v": null
@@ -337,8 +357,11 @@
 				},
 				"name": {
 					"_v": [
-						"leon"
+						"fuji"
 					]
+				},
+				"position": {
+					"_v": 3
 				},
 				"size": {
 					"_v": null
@@ -349,56 +372,35 @@
 			]
 		},
 		{
-			"_c": "human",
+			"_c": "city",
 			"_do": {
 
 			},
 			"_p": {
-				"age": {
-					"_st": "age is over 18",
-					"_v": "adult"
+				"city": {
+					"_v": null
 				},
-				"dead": {
-					"_v": false
+				"continent": {
+					"_v": null
 				},
-				"gender": {
-					"_v": "male"
+				"country": {
+					"_v": null
 				},
 				"name": {
 					"_v": [
-						"ricco"
+						"bontang"
 					]
+				},
+				"planet": {
+					"_v": null
+				},
+				"position": {
+					"_v": null
 				},
 				"size": {
 					"_v": null
-				}
-			},
-			"_st": [
-
-			]
-		},
-		{
-			"_c": "human",
-			"_do": {
-
-			},
-			"_p": {
-				"age": {
-					"_st": "age is over 18",
-					"_v": "adult"
 				},
-				"dead": {
-					"_v": false
-				},
-				"gender": {
-					"_v": "male"
-				},
-				"name": {
-					"_v": [
-						"leon"
-					]
-				},
-				"size": {
+				"world": {
 					"_v": null
 				}
 			},
