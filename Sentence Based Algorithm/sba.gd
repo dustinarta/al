@@ -199,7 +199,7 @@ func parse_clause(coll:English.Collection, pos:int = 0, once:bool = false):
 	
 	return clause
 
-func clause_run(clause:Clause, first:bool = true):
+func clause_run(clause:Clause, first:bool = true)->String:
 #	print("top execute", clause)
 	if clause.has_relative():
 		return clause_ask(clause)
@@ -222,7 +222,13 @@ func clause_run(clause:Clause, first:bool = true):
 			if do.has("is") or do.has("are"):
 				
 				if state == Clause.State.TELL:
-					answer = clause_assign(clause)
+					answer = clause_be(clause)
+				elif state == Clause.State.ASK:
+					print("im asking ", do.object)
+					answer = clause_check(clause)
+			elif do.has("has") or do.has("have"):
+				if state == Clause.State.TELL:
+					answer = clause_have(clause)
 				elif state == Clause.State.ASK:
 					print("im asking ", do.object)
 					answer = clause_check(clause)
@@ -254,7 +260,7 @@ func clause_run(clause:Clause, first:bool = true):
 			
 	return answer
 
-func clause_ask(clause:Clause):
+func clause_ask(clause:Clause)->String:
 	var subject:Noun = clause.subject
 	var do:Task = clause.task
 	var object:Noun = clause.task.object
@@ -299,7 +305,7 @@ func clause_ask(clause:Clause):
 		print(do.count)
 	return answer
 
-func clause_check(clause:Clause):
+func clause_check(clause:Clause)->String:
 	var subject:Noun = clause.subject
 	var do:Task = clause.task
 	var object = do.object
@@ -325,7 +331,7 @@ func clause_check(clause:Clause):
 						else:
 							answer = "no"
 					else:
-						printerr("Unhandled code! 328")
+						printerr("Unhandled code! 334")
 			elif object is Preposition:
 				print("on preposition")
 				var object_as_preposition:Preposition = object as Preposition
@@ -347,13 +353,40 @@ func clause_check(clause:Clause):
 						printerr("Undefined subject is uncheckable!")
 						answer = "ERROR!"
 					else:
-						printerr("Unhandled code! 328")
+						printerr("Unhandled code! 356")
 	else:
-		printerr("Unhandled code 330")
+		printerr("Unhandled code 358")
 	print("returning ", answer)
 	return answer
 
-func clause_assign(clause:Clause)->String:
+func clause_have(clause:Clause)->String:
+	var subject:Noun = clause.subject
+	var do:Task = clause.task
+	var object = do.object
+	var answer:String = "ok"
+	
+	if object is Noun:
+		var object_noun:Noun = object as Noun
+		var ob = object_noun.entities[0]
+		for j in range(subject.count):
+			var sub = subject.entities[j] as Entity
+			
+			if sub.type == Entity.Type.Undefined:
+				printerr("Undefined ", sub.identifier)
+				
+			elif sub.type == Entity.Type.Variable or sub.type == Entity.Type.Pronoun:
+				
+				if sub.is_have({"class": ob.identifier}):
+					pass
+				else:
+					var newvar = create_but_get_variable([], ob.inherit)
+					sub.data["_ha"].append(newvar)
+			else:
+				printerr("Unhandled code! 385")
+	
+	return answer
+
+func clause_be(clause:Clause)->String:
 	var subject:Noun = clause.subject
 	var do:Task = clause.task
 	var object = do.object
@@ -393,7 +426,7 @@ func clause_assign(clause:Clause)->String:
 				printerr("Unhandled code! 349")
 	return answer
 
-func clause_do(clause:Clause):
+func clause_do(clause:Clause)->String:
 	var subject:Noun = clause.subject
 	var do:Task = clause.task
 	var object:Noun = do.object
@@ -415,30 +448,30 @@ func clause_do(clause:Clause):
 	
 	return answer
 
-func clause_excute(clause:Clause):
-	var subject:Noun = clause.subject
-	var do:Task = clause.task
-	var object:Noun = clause.task.object
-	var conjunction = clause.conjunction
-	var answer:String = "ok"
-	
-	if do.count == 1:
-		if do.has("is") or do.has("are"):
-			var ob = object.entities[0]
-			for j in range(subject.count):
-				var sub = subject.entities[j] as Entity
-				
-				if sub.type == Entity.Type.Undefined:
-					print("object is assigned to ", ob)
-					var new_var = create_variable(sub.identifier, ob.get_entity_class(), ob.data)
-					print("i remember ", new_var["_p"]["name"])
-					
-				elif sub.type == Entity.Type.Variable or sub.type == Entity.Type.Pronoun:
-					assign_a_value(sub.data, ob.data)
-					
-				else:
-					printerr("Unhandled code! 354")
-	return answer
+#func clause_excute(clause:Clause):
+#	var subject:Noun = clause.subject
+#	var do:Task = clause.task
+#	var object:Noun = clause.task.object
+#	var conjunction = clause.conjunction
+#	var answer:String = "ok"
+#
+#	if do.count == 1:
+#		if do.has("is") or do.has("are"):
+#			var ob = object.entities[0]
+#			for j in range(subject.count):
+#				var sub = subject.entities[j] as Entity
+#
+#				if sub.type == Entity.Type.Undefined:
+#					print("object is assigned to ", ob)
+#					var new_var = create_variable(sub.identifier, ob.get_entity_class(), ob.data)
+#					print("i remember ", new_var["_p"]["name"])
+#
+#				elif sub.type == Entity.Type.Variable or sub.type == Entity.Type.Pronoun:
+#					assign_a_value(sub.data, ob.data)
+#
+#				else:
+#					printerr("Unhandled code! 354")
+#	return answer
 
 class Sentence:
 	var clauses:Array[Clause]
@@ -774,12 +807,14 @@ class Entity:
 	var var_id:int
 	var inherit:String
 	var data:Dictionary
-	var type
+	var type:Type
 	var adj:Adjective
 	var article:String
 	
 	var pronoun:English.Phrase
 	var reference:Entity
+	
+	var propertyname:Array[String]
 	
 	func _init():
 		var_id = -1
@@ -833,15 +868,39 @@ class Entity:
 		elif phrase.type == En.PHRASE_TYPE.Pronoun:
 			type = Type.Pronoun
 			pronoun = phrase
+			var pronounlist = pronoun.speech
+			var pronountype:int = pronoun.speechtype[pronoun.find_speech(En.SPEECH_TYPE.Pronoun)][1]
 			var ref:Array
-			print("SBA.sentences ", SBA.sentences)
 #			return -1
-			for i in range(SBA.sentences.size(), 0, -1):
-				var sentence = SBA.sentences[0]
+			for j in range(SBA.sentences.size()-1, -1, -1):
+				print("j is ", j)
+				var sentence = SBA.sentences[j]
 #				print("sfvnijsfncjiafsjcnafijbnafscjiafsnivnafsijnij ", SBA.sentences.size())
-#				print("c is ", c)
-				ref = sentence.find_pronoun(phrase.speech)
-#				return -1
+				var subject = sentence.subject
+				var task = sentence.task
+				var entities:Array
+				var nouns:Array = [subject]
+				if task.has_object():
+					nouns.append(task.object)
+				
+				for noun in nouns:
+					for i in range(noun.count):
+						var sub = noun.entities[i]
+						var vardata = SBA.Variable[SBA.find_variable_by_name(sub.identifier)]
+						if vardata.size() == 0:
+							continue
+						if pronountype == En.Pronoun.Personal:
+							match pronounlist[0]:
+								"he":
+									if vardata["_p"]["gender"]["_v"] == "male":
+										ref.append(sub)
+								"she":
+									if vardata["_p"]["gender"]["_v"] == "female":
+										ref.append(sub)
+								_:
+									printerr("unwritten type 901")
+						else:
+							printerr("unwritten another pronoun 903")
 				if ref.size() != 0:
 					break
 			if ref.size() == 0:
@@ -877,12 +936,59 @@ class Entity:
 	func get_entity_name()->String:
 		return " ".join(identifier)
 	
+	func assign(value:Entity):
+		match self.type:
+			Type.Undefined:
+				printerr("Cant assign undefined entity named ", self.identifier)
+			Type.Variable:
+				data["_p"].merge(value.data["_p"])
+			Type.Property:
+				var valuelist = SBA.Classes[SBA._instance_get_class(value.inherit)]["_p"]
+#				for i in valuelist
+				if propertyname.size() == 1:
+					var property:String = propertyname[0]
+					if data["_p"].has(property):
+						data["_p"][property] = value.data["_v"][property]
+					
+				else:
+					printerr("Unwritten code 926")
+					return false
+		return true
+	
+	func is_have(info:Dictionary)->bool:
+		var have = data["_ha"]
+		
+		for i in info.keys():
+			match i:
+				"class":
+					for each in have:
+						if SBA.Variable[each]["_c"] == info[i]:
+							return true
+				_:
+					printerr("Unwritten code 911")
+		
+		return false
+	
+	func where_have(info:Dictionary)->Array:
+		var result:Array = []
+		var have = data["_ha"]
+		
+		for i in info.keys():
+			match i:
+				"class":
+					for each in have:
+						if SBA.Variable[each]["_c"] == info[i]:
+							result.append(each)
+				_:
+					printerr("Unwritten code 959")
+		
+		return result
+	
 	func as_subject():
 		pass
 	
 	func as_object():
 		pass
-	
 	
 	enum Type {
 		none,
@@ -891,7 +997,8 @@ class Entity:
 		Variable = 4,
 		Relative = 8,
 		Pronoun = 16,
-		Gerund = 32
+		Gerund = 32,
+		Property = 64
 	}
 	
 	func print():
@@ -1113,6 +1220,32 @@ const verb_template = {
 	"long" : ""
 }
 
+func clause_find_pronoun(clause:Clause, pronouns:PackedStringArray):
+	var subject = clause.subject
+	var task = clause.task
+	var result = []
+	var entities:Array
+	
+	for i in range(subject.count):
+		var sub = subject.entities[i]
+		var vardata = SBA.Variable[SBA.find_variable_by_name(sub.identifier)]
+		if vardata.size() == 0:
+			continue
+		if is_pronoun(vardata, pronouns):
+			result.append(sub)
+	
+	if task.has_object():
+		var object = task.object
+		for i in range(object.count):
+			var ob = object.entities[i]
+			var vardata = SBA.Variable[SBA.find_variable_by_name(ob.identifier)]
+			if vardata.size() == 0:
+				continue
+			if is_pronoun(vardata, pronouns):
+				result.append(ob)
+		
+	return result
+
 func is_pronoun(data:Dictionary, pronouns:Array):
 #	print(data, ", ", pronouns)
 	if pronouns.size() == 1:
@@ -1179,6 +1312,7 @@ func create_variable(name:Array, inherit:String, value:Dictionary = {}) -> Dicti
 	else:
 		new_var["_p"] = {}
 	new_var["_do"] = {}
+	new_var["_ha"] = []
 	new_var["_st"] = []
 	print("properties ", new_var["_p"])
 	new_var["_p"]["name"]["_v"] = name.duplicate(true)
@@ -1186,13 +1320,37 @@ func create_variable(name:Array, inherit:String, value:Dictionary = {}) -> Dicti
 	if not value.is_empty():
 		assign_a_value(new_var, value)
 	
-	data["variable"].append(new_var)
+	Variable.append(new_var)
 	print("this is creating ", name)
 	for i in range(name.size()):
 		print("i ", i)
 		English.add_data(name[i], En.SPEECH_TYPE.Noun, En.Noun.Proper)
 	print("before back ", new_var)
 	return new_var
+
+func create_but_get_variable(name:Array, inherit:String, value:Dictionary = {}) -> int:
+	var new_var:Dictionary
+	if inherit != "":
+		new_var["_c"] = _instance_get_class(inherit)
+		new_var["_p"] = _instance_properties_values(inherit)
+	else:
+		new_var["_p"] = {}
+	new_var["_do"] = {}
+	new_var["_ha"] = []
+	new_var["_st"] = []
+	print("properties ", new_var["_p"])
+	new_var["_p"]["name"]["_v"] = name.duplicate(true)
+	
+	if not value.is_empty():
+		assign_a_value(new_var, value)
+	
+	Variable.append(new_var)
+	print("this is creating ", name)
+	for i in range(name.size()):
+		print("i ", i)
+		English.add_data(name[i], En.SPEECH_TYPE.Noun, En.Noun.Proper)
+	print("before back ", new_var)
+	return Variable.size()-1
 
 func _instance_get_class(inherit:String)->String:
 	var parent:String = inherit

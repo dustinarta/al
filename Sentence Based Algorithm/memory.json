@@ -8,7 +8,7 @@
 			"_c": "age",
 			"_n": "adult",
 			"_p": [
-				"age"
+				
 			],
 			"_t": "value",
 			"_v": {
@@ -18,17 +18,39 @@
 				}
 			}
 		},
+		"animal": {
+			"_c": "organic",
+			"_n": "animal",
+			"_p": [
+				
+			],
+			"_t": "class",
+			"_v": {
+				
+			}
+		},
 		"age": {
 			"_c": "property",
 			"_n": "age",
 			"_p": [
-
+				"age"
 			],
 			"_t": "class",
 			"_v": {
 				"age": {
 					"_v": null
 				}
+			}
+		},
+		"cat": {
+			"_c": "animal",
+			"_n": "cat",
+			"_p": [
+				
+			],
+			"_t": "class",
+			"_v": {
+				
 			}
 		},
 		"city": {
