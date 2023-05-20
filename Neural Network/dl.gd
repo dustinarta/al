@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 
 class_name DL
 
@@ -97,12 +97,19 @@ class Backpropagation:
 						w[i] -= var1 * activation * rate
 					layer[j]["b"] -= var1 * rate
 	#				print(w)
+	
+	static func trainNN2(nn:NN2, inputs:Array, target:Array, count:int = 1000, rate:float = 0.5):
+		if nn.layers.back().size() != target.size():
+			printerr("Incorrect input and output size!")
+			return
+		
+		for lay in range(nn.layers.size()-1, 0, -1):
+			var thislayer = nn.layers[lay]
 
 class Genetic:
-	
-	var people:Array setget set_people, get_people
-	var population:int setget set_population, get_population
-	var generation:int setget set_generation, get_generation
+	var people:Array: set = set_people, get = get_people
+	var population:int: set = set_population, get = get_population
+	var generation:int: set = set_generation, get = get_generation
 	var nn_info:Dictionary
 	var _score:Array
 	

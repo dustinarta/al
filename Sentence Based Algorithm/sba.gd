@@ -822,16 +822,17 @@ class Entity:
 	
 	func init(phrases:Array, index:int = 0) -> int:
 		var phrase:English.Phrase = phrases[index]
+		return parse(phrase, index)
+	
+	func parse(phrase:English.Phrase, returnindex:int)->int:
 		var pos:int = -1
 		if phrase.type == En.PHRASE_TYPE.Noun:
-			
 			if phrase.find_speech(float(En.SPEECH_TYPE.Adjective)) != -1:
 				var article = phrase.find_speech_type_all(float(En.SPEECH_TYPE.Adjective), float(En.Adjective.Article))
 				if article.size() > 0:
 					self.article = phrase.speech[article[0]]
 			if phrase.find_speech(float(En.SPEECH_TYPE.Noun)) != -1:
 				var proper = phrase.find_speech_type_all(float(En.SPEECH_TYPE.Noun), float(En.Noun.Proper))
-				
 				if proper.size() > 0:
 					var proper_name = []
 					if proper.size() == 1:
@@ -849,7 +850,7 @@ class Entity:
 					print("data of proper is ", data)
 					identifier.append_array(proper_name)
 					type = Type.Variable
-					return index + 1
+					return returnindex + 1
 				pos = phrase.find_speech_type(float(En.SPEECH_TYPE.Noun), float(En.Noun.Common))
 				if pos != -1:
 					var result = SBA.find_class_by_name(phrase.speech[pos])
@@ -857,21 +858,20 @@ class Entity:
 					data = SBA.Classes.values()[result]
 					inherit = data["_c"]
 					type = Type.Class
-					return index + 1
+					return returnindex + 1
 				print("non existance ", phrase.speech)
 			elif phrase.find_speech(float(En.SPEECH_TYPE.Pronoun)) != -1:
 				var protype = phrase.find_speech_type_all(float(En.SPEECH_TYPE.Pronoun), float(En.Noun.Proper))
 				identifier.append_array(phrase.speech)
 				data = {}
 				type = Type.Relative
-				return index + 1
+				return returnindex + 1
 		elif phrase.type == En.PHRASE_TYPE.Pronoun:
 			type = Type.Pronoun
 			pronoun = phrase
 			var pronounlist = pronoun.speech
 			var pronountype:int = pronoun.speechtype[pronoun.find_speech(En.SPEECH_TYPE.Pronoun)][1]
 			var ref:Array
-#			return -1
 			for j in range(SBA.sentences.size()-1, -1, -1):
 				print("j is ", j)
 				var sentence = SBA.sentences[j]
@@ -899,6 +899,7 @@ class Entity:
 										ref.append(sub)
 								_:
 									printerr("unwritten type 901")
+						
 						else:
 							printerr("unwritten another pronoun 903")
 				if ref.size() != 0:
@@ -925,7 +926,45 @@ class Entity:
 		else:
 			print("else condition")
 		
-		return index + 1
+		return returnindex + 1
+	
+#	func get_value(_p:String = "")->Dictionary:
+#		if _p == "":
+#			match self.type:
+#				Type.Undefined:
+#					printerr("Cant get value from undefined entity named ", self.identifier)
+#				Type.Variable:
+#					return data["_p"]
+#				Type.Property:
+#					var valuelist = SBA.Classes[SBA._instance_get_class(value.inherit)]["_p"]
+#	#				for i in valuelist
+#					if propertyname.size() == 1:
+#						var property:String = propertyname[0]
+#						if data["_p"].has(property):
+#							data["_p"][property] = value.data["_v"][property]
+#
+#					else:
+#						printerr("Unwritten code 926")
+#						return false
+#			return true
+#		else:
+#			match self.type:
+#				Type.Undefined:
+#					printerr("Cant get value from undefined entity named ", self.identifier)
+#				Type.Variable:
+#					return data["_p"]
+#				Type.Property:
+#					var valuelist = SBA.Classes[SBA._instance_get_class(value.inherit)]["_p"]
+#	#				for i in valuelist
+#					if propertyname.size() == 1:
+#						var property:String = propertyname[0]
+#						if data["_p"].has(property):
+#							data["_p"][property] = value.data["_v"][property]
+#
+#					else:
+#						printerr("Unwritten code 926")
+#						return false
+#		return true
 	
 	func get_entity_class()->String:
 		if type == Type.Class:

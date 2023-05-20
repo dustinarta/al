@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 class_name NN
 
 enum ACTIVATION {
@@ -61,11 +61,11 @@ func add_layer(count:int, type = ACTIVATION.SIGMOID) -> void:
 			layer[i]["w"] = w.duplicate(true)
 	"""
 
-func add_layers(counts:PoolIntArray, types:PoolIntArray) -> void:
+func add_layers(counts:PackedInt64Array, types:PackedInt32Array) -> void:
 	
-	if (typeof(counts) != TYPE_INT_ARRAY):
+	if (typeof(counts) != TYPE_PACKED_INT64_ARRAY):
 		printerr("Layers count must be int")
-	elif (typeof(types) != TYPE_INT_ARRAY):
+	elif (typeof(types) != TYPE_PACKED_INT32_ARRAY):
 		printerr("Layers type must be int for activation")
 	
 	var length = counts.size()
@@ -209,7 +209,7 @@ func init_weight(init = "") -> void:
 		for j in k:
 			var w = j["w"]
 			for i in range(w.size()):
-				w[i] = rand_range(-1.0, 1.0)
+				w[i] = randf_range(-1.0, 1.0)
 
 func init_bias_all(init: = 0.459) -> void:
 	for k in layers:

@@ -1,0 +1,37 @@
+[gd_scene load_steps=2 format=3 uid="uid://cbnoeyvjn3h18"]
+
+[ext_resource type="Script" path="res://Block Of Words/main.gd" id="1_ily1d"]
+
+[node name="main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ily1d")
+
+[node name="all container" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="input" type="HBoxContainer" parent="all container"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+
+[node name="text input" type="LineEdit" parent="all container/input"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="Button" type="Button" parent="all container/input"]
+layout_mode = 2
+text = "Push"
+
+[node name="blocks" type="HBoxContainer" parent="all container"]
+layout_mode = 2
+size_flags_vertical = 3

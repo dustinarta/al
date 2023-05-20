@@ -1,6 +1,5 @@
-res://Sentence Based Algorithm/Data Editor/main.tscn
-res://English/editor/1/theme.tres
-res://Sentence Based Algorithm/memory.json
-res://English/editor/2/Main.tscn
-res://Sentence Based Algorithm/sba.gd
-res://Sentence Based Algorithm/test.gd
+res://Block Of Words/main.tscn
+res://Block Of Words/block.tscn
+res://Block Of Words/block.gd
+res://Block Of Words/block.tres
+res://Block Of Words/main.gd

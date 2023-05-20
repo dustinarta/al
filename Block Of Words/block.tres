@@ -1,0 +1,6 @@
+[gd_resource type="Theme" format=3 uid="uid://bpy71hhksxddb"]
+
+[resource]
+BoxContainer/constants/separation = 20
+Button/constants/h_separation = 4
+Button/constants/outline_size = 1
