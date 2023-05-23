@@ -1,3 +1,4 @@
+PanelContainer
 Panel
 Button
 HBoxContainer
@@ -9,7 +10,6 @@ PopupPanel
 Tree
 ScrollContainer
 TextEdit
-PanelContainer
 Control
 ItemList
 MenuButton

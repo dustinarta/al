@@ -16,10 +16,14 @@ func run():
 	var block1 = blockresource.instantiate()
 	var block2 = blockresource.instantiate()
 	block.add_new_child(block1, 1)
+#	block1.parent = block
+	print("child1 after")
 	OS.delay_msec(2000)
 	block1.add_new_child(block2, 1)
+	print("child2 after")
 	block1.word = "block1"
 	block2.word = "block2"
+	block.panel.size.x += block._container.get_child(1).size.x + 1000
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

@@ -7,6 +7,7 @@
 custom_minimum_size = Vector2(200, 80)
 layout_direction = 1
 layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = 87.0
@@ -20,7 +21,7 @@ theme = ExtResource("1_22iuu")
 script = ExtResource("1_aume3")
 word = "aku jatuh kasihan deh"
 
-[node name="panel" type="Panel" parent="."]
+[node name="panel" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 1
 anchors_preset = 15
@@ -31,12 +32,7 @@ grow_vertical = 2
 
 [node name="container" type="HBoxContainer" parent="panel"]
 custom_minimum_size = Vector2(200, 0)
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 
 [node name="label" type="Label" parent="panel/container"]
 layout_mode = 2

@@ -19,6 +19,7 @@ config/features=PackedStringArray("4.0")
 En="*res://English/src/en.gd"
 English="*res://English/src/english.gd"
 SBA="*res://Sentence Based Algorithm/sba.gd"
+BOW="*res://Block Of Words/bow.gd"
 
 [display]
 

@@ -122,3 +122,10 @@ static func speech_parse_string(current_type_int) -> String:
 			s += ", "
 	s += "}"
 	return s
+
+enum CATEGORY {
+	SPEECH,
+	PHRASE,
+	CLAUSE,
+	SENTENCE
+}

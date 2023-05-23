@@ -1,0 +1,84 @@
+Variable Type:
+	REGISTER
+	SENTENCE
+	SUBJECT
+	OBJECT
+	VERB
+	
+	ANSWEAR
+	
+	DOUBT
+	REASON
+
+Sentence Type:
+	Independent
+	Dependent
+
+Independent Sentence type:
+	Main
+	Tell
+	Ask
+
+Dependent Sentence type:
+	Conditional
+	Cause
+	Effect
+
+Instruction:
+	<variable> be <variable> = replace value
+	
+	<variable> add <variable> = append value from existing value
+	
+	<variable> is <variable> = returning the result is true or false
+	
+	<variable> #<built in function> / <variable> #<built in function> <variable>
+	
+	on SENTENCE at <int>
+	on SENTENCE type <sentence type>
+	
+	do SENTENCE = execute the verb in sentence
+	
+	learn SENTENCE
+	
+	can SENTENCE
+	
+	if <condition>:
+		<instruction>
+	else:
+		<instruction>
+
+Example:
+	#1 {
+		if he was a man, then he should fight
+		he should fight if he was a man
+		
+		[sentence count is 2 (Dependent:Conditional, Independent:Tell)]
+		
+		on SENTENCE type Conditional
+		
+		if SUBJECT is OBJECT:
+			on SENTENCE Tell
+			learn SENTENCE
+		
+		if doubt:
+			ANSWEAR add SENTENCE type Tell add "why" add SENTENCE
+		else:
+			ANSWEAR be "okay"
+	}
+	#2 {
+		today is rainning. please give me a rain coat
+		
+		[sentence count is 2 (Independent:Tell, Independent:Ask)]
+		
+		on SENTENCE type Tell
+		
+		learn SENTENCE
+		
+		on SENTENCE type ASK
+		
+		if can SENTENCE:
+			ANSWEAR be "okay"
+		else:
+			ANSEAR be "no" add REASON
+	}
+

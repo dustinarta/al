@@ -8,14 +8,13 @@ extends Control
 
 @onready var _label = $panel/container/label
 @onready var _container = $panel/container
+@onready var _panel = $panel
 
 var parent:Node
 
 
 func _ready():
 	pass # Replace with function body.
-
-
 
 func set_word(value):
 	word = value
@@ -25,9 +24,10 @@ func set_word(value):
 
 func add_new_child(node: Node, align:ALIGN):
 	_container.add_child(node)
-	$panel.size.x = _label.size.x + node.size.x
-#	node.position.x -= node.size.x
+	$panel.size.x = node._panel.size.x - node._label.size.x
+	node._panel.position.x -= 10
 	$panel.size.y += 20
+#	node._panel.position.y -= 5
 #	$panel.position.y -= 10
 #	_container.size.y += 20
 	if align == ALIGN.Left:
@@ -37,6 +37,20 @@ func add_new_child(node: Node, align:ALIGN):
 		_container.move_child(node, 1)
 		node.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
 	node.parent = self
+	
+	if parent != null:
+		print("doing upgrade")
+		parent.upgrade_size(self)
+
+func upgrade_size(thisnode:Node):
+	$panel.size.x += thisnode._panel.size.x - thisnode._label.size.x
+	$panel.size.y += 20
+#	$panel.position.y -= 
+	thisnode._panel.position.x -= 60
+	thisnode._panel.position.y -= 10
+	if parent != null:
+		print("doing upgrade")
+		parent.upgrade_size(self)
 
 func set_label_align(value):
 	if _container.get_child_count() == 1:
@@ -44,7 +58,7 @@ func set_label_align(value):
 	else:
 		if _container.get_child(0) is Label:
 			if value == ALIGN.Right:
-				_container.move_child(_label, 1)
+				_container.move_child(_label, _container.get_child_count()-1)
 		else:
 			if value == ALIGN.Left:
 				_container.move_child(_label, 0)

@@ -1,5 +1,3 @@
-res://Block Of Words/main.tscn
 res://Block Of Words/block.tscn
-res://Block Of Words/block.gd
-res://Block Of Words/block.tres
-res://Block Of Words/main.gd
+res://Block Of Words/test1.gd
+res://Block Of Words/bow.gd

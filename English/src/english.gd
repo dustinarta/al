@@ -407,6 +407,7 @@ class Phrase:
 				
 				if nextsp.type.has(float(En.SPEECH_TYPE.Verb)):
 					var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Verb))
+					print(nextet)
 					append(nextsp.speech, [En.SPEECH_TYPE.Verb, nextet[0]])
 					return index + 1
 					
