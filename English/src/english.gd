@@ -410,6 +410,17 @@ class Phrase:
 					print(nextet)
 					append(nextsp.speech, [En.SPEECH_TYPE.Verb, nextet[0]])
 					return index + 1
+				elif nextsp.type.has(float(En.SPEECH_TYPE.Adverb)):
+					var next2 = _next(sentence, index+1)
+					if next2 is SP:
+						if next2.type.has(float(En.SPEECH_TYPE.Verb)):
+							var nextet = nextsp.pick_type(float(En.SPEECH_TYPE.Adverb))
+							var nextet2 = next2.pick_type(float(En.SPEECH_TYPE.Verb))
+							print(nextet)
+							append(nextsp.speech, [En.SPEECH_TYPE.Adverb, nextet[0]])
+							append(next2.speech, [En.SPEECH_TYPE.Verb, nextet2[0]])
+							return index + 2
+				
 					
 			return index
 		else:

@@ -5,14 +5,14 @@ extends EditorScript
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
 	BOW.init()
-#	var result = BOW.push("the big cat is quickly running in the park")
-#	BOW.push("a man sleep")
-	var result = BOW.push("andy is a man")
-	BOW.push("who is andy")
-	print(result.print(0, true))
+
+	BOW.push("andy is a man")
+	BOW.push("henry is a man")
+	BOW.push("jamal is a man")
+#	BOW.push("who is andy")
 #	print(result.be_string() + "\"")
-	print(BOW.Sentence.new(result).print())
 	print(BOW.keys)
+	print(BOW.allsentences.select_or_by_word(["andy", "jamal"]))
 	
 #	var block = BOW.Block.new("oomaga")
 #	block.add_child(BOW.Block.new("obamna")).add_child(BOW.Block.new("suuui"))
