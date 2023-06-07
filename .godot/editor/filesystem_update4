@@ -1,3 +1,6 @@
 res://Block Of Words/block.tscn
-res://Block Of Words/test2.gd
-res://Block Of Words/bow.gd
+res://Long-Short Term Memory/lstm.gd
+res://Long-Short Term Memory/test1.gd
+res://Word Embedding/wem.gd
+res://Word Embedding/model.json
+res://Word Embedding/test1.gd

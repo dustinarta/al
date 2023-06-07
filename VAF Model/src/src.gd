@@ -1,5 +1,5 @@
-tool
+@tool
 extends EditorScript
 
 func _run():
-    print("test")
+	print("test")

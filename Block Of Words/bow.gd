@@ -15,14 +15,25 @@ func init():
 	keys = {}
 
 func run(sentence:Sentence):
+	var blocks:Array[Block] = sentence.block.child
 	if sentence.type == Sentence.SENTENCE_TYPE.Ask:
+		var topic = sentence.get_topic()
+		var verb = sentence.find_part(SENTENCE_PART.VERB)
 		var question
-		question = sentence.find(SENTENCE_PART.QUESTION)
+		question = sentence.find_part(SENTENCE_PART.QUESTION)
 		if question == -1:
-			printerr("Invalid question")
+			
 			return
-		
-	pass
+		else:
+			match " ".join(sentence.block.child[question].words):
+				"who":
+					var args:PackedStringArray
+					args.append_array(blocks[verb].words)
+					args.append_array(topic.words)
+					print("answer is ", allsentences.select_and_by_word(args).select_not_by_word(["who"]))
+				_:
+					print("default is ", sentence.block.child[question].words)
+	return
 
 func understand_sentence(sentence:Sentence):
 	var childs:Array[Block] = sentence.block.child
@@ -41,21 +52,24 @@ func understand_sentence(sentence:Sentence):
 					childs[c].sentence_part = SENTENCE_PART.OBJECT
 					has_object = true
 			else:
+#				print("catch! ", childs[c].words)
 				childs[c].sentence_part = SENTENCE_PART.SUBJECT
 				has_subject = true
+			
 		elif childs[c].type2 == En.SPEECH_TYPE.Pronoun:
-			if has_verb:
-				if has_object:
-					childs[c].sentence_part = SENTENCE_PART.OBJECT2
-				else:
-					childs[c].sentence_part = SENTENCE_PART.OBJECT
-					has_object = true
-			else:
-				childs[c].sentence_part = SENTENCE_PART.SUBJECT
-				has_subject = true
 			if childs[c].type3 == En.Pronoun.Relative:
-				
+				childs[c].sentence_part = SENTENCE_PART.QUESTION
 				has_relative = true
+			else:
+				if has_verb:
+					if has_object:
+						childs[c].sentence_part = SENTENCE_PART.OBJECT2
+					else:
+						childs[c].sentence_part = SENTENCE_PART.OBJECT
+						has_object = true
+				else:
+					childs[c].sentence_part = SENTENCE_PART.SUBJECT
+					has_subject = true
 		elif childs[c].type2 == En.SPEECH_TYPE.Verb:
 			if has_verb:
 				childs[c].sentence_part = SENTENCE_PART.VERB2
@@ -68,9 +82,17 @@ func understand_sentence(sentence:Sentence):
 				has_emptydescripton = true
 			else:
 				childs[c].sentence_part = SENTENCE_PART.DESCRIPTON
+		else:
+			printerr("throwed ", childs[c].words)
 	
 	if has_relative or has_emptydescripton:
 		sentence.type == Sentence.SENTENCE_TYPE.Ask
+	
+	var understandresult:String
+	var sentencepartkey = SENTENCE_PART.keys()
+	for child in childs:
+		understandresult += "[" +" ".join(child.words) + "][" + sentencepartkey[child.sentence_part] + "],"
+	print("understand result ", understandresult)
 
 func answer(block:Block)->Block:
 	var answer:Block = Block.new()
@@ -82,7 +104,10 @@ func push(s:String):
 	print(coll)
 	var block = parse(coll)
 	assign_block(block)
-	allsentences.append(Sentence.new(block))
+	var sentence = Sentence.new(block)
+	understand_sentence(sentence)
+	allsentences.append(sentence)
+#	run(allsentences.sentences.back())
 	return block
 
 func parse(collection:English.Collection)->Block:
@@ -106,7 +131,7 @@ func parse(collection:English.Collection)->Block:
 	
 	return _base
 
-func digest(block, coll:English.Collection, index:int)->Block:
+func digest(block:Block, coll:English.Collection, index:int)->Block:
 	var phrase = coll.elements[index] as English.Phrase
 	
 	if phrase.type == En.PHRASE_TYPE.Noun:
@@ -175,6 +200,9 @@ func digest(block, coll:English.Collection, index:int)->Block:
 				block.child[0].add_child(new_block(phrase.speech[adverb], 0)).set_atparent(adverb-verb+1) \
 				.set_type2(En.SPEECH_TYPE.Adverb).set_type3(phrase.speechtype[adverb][1])
 			return block
+	elif phrase.type == En.PHRASE_TYPE.Conjunctive:
+		block.re_set(phrase.speech[0], 0)
+		return block
 	elif phrase.type == En.PHRASE_TYPE.Prepositional:
 		var prep = phrase.speechtype[0][1]
 		
@@ -189,7 +217,8 @@ func digest(block, coll:English.Collection, index:int)->Block:
 				return block
 			return block
 	elif phrase.type == En.PHRASE_TYPE.Undefined:
-		block.re_set(phrase.speech[0], 0)
+		block.re_set(phrase.speech[0], 0) \
+		.set_type2(En.SPEECH_TYPE.Noun)
 		return block
 	return null
 
@@ -213,19 +242,24 @@ class PackedSentence:
 		sentences.append(sentence)
 		return sentences.size()-1
 	
+	func duplicate()->PackedSentence:
+		var result:PackedSentence = PackedSentence.new()
+		result.sentences = self.sentences.duplicate(true)
+		return result
+	
 	func is_empty()->bool:
 		if sentences.size() == 0:
 			return true
 		return false
 	
-	func select_by_key(key:int):
+	func select_by_key(key:int)->PackedSentence:
 		var result:PackedSentence = PackedSentence.new()
 		for s in range(sentences.size(), 0, -1):
 			if sentences[s].has_key(key):
 				result.append(sentences[s])
 		return result
 	
-	func select_and_by_key(keys:PackedInt64Array):
+	func select_and_by_key(keys:PackedInt64Array)->PackedSentence:
 		var result:PackedSentence = PackedSentence.new()
 		for s in sentences:
 			var thisis = true
@@ -237,7 +271,7 @@ class PackedSentence:
 				result.append(s)
 		return result
 	
-	func select_or_by_key(keys:PackedInt64Array):
+	func select_or_by_key(keys:PackedInt64Array)->PackedSentence:
 		var result:PackedSentence = PackedSentence.new()
 		for s in sentences:
 			var thisis = false
@@ -249,14 +283,23 @@ class PackedSentence:
 				result.append(s)
 		return result
 	
-	func select_by_word(word:String):
+	func select_not_by_key(keys:PackedInt64Array)->PackedSentence:
+		var result:PackedSentence = self.duplicate()
+		var sentences = result.sentences
+		for s in range(sentences.size()):
+			for key in keys:
+				if sentences[s].has_key(key):
+					sentences.remove_at(s)
+		return result
+	
+	func select_by_word(word:String)->PackedSentence:
 		var result:PackedSentence = PackedSentence.new()
 		for s in sentences:
 			if s.has_word(word):
 				result.append(s)
 		return result
 	
-	func select_and_by_word(words:PackedStringArray):
+	func select_and_by_word(words:PackedStringArray)->PackedSentence:
 		var result:PackedSentence = PackedSentence.new()
 		for s in sentences:
 			var thisis = true
@@ -268,7 +311,7 @@ class PackedSentence:
 				result.append(s)
 		return result
 	
-	func select_or_by_word(words:PackedStringArray):
+	func select_or_by_word(words:PackedStringArray)->PackedSentence:
 		var result:PackedSentence = PackedSentence.new()
 		for s in sentences:
 			var thisis = false
@@ -280,10 +323,19 @@ class PackedSentence:
 				result.append(s)
 		return result
 	
+	func select_not_by_word(words:PackedStringArray)->PackedSentence:
+		var result:PackedSentence = self.duplicate()
+		var sentences = result.sentences
+		for s in range(sentences.size()):
+			for word in words:
+				if sentences[s].has_word(word):
+					sentences.remove_at(s)
+		return result
+	
 	func print()->String:
 		var s:String
 		for sen in sentences:
-			s += "[ " + " ".join(sen.listword) + " ]\n"
+			s += "[" + " ".join(sen.listword) + "] "
 		if s == "":
 			s += "[<empty Packed Sentence>]"
 		return s.c_unescape()
@@ -292,11 +344,12 @@ class PackedSentence:
 		return self.print()
 
 class Sentence:
+	var id:int
 	var listword:PackedStringArray
 	var listkey:PackedInt64Array
 	var type:int
 	var block:Block
-	var connections:Array[Connection]
+	var connections:PackedConnection
 	
 	enum SENTENCE_TYPE {
 		Ask,
@@ -317,18 +370,19 @@ class Sentence:
 		self.block = block
 		return self
 	
-	func find(part:SENTENCE_PART):
+	func find_part(part:SENTENCE_PART):
 		var childs:Array[Block] = block.child
 		for b in range(childs.size()):
 			if childs[b].sentence_part == part:
 				return b
 		return -1
 	
-	func get_topic():
-		var where = find(BOW.SENTENCE_PART.SUBJECT)
+	func get_topic()->Block:
+		var where = find_part(BOW.SENTENCE_PART.SUBJECT)
 		if where == -1:
-			where = find(BOW.SENTENCE_PART.OBJECT)
+			where = find_part(BOW.SENTENCE_PART.OBJECT)
 			if where == -1:
+				print("no topic found ", self.print())
 				return null
 			else:
 				return block.child[where]
@@ -353,9 +407,16 @@ class Sentence:
 			s += "[" + listword[i] + "][" + str(listkey[i]) + "]\n"
 		return s.c_unescape()
 
+class PackedConnection:
+	var connections:Array[Connection]
+	
+	func link(sentence:Sentence, conjunction:String, status:int):
+		connections.append(Connection.new(sentence, conjunction, status))
+
 class Connection:
+	var sentence:Sentence
 	var conjunction:String
-	var sentence_id:int
+	var status:ConnectionType
 	
 	const _list = {
 		"REASON" : [
@@ -366,10 +427,15 @@ class Connection:
 		]
 	}
 	
-	func _init(_con:String, _id:int):
-		conjunction = _con
-		sentence_id = _id
-
+	func _init(sentence:Sentence, conjunction:String, status:int):
+		self.sentence = sentence
+		self.conjunction = conjunction
+		self.status = status
+	
+	enum ConnectionType{
+		Connecting,
+		Connected
+	}
 """
 Doing the sentence connection
 """
@@ -398,6 +464,18 @@ class Block:
 			atchild = at
 		return self
 	
+	func get_words()->String:
+		return " ".join(words)
+	
+	func is_equal(block:Block)->bool:
+		if words != block.words:
+			return false
+		if child.size() != block.child.size():
+			return false
+		for c in range(child.size()):
+			child[c].is_equal(block.child[c])
+		return true
+	
 	func copy()->Block:
 		var newblock:Block = Block.new()
 		newblock.words = words.duplicate()
@@ -409,6 +487,15 @@ class Block:
 		newblock.type3 = type3
 		return newblock
 	
+	func get_verb(withadverb:bool = true):
+		var result:PackedStringArray
+		if sentence_part == SENTENCE_PART.VERB or sentence_part == SENTENCE_PART.VERB2:
+			result.append_array(words)
+			for c in child:
+				if c.type2 == En.SPEECH_TYPE.Verb:
+					result.append_array(c.words)
+		return result
+	
 	func add_child(block:Block, at = -1)->Block:
 		if at == -1:
 			child.append(block)
@@ -417,6 +504,22 @@ class Block:
 			child.insert(at, block)
 			block.atparent = at
 		return block
+	
+	func child_word_at(at:int)->String:
+		if child.size() == 0:
+			return ""
+		elif at >= child.size():
+			return ""
+		else:
+			return " ".join(child[at].words)
+	
+	func child_words_at(at:int)->PackedStringArray:
+		if child.size() == 0:
+			return [""]
+		elif at >= child.size():
+			return [""]
+		else:
+			return child[at].words
 	
 	func set_atparent(at:int)->Block:
 		atparent = at

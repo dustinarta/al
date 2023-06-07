@@ -1,0 +1,6 @@
+
+
+if sentence type has type question:
+	
+else:
+	

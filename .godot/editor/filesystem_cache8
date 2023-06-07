@@ -1,5 +1,5 @@
 2a60927148abd1d33b818b535e306557
-::res://::1685503662
+::res://::1686118716
 ai logo.png::CompressedTexture2D::2774366399910235203::1668783325::1677829033::1::::<><>::
 ai logo.svg::CompressedTexture2D::8187573020341992674::1668782914::1677829033::1::::<><>::
 dataset-key2.json::JSON::-1::1675419991::0::1::::<><>::
@@ -12,18 +12,24 @@ prime numbers.txt::TextFile::-1::1678712635::0::1::::<><>::
 README.md::TextFile::-1::1673239066::0::1::::<><>::
 system.gd::GDScript::-1::1659327038::0::1::::<>Node<>::
 test2.gd::GDScript::-1::1682606124::0::1::::<>EditorScript<>::
-::res://Block Of Words/::1685503639
+::res://Block Of Words/::1686065216
 block.gd::GDScript::-1::1684766046::0::1::::<>Control<>::
 block.tres::Theme::3490788157727473355::1684489572::0::1::::<><>::
-block.tscn::PackedScene::1421745504587224823::1685503639::0::1::::<><>::uid://bpy71hhksxddb<>res://Block Of Words/block.gd
-bow.gd::GDScript::-1::1685503513::0::1::::<>Node<>::
+block.tscn::PackedScene::1421745504587224823::1686065216::0::1::::<><>::uid://bpy71hhksxddb<>res://Block Of Words/block.gd
+bow.gd::GDScript::-1::1685885687::0::1::::<>Node<>::
+bow_al.gd::GDScript::-1::1685870390::0::1::::<>Node<>::
+code.txt::TextFile::-1::1685869612::0::1::::<><>::
 convert.gd::GDScript::-1::1684596666::0::1::::<>EditorScript<>::
 design.txt::TextFile::-1::1684599067::0::1::::<><>::
 main.gd::GDScript::-1::1684581181::0::1::::<>Control<>::
-main.tscn::PackedScene::4870725596330058561::1684850678::0::1::::<><>::res://Block Of Words/main.gd
+main.tscn::PackedScene::4870725596330058561::1685672394::0::1::::<><>::res://Block Of Words/main.gd
 memory.json::JSON::-1::1684596855::0::1::::<><>::
 test1.gd::GDScript::-1::1685163392::0::1::::<>EditorScript<>::
-test2.gd::GDScript::-1::1685503639::0::1::::<>EditorScript<>::
+test2.gd::GDScript::-1::1685885812::0::1::::<>EditorScript<>::
+test3.gd::GDScript::-1::1685870325::0::1::::<>EditorScript<>::
+::res://Data Structure/::1685857032
+ds.gd::GDScript::-1::1685857032::0::1::::<>Node<>::
+test1.gd::GDScript::-1::1685855451::0::1::::<>EditorScript<>::
 ::res://Database Editor/::1665324690
 Database Editor.gd::GDScript::-1::1661331476::0::1::::<>Control<>::
 Database Editor.tscn::PackedScene::-1::1665231086::0::1::::<><>::res://Database Editor/Database Editor.gd<>res://Database Editor/Editor.gd<>res://Database Editor/Noun.tscn<>res://Database Editor/Pronoun.tscn
@@ -49,7 +55,7 @@ why2.txt::TextFile::-1::1668006662::0::1::::<><>::
 adjective-adverb with conjunction.txt::TextFile::-1::1669633583::0::1::::<><>::
 dataset2.json::JSON::-1::1669004280::0::1::::<><>::
 dataset3.json::JSON::-1::1669017283::0::1::::<><>::
-dataset-key2.json::JSON::-1::1684812119::0::1::::<><>::
+dataset-key2.json::JSON::-1::1685672460::0::1::::<><>::
 dataset-key.json::JSON::-1::1673320296::0::1::::<><>::
 dataset.json::JSON::-1::1668773479::0::1::::<><>::
 example.txt::TextFile::-1::1672496214::0::1::::<><>::
@@ -94,6 +100,9 @@ node.tscn::PackedScene::-1::1666701969::0::1::::<><>::res://gd node/node.gd
 ::res://GLOBAL/::1669557824
 matrix.gd::GDScript::-1::1669557824::0::1::::Matrix<>Reference<>::
 thread server.gd::GDScript::-1::1667125296::0::1::::ThreadServer<>Reference<>::
+::res://Long-Short Term Memory/::1686103160
+lstm.gd::GDScript::-1::1686118706::0::1::::LSTM<>RefCounted<>::
+test1.gd::GDScript::-1::1686065118::0::1::::<>EditorScript<>::
 ::res://Neural Network/::1684403102
 dl.gd::GDScript::-1::1684403102::0::1::::DL<>RefCounted<>::
 test dl 1.gd::GDScript::-1::1672155725::0::1::::<>RefCounted<>::
@@ -207,8 +216,9 @@ thread test.gd::GDScript::-1::1665918940::0::1::::<>RefCounted<>::
 venn test.gd::GDScript::-1::1666416561::0::1::::<>RefCounted<>::
 ::res://VAF Model/::1668395471
 model.txt::TextFile::-1::1668395293::0::1::::<><>::
-::res://VAF Model/src/::1668395791
+::res://VAF Model/src/::1685682994
 dataset.json::JSON::-1::1668395502::0::1::::<><>::
 mind.gd::GDScript::-1::1668395703::0::1::::<>Resource<>::
-src.gd::GDScript::-1::1668487416::0::1::::<>RefCounted<>::
+src.gd::GDScript::-1::1685682994::0::1::::<>EditorScript<>::
 ::res://VAF Model/VAF Pusher/::1668395158
+::res://Word Embedding/::1686098002
