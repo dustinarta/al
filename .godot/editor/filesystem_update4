@@ -1,6 +1,9 @@
 res://Block Of Words/block.tscn
+res://Word Embedding/1/wem.gd
+res://Word Embedding/2/wem2.gd
+res://Neural Network/3/nn3.gd
+res://Sentence Embedding/1/sem.gd
+res://Neural Network/3/test2.gd
 res://Long-Short Term Memory/lstm.gd
 res://Long-Short Term Memory/test1.gd
-res://Word Embedding/wem.gd
-res://Word Embedding/model.json
-res://Word Embedding/test1.gd
+res://Long-Short Term Memory/test2.gd

@@ -8,3 +8,4 @@ func _run():
 #	wem.load()
 	wem.push("aku belum mandi")
 	print(wem.keys)
+	wem.save()
