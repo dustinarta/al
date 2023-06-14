@@ -2,11 +2,12 @@ extends RefCounted
 class_name NN3
 
 enum ACTIVATION {
+	NONE = 0,
+	SOFTMAX,
 	SIGMOID,
 	TANH,
 	MAX,
-	MIN,
-	NONE
+	MIN
 }
 
 const Layer:Dictionary = {
@@ -16,14 +17,18 @@ const Layer:Dictionary = {
 	"i" : 0,
 	"o": 0
 }
-const e = 2.7181828459
+const E = 2.7181828459
 
+var path:String
 var input:int
-var layers:Array[Dictionary]
+var layers:Array
 var is_biased:bool
 var forward_result:Array
 
-func _init(composition:PackedInt64Array, activations:PackedInt64Array = [], no_bias:bool = false):
+func _init():
+	pass
+
+func init(composition:PackedInt64Array, activations:PackedInt64Array = [], no_bias:bool = false):
 	var size = composition.size()
 	layers.resize(size-1)
 	self.input = composition[0]
@@ -85,10 +90,10 @@ func forward(inputs:PackedFloat64Array):
 		return null
 	forward_result = []
 	var result:PackedFloat64Array
+	var nextinput:PackedFloat64Array = inputs
 	
 	if is_biased:
 		for layer in layers:
-			var nextinput:PackedFloat64Array
 			var w = layer["w"]
 			var b = layer["b"]
 			var a = layer["a"]
@@ -100,14 +105,13 @@ func forward(inputs:PackedFloat64Array):
 				var res:float = 0
 				for j in range(inputsize):
 					var index = i * inputsize + j
-					res += w[index]
+					res += w[index] * nextinput[j]
 				result[i] = activation(res + b[i], a)
+			nextinput = result
 			forward_result.append(result)
 	else:
 		for layer in layers:
-			var nextinput:PackedFloat64Array
 			var w = layer["w"]
-			var b = layer["b"]
 			var a = layer["a"]
 			var inputsize = layer["i"]
 			var outputsize = layer["o"]
@@ -117,8 +121,86 @@ func forward(inputs:PackedFloat64Array):
 				var res:float = 0
 				for j in range(inputsize):
 					var index = i * inputsize + j
-					res += w[index]
+					res += w[index] * nextinput[j]
 				result[i] = activation(res, a)
+			nextinput = result
+			forward_result.append(result)
+	return forward_result
+
+func forward_by_id(inputs:PackedInt64Array):
+	var highest = inputs.duplicate()
+	highest.sort()
+	highest = highest[0]
+	if input < highest:
+		printerr("undefined ", highest, " index, the limit is ", input)
+		return null
+	forward_result = []
+	var result:PackedFloat64Array
+	var nextinput:PackedFloat64Array
+	var w
+	var b
+	var a
+	var inputsize
+	var outputsize
+	if is_biased:
+		w = layers[0]["w"]
+		b = layers[0]["b"]
+		a = layers[0]["a"]
+		inputsize = layers[0]["i"]
+		outputsize = layers[0]["o"]
+		result.resize(outputsize)
+		for i in range(outputsize):
+			var res:float = 0.0
+			for j in inputs:
+				var index = i * inputsize + j
+				res += w[index]
+			result[i] = activation(res + b[i], a)
+		nextinput = result
+		forward_result.append(result)
+		for layer in range(1, layers.size()):
+			w = layers[layer]["w"]
+			b = layers[layer]["b"]
+			a = layers[layer]["a"]
+			inputsize = layers[layer]["i"]
+			outputsize = layers[layer]["o"]
+			result = []
+			result.resize(outputsize)
+			for i in range(outputsize):
+				var res:float = 0.0
+				for j in range(inputsize):
+					var index = i * inputsize + j
+					res += w[index] * nextinput[j]
+				result[i] = activation(res + b[i], a)
+			nextinput = result
+			forward_result.append(result)
+	else:
+		w = layers[0]["w"]
+		a = layers[0]["a"]
+		inputsize = layers[0]["i"]
+		outputsize = layers[0]["o"]
+		result.resize(outputsize)
+		for i in range(outputsize):
+			var res:float = 0.0
+			for j in inputs:
+				var index = i * inputsize + j
+				res += w[index]
+			result[i] = activation(res, a)
+		nextinput = result
+		forward_result.append(result)
+		for layer in range(1, layers.size()):
+			w = layers[layer]["w"]
+			a = layers[layer]["a"]
+			inputsize = layers[layer]["i"]
+			outputsize = layers[layer]["o"]
+			result = []
+			result.resize(outputsize)
+			for i in range(outputsize):
+				var res:float = 0.0
+				for j in range(inputsize):
+					var index = i * inputsize + j
+					res += w[index] * nextinput[j]
+				result[i] = activation(res, a)
+			nextinput = result
 			forward_result.append(result)
 	return forward_result
 
@@ -437,7 +519,7 @@ func activation(number:float, type:ACTIVATION):
 		ACTIVATION.TANH:
 			return tanh(number)
 		ACTIVATION.SIGMOID:
-			return (1 / (1 + pow(e, -number)))
+			return (1 / (1 + pow(E, -number)))
 		ACTIVATION.NONE:
 			return number
 #
@@ -458,8 +540,41 @@ func derivative_activations(numbers:PackedFloat64Array, type:ACTIVATION):
 			result.fill(1.0)
 	return result
 
-func save():
-	pass
+func softmax(numbers:PackedFloat64Array):
+	var size = numbers.size()
+	var exp:PackedFloat64Array
+	var total:float = 0.0
+	exp.resize(size)
+	for e in range(size):
+		var res = pow(E, numbers[e])
+		exp[e] = res
+		total += res
+	
+	for e in range(size):
+		exp[e] /= total
+	
+	return exp
 
-func load():
-	pass
+func _to_dictionary()->Dictionary:
+	var data:Dictionary = {}
+	data["is_biased"] = is_biased
+	data["input"] = input
+	data["layers"] = layers
+	return data
+
+func save(path:String = self.path):
+	FileAccess.open(path, FileAccess.WRITE).store_string(
+		JSON.stringify(self._to_dictionary(), "\t")
+	)
+
+func load(path:String = self.path):
+	var data:Dictionary = JSON.parse_string(
+		FileAccess.open(path, FileAccess.READ).get_as_text()
+	)
+	self.path = path
+	load_from_dict(data)
+
+func load_from_dict(data:Dictionary):
+	is_biased = data["is_biased"]
+	input = data["input"]
+	layers = data["layers"]

@@ -1,10 +1,10 @@
-PanelContainer
-Panel
+Label
 Button
 HBoxContainer
-Label
 LineEdit
 VBoxContainer
+PanelContainer
+Panel
 PopupMenu
 PopupPanel
 Tree

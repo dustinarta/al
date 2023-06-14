@@ -37,6 +37,7 @@ func _run():
 	starttime = Time.get_ticks_msec()
 	for i in range(limit):
 		var lstm = LSTM.new()
+		lstm.init()
 		var input:PackedFloat64Array = [0.01, 0.5, -1]
 		var expected = 0.5
 		lstm.init_memory()

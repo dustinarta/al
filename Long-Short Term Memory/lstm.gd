@@ -2,6 +2,10 @@
 extends RefCounted
 class_name LSTM
 
+
+const E = 2.7181828459
+
+var path:String
 var weights:Array
 var biases:PackedFloat64Array
 var stm:PackedFloat64Array
@@ -10,17 +14,21 @@ var functionresult:PackedFloat64Array
 var accuracy:float
 
 func _init():
-	weights.resize(4)
-	biases.resize(4)
-	init()
+	pass
 
 func init():
+	weights.resize(4)
+	biases.resize(4)
+	init_weight_and_bias()
+	init_memory()
+
+func init_weight_and_bias():
 	for i in range(4):
 		weights[i] = [randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)] as PackedFloat64Array
 	for i in range(4):
 		biases[i] = randf_range(-1, 1)
 
-func init_memory(s:float = 0.1, l:float = 0.1):
+func init_memory(s:float = 0.01, l:float = 0.01):
 	stm = [s]
 	ltm = [l]
 
@@ -45,6 +53,13 @@ func _forward(input:float, ltm:PackedFloat64Array = [], stm:PackedFloat64Array =
 	return results
 
 func forward(inputs:PackedFloat64Array):
+	var results:Array[PackedFloat64Array]
+	for i in range(inputs.size()):
+		results.append(_forward(inputs[i]))
+	return results
+
+func forward2(inputs:PackedFloat64Array):
+	init_memory()
 	var results:Array[PackedFloat64Array]
 	for i in range(inputs.size()):
 		results.append(_forward(inputs[i]))
@@ -110,7 +125,6 @@ func backward2(inputs:PackedFloat64Array, expected:float, count:int = 100, rate:
 	var repeat:int = inputs.size()
 	var result
 	var error
-	rate = rate / repeat
 	for c in range(count):
 		init_memory()
 		result = forward(inputs)
@@ -144,16 +158,61 @@ func backward3(inputs:PackedFloat64Array, expected:float, count:int = 100, rate:
 	var repeat:int = inputs.size()
 	var result
 	var error
-	rate = rate / repeat
+	var futureerror
 	for c in range(count):
 		init_memory()
 		result = forward(inputs)
 		error = (stm[-1] - expected)
 		var res = result[-1]
 		var expected2 = expected
+		
+		futureerror = (stm[-1] - expected2)
+		
+		for rep in range(repeat-1, 0, -1):
+			res = result[rep]
+			var simplecodecode = (1 - pow( ltm[rep+1], 2 ) ) * error * res[3]
+			futureerror += tanh(ltm[rep+1]) * error * ((1 - res[3]) * res[3]) * weights[3][1]
+			futureerror += simplecodecode  * res[1] * (1 - pow(res[2], 2)) * weights[2][1]
+			futureerror += simplecodecode  * res[2] * ((1 - (res[1])) * res[1]) * weights[1][1]
+			futureerror += simplecodecode * ltm[rep] * ((1 - (res[0])) * res[0]) * weights[0][1]
+			error = futureerror
+			futureerror = 0
+		
+		var simplecodecode = (1 - pow( ltm[1], 2 ) ) * error * res[3]
+		var simplecode21 = tanh(ltm[1]) * error * ((1 - res[3]) * res[3]) * rate
+		weights[3][0] -= simplecode21 * inputs[0]
+		weights[3][1] -= simplecode21 * stm[0]
+		biases[3] -= simplecode21
+		var simplecode22 = simplecodecode  * res[1] * (1 - pow(res[2], 2)) * rate
+		weights[2][0] -= simplecode22 * inputs[0]
+		weights[2][1] -= simplecode22 * stm[0]
+		biases[2] -= simplecode22
+		var simplecode23 = simplecodecode  * res[2] * ((1 - (res[1])) * res[1]) * rate
+		weights[1][0] -= simplecode23 * inputs[0]
+		weights[1][1] -= simplecode23 * stm[0]
+		biases[1] -= simplecode23
+		var simplecode24 = simplecodecode * ltm[0] * ((1 - (res[0])) * res[0]) * rate
+		weights[0][0] -= simplecode24 * inputs[0]
+		weights[0][1] -= simplecode24 * stm[0]
+		biases[0] -= simplecode24
+		
+		expected2 = stm[0]
+
+func backward_many(inputs:PackedFloat64Array, expecteds:PackedFloat64Array, count:int = 100, rate:float = 0.01):
+	var repeat:int = inputs.size()
+	var result
+	var error
+	if inputs.size() != expecteds.size():
+		printerr("Expected ", inputs.size(), " but given ", expecteds.size())
+		return
+	
+	for c in range(count):
+		init_memory()
+		result = forward(inputs)
+		var res
 		for rep in range(repeat-1, -1, -1):
 			res = result[rep]
-			error = (stm[rep+1] - expected2)
+			error = (stm[rep+1] - expecteds[rep])
 			var simplecodecode = (1 - pow( ltm[rep+1], 2 ) ) * error * res[3]
 			var simplecode21 = tanh(ltm[rep+1]) * error * ((1 - res[3]) * res[3]) * rate
 			weights[3][0] -= simplecode21 * inputs[rep]
@@ -171,23 +230,93 @@ func backward3(inputs:PackedFloat64Array, expected:float, count:int = 100, rate:
 			weights[0][0] -= simplecode24 * inputs[rep]
 			weights[0][1] -= simplecode24 * stm[rep]
 			biases[0] -= simplecode24
-			
-			expected2 = stm[rep]
+	init_memory()
 
-func _train_with_error(errors:PackedFloat64Array):
-	pass
+func _train_with_error(inputs:PackedFloat64Array, error:float, rate:float = 0.01):
+	"""
+	Using backward3 algorithm
+	"""
+	
+	var repeat:int = inputs.size()
+	var result
+	var futureerror
+	init_memory()
+	result = forward(inputs)
+	var res = result[-1]
+	var simplecodecode
+	
+	for rep in range(repeat-1, 0, -1):
+		res = result[rep]
+		simplecodecode = (1 - pow( ltm[rep+1], 2 ) ) * error * res[3]
+		futureerror += tanh(ltm[rep+1]) * error * ((1 - res[3]) * res[3]) * weights[3][1]
+		futureerror += simplecodecode  * res[1] * (1 - pow(res[2], 2)) * weights[2][1]
+		futureerror += simplecodecode  * res[2] * ((1 - (res[1])) * res[1]) * weights[1][1]
+		futureerror += simplecodecode * ltm[rep] * ((1 - (res[0])) * res[0]) * weights[0][1]
+		error = futureerror
+		futureerror = 0
+	
+	simplecodecode = (1 - pow( ltm[1], 2 ) ) * error * res[3]
+	futureerror += tanh(ltm[1]) * error * ((1 - res[3]) * res[3]) * weights[3][1]
+	futureerror += simplecodecode  * res[1] * (1 - pow(res[2], 2)) * weights[2][1]
+	futureerror += simplecodecode  * res[2] * ((1 - (res[1])) * res[1]) * weights[1][1]
+	futureerror += simplecodecode * ltm[0] * ((1 - (res[0])) * res[0]) * weights[0][1]
+	
+	simplecodecode = (1 - pow( ltm[1], 2 ) ) * error * res[3]
+	var simplecode21 = tanh(ltm[1]) * error * ((1 - res[3]) * res[3]) * rate
+	weights[3][0] -= simplecode21 * inputs[0]
+	weights[3][1] -= simplecode21 * stm[0]
+	biases[3] -= simplecode21
+	var simplecode22 = simplecodecode  * res[1] * (1 - pow(res[2], 2)) * rate
+	weights[2][0] -= simplecode22 * inputs[0]
+	weights[2][1] -= simplecode22 * stm[0]
+	biases[2] -= simplecode22
+	var simplecode23 = simplecodecode  * res[2] * ((1 - (res[1])) * res[1]) * rate
+	weights[1][0] -= simplecode23 * inputs[0]
+	weights[1][1] -= simplecode23 * stm[0]
+	biases[1] -= simplecode23
+	var simplecode24 = simplecodecode * ltm[0] * ((1 - (res[0])) * res[0]) * rate
+	weights[0][0] -= simplecode24 * inputs[0]
+	weights[0][1] -= simplecode24 * stm[0]
+	biases[0] -= simplecode24
+	
+	return futureerror
 
-func save(path:String):
+func softmax(numbers:PackedFloat64Array):
+	var size = numbers.size()
+	var exp:PackedFloat64Array
+	var total:float = 0.0
+	exp.resize(size)
+	for e in range(size):
+		var res = pow(E, numbers[e])
+		exp[e] = res
+		total += res
+	
+	for e in range(size):
+		exp[e] /= total
+	
+	return exp
+
+func _to_dictionary()->Dictionary:
+	var data:Dictionary = {}
+	data["weights"] = weights
+	data["biases"] = biases
+	return data
+
+func save(path:String = self.path):
 	FileAccess.open(path, FileAccess.WRITE).store_string(
-		JSON.stringify(
-			{
-				"weights" : weights,
-				"biases" : biases,
-				"last" : accuracy
-			}, "\t"
-		)
+		JSON.stringify(self._to_dictionary(), "\t")
 	)
-	print("updated")
+
+func load(path:String = self.path):
+	var data = JSON.parse_string(
+		FileAccess.open(path, FileAccess.READ).get_as_text()
+	)
+	self.path = path
+	load_from_dict(data)
+
+func load_from_dict(data:Dictionary):
+	weights = data["weights"]
+	biases = data["biases"]
 
 func _to_string():
 	var s:String

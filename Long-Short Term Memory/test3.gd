@@ -7,14 +7,14 @@ func _run():
 	var lstm = LSTM.new()
 	lstm.init()
 	var input:PackedFloat64Array = [0.01, 0.5, 0.25, 1.0]
-	var expected = 0.5
+	var expected = 1
 	lstm.init_memory()
 	var result = lstm.forward(input)
 	var result2 = [lstm.stm[-1]]
 	print("LTM: ", lstm.ltm, " STM: ", lstm.stm)
 	print(lstm)
 #	print(result)
-	lstm.backward2(input, expected, 10000, 0.01)
+	lstm.backward3(input, expected, 10000, 0.01)
 	lstm.init_memory()
 	result = lstm.forward(input)
 	result2.append(lstm.stm[-1])
