@@ -6,5 +6,5 @@ extends EditorScript
 func _run():
 	var sem = SEM.new()
 	sem.load("res://Sentence Embedding/1/model1.json")
-	
+	sem.push("aku belum mandi")
 	print(sem.keys)
