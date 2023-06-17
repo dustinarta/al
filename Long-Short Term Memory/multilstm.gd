@@ -18,18 +18,17 @@ func forward(inputs:Array):
 	if inputs.size() != cell_count:
 		printerr("Invalid input count! expected ", cell_count, " but given ", inputs.size())
 		return null
-	print(inputs)
+#	print(inputs)
 	var inputsize = inputs[0].size()
-	print("nani")
+#	print("nani")
 	for i in range(1, inputs.size()):
 		if inputs[i].size() != inputsize:
 			printerr("Invalid input size! expected ", inputsize, " but given ", inputs[i].size())
 			return null
-	init_all()
+	
 	var results:Array
 	results.resize(cell_count)
 	for c in range(cell_count):
-		print("haiya")
 		results[c] = cells[c].forward(inputs[c])
 	return results
 
@@ -43,7 +42,7 @@ func forward_col(inputs:Array):
 		if inputs[i].size() != length:
 			printerr("Invalid input count! expected ", length, " but given ", inputs[i].size())
 			return null
-	init_all()
+	
 	var results:Array
 	results.resize(cell_count)
 	for c in range(size):
@@ -52,12 +51,57 @@ func forward_col(inputs:Array):
 	
 	return results
 
+#func train_with_error(errors:PackedFloat64Array):
+#	for c in range(cell_count):
+#		cells[c]
+
+func train_with_errors_get_input_error(inputs:Array, errors:Array, rate:float = 0.01, memory:Array = []):
+	var ret = []
+	ret.resize(cell_count)
+	for c in range(cell_count):
+		ret[c] = cells[c]._train_with_errors_get_input_error(inputs[c], errors[c], rate, memory)
+	return ret
+
 func get_ltm_and_stm():
 	var all:Array
 	all.resize(cell_count)
 	for c in range(cell_count):
 		all[c] = cells[c].get_ltm_and_stm()
 	return all
+
+func get_all_stm():
+	var len = cells[0].stm.size()
+	var all:Array[PackedFloat64Array]
+	all.resize(cell_count)
+	
+	for j in range(cell_count):
+		var arr:PackedFloat64Array = []
+		arr.resize(len-1)
+		for i in range(1, len):
+			arr[i-1] = cells[j].stm[i]
+		all[j] = arr
+	return all
+
+func get_all_stm_col():
+	var len = cells[0].stm.size()
+	var all:Array[PackedFloat64Array]
+	all.resize(len-1)
+	
+	for j in range(1, len):
+		var arr:PackedFloat64Array = []
+		arr.resize(cell_count)
+		for i in range(cell_count):
+			arr[i] = cells[i].stm[j]
+		all[j-1] = arr
+	return all
+
+func get_output():
+	var outputs:PackedFloat64Array
+	outputs.resize(cell_count)
+	
+	for o in range(cell_count):
+		outputs[o] = cells[o].stm[-1]
+	return outputs
 
 func move_memory(multilstm:MultiLSTM):
 	if self.cell_count != multilstm.cell_count:

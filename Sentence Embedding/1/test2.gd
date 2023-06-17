@@ -6,5 +6,7 @@ extends EditorScript
 func _run():
 	var sem = SEM.new()
 	sem.load("res://Sentence Embedding/1/model1.json")
-	sem.push("aku belum mandi")
+	var res = sem.push_to_id("aku belum mandi")
+	sem.train("kamu sudah mandi", "aku belum mandi")
+#	print(sem.wordid_to_sentence(res))
 	print(sem.keys)

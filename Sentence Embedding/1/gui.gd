@@ -1,9 +1,12 @@
 extends Control
 
+@onready var input = $VBox/input
+@onready var output = $VBox/output
 
-# Called when the node enters the scene tree for the first time.
+var sem:SEM
+
 func _ready():
-	var sem = SEM.new()
+	sem = SEM.new()
 	sem.load("res://Sentence Embedding/1/model1.json")
 	sem.push("aku belum mandi")
 	print("goodbye")
@@ -11,3 +14,7 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
+
+
+func _on_push_pressed():
+	output.text = sem.push(input.text)

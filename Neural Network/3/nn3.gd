@@ -19,6 +19,8 @@ const Layer:Dictionary = {
 }
 const E = 2.7181828459
 
+var _test_mode:bool = false
+
 var path:String
 var input:int
 var layers:Array
@@ -52,7 +54,7 @@ func init(composition:PackedInt64Array, activations:PackedInt64Array = [], no_bi
 			lastcount = composition[i]
 	else:
 		if activations.size() != size-1:
-			printerr("expected equal size!")
+			printerr("expected equal activation size!")
 			return
 		
 		for i in range(1, size):
@@ -71,18 +73,27 @@ func init(composition:PackedInt64Array, activations:PackedInt64Array = [], no_bi
 	init_weight_and_bias()
 
 func init_weight_and_bias():
-	if is_biased:
-		for layer in layers:
-			var size = layer["w"].size()
-			for i in range(size):
-				layer["w"][i] = randf_range(-0.5, 0.5)
-			for i in range(layer["o"]):
-				layer["b"][i] = randf_range(-0.5, 0.5)
+	if _test_mode:
+		if is_biased:
+			for layer in layers:
+				layer["w"].fill(0.5)
+				layer["b"].fill(0.5)
+		else:
+			for layer in layers:
+				layer["w"].fill(0.5)
 	else:
-		for layer in layers:
-			var size = layer["w"].size()
-			for i in range(size):
-				layer["w"][i] = randf_range(-0.5, 0.5)
+		if is_biased:
+			for layer in layers:
+				var size = layer["w"].size()
+				for i in range(size):
+					layer["w"][i] = randf_range(-0.5, 0.5)
+				for i in range(layer["o"]):
+					layer["b"][i] = randf_range(-0.5, 0.5)
+		else:
+			for layer in layers:
+				var size = layer["w"].size()
+				for i in range(size):
+					layer["w"][i] = randf_range(-0.5, 0.5)
 
 func forward(inputs:PackedFloat64Array):
 	if input != inputs.size():
@@ -127,7 +138,7 @@ func forward(inputs:PackedFloat64Array):
 			result = activations(result, a)
 			nextinput = result
 			forward_result.append(result)
-	return forward_result
+	return forward_result.back()
 
 func forward_by_id(inputs:PackedInt64Array):
 	var highest = inputs.duplicate()
@@ -208,7 +219,7 @@ func forward_by_id(inputs:PackedInt64Array):
 			result = activations(result, a)
 			nextinput = result
 			forward_result.append(result)
-	return forward_result
+	return forward_result.back()
 
 func backward(inputs:PackedFloat64Array, expected:PackedFloat64Array, count:int = 1000, rate:float = 0.01):
 	if layers.front()["i"] != inputs.size():
@@ -222,6 +233,21 @@ func backward(inputs:PackedFloat64Array, expected:PackedFloat64Array, count:int 
 	else:
 		_backward_nobias(inputs, expected, count, rate)
 
+func backward_by_id(inputs:PackedInt64Array, expected:PackedFloat64Array, count:int = 1000, rate:float = 0.01):
+	var highest = inputs.duplicate()
+	highest.sort()
+	highest = highest[0]
+	if input < highest:
+		printerr("undefined ", highest, " index, the limit is ", input)
+		return null
+	if layers.back()["o"] != expected.size():
+		printerr("expected ", layers.back()["o"], " output but given ", expected.size())
+		return null
+	if is_biased:
+		_backward_by_id_bias(inputs, expected, count, rate)
+	else:
+		_backward_by_id_nobias(inputs, expected, count, rate)
+
 func backward_many(inputs:Array[PackedFloat64Array], expecteds:Array[PackedFloat64Array], count:int = 1000, rate:float = 0.01):
 	if inputs.size() != expecteds.size():
 		printerr("expected ", inputs.size(), " but given ", expecteds.size())
@@ -230,7 +256,7 @@ func backward_many(inputs:Array[PackedFloat64Array], expecteds:Array[PackedFloat
 		printerr("expected ", layers.front()["i"], " input but given ", inputs.size())
 		return null
 	if layers.back()["o"] != expecteds[0].size():
-		printerr("expected ", layers.back()["o"], " input but given ", expecteds[0].size())
+		printerr("expected ", layers.back()["o"], " output but given ", expecteds[0].size())
 		return null
 	if is_biased:
 		_backward_many_bias(inputs, expecteds, count, rate)
@@ -249,10 +275,231 @@ func _backward_bias(inputs:PackedFloat64Array, expected:PackedFloat64Array, coun
 	var simplecode:PackedFloat64Array = []
 	var thisinput:PackedFloat64Array = []
 	var derivatives:PackedFloat64Array = []
-	for repeat in range(count):
+	if layers.size() == 1:
+		error = []
+		error.resize(outputsize)
+		simplecode.resize(outputsize)
+		thisinput = inputs
+		for repeat in range(count):
+			#input layer
+			inputsize = layers[0]["i"]
+			outputsize = layers[0]["o"]
+			w = layers[0]["w"]
+			b = layers[0]["b"]
+			derivatives = derivative_activations(forward_result[0], a)
+			for o in range(outputsize):
+				error[o] = (forward_result[-1][o] - expected[o])
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+					b[o] -= simplecode[o]
+	else:
+		for repeat in range(count):
+				###################################################
+				#output layer
+				forward(inputs)
+				inputsize = layers[-1]["i"]
+				outputsize = layers[-1]["o"]
+				w = layers[-1]["w"]
+				b = layers[-1]["b"]
+				a = layers[-1]["a"]
+				error = []
+				error.resize(outputsize)
+				futureerror = []
+				futureerror.resize(inputsize)
+				simplecode.resize(outputsize)
+				thisinput = forward_result[-2]
+				derivatives = derivative_activations(forward_result[-1], a)
+				for o in range(expected.size()):
+					error[o] = (forward_result[-1][o] - expected[o])
+					simplecode[o] = error[o] * derivatives[o]
+				
+				for i in range(inputsize):
+					for o in range(outputsize):
+						futureerror[i] += simplecode[o] * w[o * inputsize + i]
+						w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+						b[o] -= simplecode[o]
+		#		print(error)
+				#####################################################
+				#hidden layer
+				for layer in range(layers.size()-2, 0, -1):
+		#			print(layer)
+					inputsize = layers[layer]["i"]
+					outputsize = layers[layer]["o"]
+					w = layers[layer]["w"]
+					b = layers[layer]["b"]
+					a = layers[layer]["a"]
+					error = futureerror
+					futureerror = []
+					futureerror.resize(inputsize)
+					simplecode.resize(outputsize)
+					thisinput = forward_result[layer-1]
+					derivatives = derivative_activations(forward_result[layer], a)
+					for o in range(outputsize):
+						simplecode[o] = error[o] * derivatives[o]
+					
+					for i in range(inputsize):
+						for o in range(outputsize):
+							futureerror[i] += simplecode[o] * w[o * inputsize + i]
+							w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+							b[o] -= simplecode[o]
+		#		print(error)
+				####################################################
+				#input layer
+				inputsize = layers[0]["i"]
+				outputsize = layers[0]["o"]
+				w = layers[0]["w"]
+				b = layers[0]["b"]
+				error = futureerror
+				futureerror = []
+				futureerror.resize(inputsize)
+				simplecode.resize(outputsize)
+				thisinput = inputs
+				derivatives = derivative_activations(forward_result[0], a)
+				for o in range(outputsize):
+					simplecode[o] = error[o] * derivatives[o]
+				
+				for i in range(inputsize):
+					for o in range(outputsize):
+						w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+						b[o] -= simplecode[o]
+
+func _backward_nobias(inputs:PackedFloat64Array, expected:PackedFloat64Array, count:int = 1000, rate:float = 0.01):
+	var inputsize = layers.back()["i"]
+	var outputsize = layers.back()["o"]
+	var w = layers.back()["w"]
+	var a = layers.back()["a"]
+	
+	var error:PackedFloat64Array = []
+	var futureerror:PackedFloat64Array = []
+	var simplecode:PackedFloat64Array = []
+	var thisinput:PackedFloat64Array = []
+	var derivatives:PackedFloat64Array = []
+	if layers.size() == 1:
+		error = []
+		error.resize(outputsize)
+		simplecode.resize(outputsize)
+		thisinput = inputs
+		for repeat in range(count):
+			#input layer
+			inputsize = layers[0]["i"]
+			outputsize = layers[0]["o"]
+			w = layers[0]["w"]
+			derivatives = derivative_activations(forward_result[0], a)
+			for o in range(outputsize):
+				error[o] = (forward_result[-1][o] - expected[o])
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+	else:
+		for repeat in range(count):
 			###################################################
 			#output layer
-			forward_result = forward(inputs)
+			forward(inputs)
+			inputsize = layers[-1]["i"]
+			outputsize = layers[-1]["o"]
+			w = layers[-1]["w"]
+			a = layers[-1]["a"]
+			error = []
+			error.resize(outputsize)
+			futureerror = []
+			futureerror.resize(inputsize)
+			simplecode.resize(outputsize)
+			thisinput = forward_result[-2]
+			derivatives = derivative_activations(forward_result[-1], a)
+			for o in range(expected.size()):
+				error[o] = (forward_result[-1][o] - expected[o])
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					futureerror[i] += simplecode[o] * w[o * inputsize + i]
+					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+	#		print(error)
+			#####################################################
+			#hidden layer
+			for layer in range(layers.size()-2, 0, -1):
+	#			print(layer)
+				inputsize = layers[layer]["i"]
+				outputsize = layers[layer]["o"]
+				w = layers[layer]["w"]
+				a = layers[layer]["a"]
+				error = futureerror
+				futureerror = []
+				futureerror.resize(inputsize)
+				simplecode.resize(outputsize)
+				thisinput = forward_result[layer-1]
+				derivatives = derivative_activations(forward_result[layer], a)
+				for o in range(outputsize):
+					simplecode[o] = error[o] * derivatives[o]
+				
+				for i in range(inputsize):
+					for o in range(outputsize):
+						futureerror[i] += simplecode[o] * w[o * inputsize + i]
+						w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+	#		print(error)
+			####################################################
+			#input layer
+			inputsize = layers[0]["i"]
+			outputsize = layers[0]["o"]
+			w = layers[0]["w"]
+			error = futureerror
+			futureerror = []
+			futureerror.resize(inputsize)
+			simplecode.resize(outputsize)
+			thisinput = inputs
+			derivatives = derivative_activations(forward_result[0], a)
+			for o in range(outputsize):
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+
+func _backward_by_id_bias(inputs:PackedInt64Array, expected:PackedFloat64Array, count:int = 1000, rate:float = 0.01):
+	var inputsize = layers.back()["i"]
+	var inputlen:int = 0
+	var outputsize = layers.back()["o"]
+	var w = layers.back()["w"]
+	var b = layers.back()["b"]
+	var a = layers.back()["a"]
+	
+	var error:PackedFloat64Array = []
+	var futureerror:PackedFloat64Array = []
+	var simplecode:PackedFloat64Array = []
+	var thisinput = []
+	var derivatives:PackedFloat64Array = []
+	if layers.size() == 1:
+		printerr("not fixed 458")
+		error = []
+		error.resize(outputsize)
+		simplecode.resize(outputsize)
+		thisinput = inputs
+		for repeat in range(count):
+			#input layer
+			forward_by_id(inputs)
+			inputsize = layers[0]["i"]
+			outputsize = layers[0]["o"]
+			w = layers[0]["w"]
+			b = layers[0]["b"]
+			derivatives = derivative_activations(forward_result[0], a)
+			for o in range(outputsize):
+				error[o] = (forward_result[-1][o] - expected[o])
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+					b[o] -= simplecode[o]
+	else:
+		for repeat in range(count):
+			###################################################
+			#output layer
+			forward_by_id(inputs)
 			inputsize = layers[-1]["i"]
 			outputsize = layers[-1]["o"]
 			w = layers[-1]["w"]
@@ -301,7 +548,7 @@ func _backward_bias(inputs:PackedFloat64Array, expected:PackedFloat64Array, coun
 	#		print(error)
 			####################################################
 			#input layer
-			inputsize = layers[0]["i"]
+			inputsize = inputs.size()
 			outputsize = layers[0]["o"]
 			w = layers[0]["w"]
 			b = layers[0]["b"]
@@ -316,11 +563,12 @@ func _backward_bias(inputs:PackedFloat64Array, expected:PackedFloat64Array, coun
 			
 			for i in range(inputsize):
 				for o in range(outputsize):
-					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+					w[o * inputs[i] + i] -= simplecode[o] * 1
 					b[o] -= simplecode[o]
 
-func _backward_nobias(inputs:PackedFloat64Array, expected:PackedFloat64Array, count:int = 1000, rate:float = 0.01):
+func _backward_by_id_nobias(inputs:PackedInt64Array, expected:PackedFloat64Array, count:int = 1000, rate:float = 0.01):
 	var inputsize = layers.back()["i"]
+	var inputlen:int = 0
 	var outputsize = layers.back()["o"]
 	var w = layers.back()["w"]
 	var a = layers.back()["a"]
@@ -328,12 +576,32 @@ func _backward_nobias(inputs:PackedFloat64Array, expected:PackedFloat64Array, co
 	var error:PackedFloat64Array = []
 	var futureerror:PackedFloat64Array = []
 	var simplecode:PackedFloat64Array = []
-	var thisinput:PackedFloat64Array = []
+	var thisinput = []
 	var derivatives:PackedFloat64Array = []
-	for repeat in range(count):
+	if layers.size() == 1:
+		error = []
+		error.resize(outputsize)
+		simplecode.resize(outputsize)
+		thisinput = inputs
+		inputlen = layers[0]["i"]
+		inputsize = inputs.size()
+		outputsize = layers[0]["o"]
+		w = layers[0]["w"]
+		for repeat in range(count):
+			#input layer
+			derivatives = derivative_activations(forward_result[-1], a)
+			for o in range(outputsize):
+				error[o] = (forward_result[-1][o] - expected[o])
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					w[o * inputlen + inputs[i]] -= simplecode[o] * 1
+	else:
+		for repeat in range(count):
 			###################################################
 			#output layer
-			forward_result = forward(inputs)
+			forward_by_id(inputs)
 			inputsize = layers[-1]["i"]
 			outputsize = layers[-1]["o"]
 			w = layers[-1]["w"]
@@ -344,6 +612,7 @@ func _backward_nobias(inputs:PackedFloat64Array, expected:PackedFloat64Array, co
 			futureerror.resize(inputsize)
 			simplecode.resize(outputsize)
 			thisinput = forward_result[-2]
+			print(forward_result[-1])
 			derivatives = derivative_activations(forward_result[-1], a)
 			for o in range(expected.size()):
 				error[o] = (forward_result[-1][o] - expected[o])
@@ -378,7 +647,8 @@ func _backward_nobias(inputs:PackedFloat64Array, expected:PackedFloat64Array, co
 	#		print(error)
 			####################################################
 			#input layer
-			inputsize = layers[0]["i"]
+			inputsize = inputs.size()
+			inputlen = layers[0]["i"]
 			outputsize = layers[0]["o"]
 			w = layers[0]["w"]
 			error = futureerror
@@ -392,7 +662,7 @@ func _backward_nobias(inputs:PackedFloat64Array, expected:PackedFloat64Array, co
 			
 			for i in range(inputsize):
 				for o in range(outputsize):
-					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+					w[o * inputlen + inputs[i]] -= simplecode[o] * 1
 
 func _backward_many_bias(inputs:Array[PackedFloat64Array], expecteds:Array[PackedFloat64Array], count:int = 1000, rate:float = 0.01):
 	var repeat = inputs.size()
@@ -411,7 +681,7 @@ func _backward_many_bias(inputs:Array[PackedFloat64Array], expecteds:Array[Packe
 			var id = rep % repeat
 			###################################################
 			#output layer
-			forward_result = forward(inputs[id])
+			forward(inputs[id])
 			inputsize = layers[-1]["i"]
 			outputsize = layers[-1]["o"]
 			w = layers[-1]["w"]
@@ -490,11 +760,34 @@ func _backward_many_nobias(inputs:Array[PackedFloat64Array], expecteds:Array[Pac
 	var simplecode:PackedFloat64Array = []
 	var thisinput:PackedFloat64Array = []
 	var derivatives:PackedFloat64Array = []
-	for rep in range(repeat, count + repeat):
+	if layers.size() == 1:
+		error = []
+		error.resize(outputsize)
+		simplecode.resize(outputsize)
+		thisinput = inputs
+		inputsize = layers[0]["i"]
+		outputsize = layers[0]["o"]
+		for rep in range(repeat, count + repeat):
+			var id = rep % repeat
+			
+			#input layer
+			thisinput = inputs[id]
+			forward(thisinput)
+			w = layers[0]["w"]
+			derivatives = derivative_activations(forward_result[0], a)
+			for o in range(outputsize):
+				error[o] = (forward_result[-1][o] - expecteds[id][o])
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+	else:
+		for rep in range(repeat, count + repeat):
 			var id = rep % repeat
 			###################################################
 			#output layer
-			forward_result = forward(inputs[id])
+			forward(inputs[id])
 			inputsize = layers[-1]["i"]
 			outputsize = layers[-1]["o"]
 			w = layers[-1]["w"]
@@ -634,7 +927,7 @@ func _train_with_error(inputs:PackedFloat64Array, errors:PackedFloat64Array):
 				w[o * inputsize + i] -= simplecode[o] * thisinput[i]
 				b[o] -= simplecode[o]
 	else:
-		forward_result = forward(inputs)
+		forward(inputs)
 		inputsize = layers[-1]["i"]
 		outputsize = layers[-1]["o"]
 		w = layers[-1]["w"]
@@ -694,6 +987,174 @@ func _train_with_error(inputs:PackedFloat64Array, errors:PackedFloat64Array):
 				futureerror[i] += simplecode[o] * w[o * inputsize + i]
 				w[o * inputsize + i] -= simplecode[o] * thisinput[i]
 	return futureerror
+
+func _train_many_with_expected(inputs:Array, expecteds:Array):
+	var repeat:int = inputs.size()
+	var inputsize = layers.back()["i"]
+	var outputsize = layers.back()["o"]
+	var w = layers.back()["w"]
+	var b = layers.back()["b"]
+	var a = layers.back()["a"]
+	
+	var error:PackedFloat64Array = []
+	var futureerror:PackedFloat64Array = []
+	var futureerrors:Array = []
+	var simplecode:PackedFloat64Array = []
+	var thisinput:PackedFloat64Array = []
+	var derivatives:PackedFloat64Array = []
+	
+	if is_biased:
+		inputsize = layers[-1]["i"]
+		outputsize = layers[-1]["o"]
+		w = layers[-1]["w"]
+		b = layers[-1]["b"]
+		a = layers[-1]["a"]
+		
+		futureerror = []
+		futureerror.resize(inputsize)
+		simplecode.resize(outputsize)
+		thisinput = forward_result[-2]
+		derivatives = derivative_activations(forward_result[-1], a)
+		for o in range(outputsize):
+			simplecode[o] = error[o] * derivatives[o]
+		
+		for i in range(inputsize):
+			for o in range(outputsize):
+				futureerror[i] += simplecode[o] * w[o * inputsize + i]
+				w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+				b[o] -= simplecode[o]
+#		print(error)
+		#####################################################
+		#hidden layer
+		for layer in range(layers.size()-2, 0, -1):
+#			print(layer)
+			inputsize = layers[layer]["i"]
+			outputsize = layers[layer]["o"]
+			w = layers[layer]["w"]
+			b = layers[layer]["b"]
+			a = layers[layer]["a"]
+			error = futureerror
+			futureerror = []
+			futureerror.resize(inputsize)
+			simplecode.resize(outputsize)
+			thisinput = forward_result[layer-1]
+			derivatives = derivative_activations(forward_result[layer], a)
+			for o in range(outputsize):
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					futureerror[i] += simplecode[o] * w[o * inputsize + i]
+					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+					b[o] -= simplecode[o]
+#		print(error)
+		####################################################
+		#input layer
+		inputsize = layers[0]["i"]
+		outputsize = layers[0]["o"]
+		w = layers[0]["w"]
+		b = layers[0]["b"]
+		error = futureerror
+		futureerror = []
+		futureerror.resize(inputsize)
+		simplecode.resize(outputsize)
+		thisinput = inputs
+		derivatives = derivative_activations(forward_result[0], a)
+		for o in range(outputsize):
+			simplecode[o] = error[o] * derivatives[o]
+		
+		for i in range(inputsize):
+			for o in range(outputsize):
+				futureerror[i] += simplecode[o] * w[o * inputsize + i]
+				w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+				b[o] -= simplecode[o]
+	else:
+		if layers.size() == 1:
+			futureerror = []
+			futureerror.resize(inputsize)
+			simplecode.resize(outputsize)
+			error.resize(outputsize)
+			for rep in range(repeat):
+				#input layer
+				forward(inputs[rep])
+				inputsize = layers[0]["i"]
+				outputsize = layers[0]["o"]
+				w = layers[0]["w"]
+				
+				thisinput = inputs[rep]
+				derivatives = derivative_activations(forward_result[0], a)
+				for o in range(outputsize):
+					error[o] = (forward_result[-1][o] - expecteds[rep][o])
+					simplecode[o] = error[o] * derivatives[o]
+				
+				for i in range(inputsize):
+					for o in range(outputsize):
+						futureerror[i] += simplecode[o] * w[o * inputsize + i]
+						w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+				futureerrors.append(futureerror)
+		else:
+			for rep in range(repeat):
+				forward(inputs[rep])
+				inputsize = layers[-1]["i"]
+				outputsize = layers[-1]["o"]
+				w = layers[-1]["w"]
+				a = layers[-1]["a"]
+				
+				futureerror = []
+				futureerror.resize(inputsize)
+				simplecode.resize(outputsize)
+				thisinput = forward_result[-2]
+				derivatives = derivative_activations(forward_result[-1], a)
+				for o in range(outputsize):
+					error[o] = (forward_result[-1][o] - expecteds[rep][o])
+					simplecode[o] = error[o] * derivatives[o]
+				
+				for i in range(inputsize):
+					for o in range(outputsize):
+						futureerror[i] += simplecode[o] * w[o * inputsize + i]
+						w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+		#		print(error)
+				#####################################################
+				#hidden layer
+				for layer in range(layers.size()-2, 0, -1):
+		#			print(layer)
+					inputsize = layers[layer]["i"]
+					outputsize = layers[layer]["o"]
+					w = layers[layer]["w"]
+					a = layers[layer]["a"]
+					error = futureerror
+					futureerror = []
+					futureerror.resize(inputsize)
+					simplecode.resize(outputsize)
+					thisinput = forward_result[layer-1]
+					derivatives = derivative_activations(forward_result[layer], a)
+					for o in range(outputsize):
+						simplecode[o] = error[o] * derivatives[o]
+					
+					for i in range(inputsize):
+						for o in range(outputsize):
+							futureerror[i] += simplecode[o] * w[o * inputsize + i]
+							w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+		#		print(error)
+				####################################################
+				#input layer
+				inputsize = layers[0]["i"]
+				outputsize = layers[0]["o"]
+				w = layers[0]["w"]
+				error = futureerror
+				futureerror = []
+				futureerror.resize(inputsize)
+				simplecode.resize(outputsize)
+				thisinput = inputs
+				derivatives = derivative_activations(forward_result[0], a)
+				for o in range(outputsize):
+					simplecode[o] = error[o] * derivatives[o]
+				
+				for i in range(inputsize):
+					for o in range(outputsize):
+						futureerror[i] += simplecode[o] * w[o * inputsize + i]
+						w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+	return futureerrors
 
 func activationcr3r(number:float, type:ACTIVATION):
 	match type:
