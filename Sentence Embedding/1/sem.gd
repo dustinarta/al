@@ -68,7 +68,6 @@ func push(input:String, max:int = 100):
 	push_encoder(inputs_id)
 	decoder.move_memory(encoder)
 	
-	var answer:String
 	var answer_id:PackedInt64Array
 	var word_id:int = 0
 	var limit = max
@@ -76,10 +75,9 @@ func push(input:String, max:int = 100):
 		vectors = embedding_output.forward_by_id([word_id])
 		results = decoder.forward_col([vectors])
 		word_id = highest( vec2word.forward(decoder.get_output()) )
-		answer_id.append(word_id)
 		if word_id == 1:
 			break
-		answer += keys.keys()[ word_id ] + " "
+		answer_id.append(word_id)
 		limit -= 1
 		if limit == 0:
 			break
@@ -87,6 +85,7 @@ func push(input:String, max:int = 100):
 #	results = transpose(results[-1])
 #	print(results)
 #	print(keys.keys()[highest])
+	var answer:String = wordid_to_sentence(answer_id)
 	return answer
 
 func push_to_id(input:String, max:int = 100):
@@ -143,6 +142,7 @@ func push_decoder(limit:int)->PackedInt64Array:
 		limit -= 1
 		if limit == 0:
 			break
+	print("answer id ", answer_id)
 	return answer_id
 
 func wordid_to_vector(id:int):
@@ -159,59 +159,95 @@ func wordid_many_to_vector(ids:PackedInt64Array)->Array[PackedFloat64Array]:
 func wordid_to_sentence(word_id:PackedInt64Array):
 	var s:String = ""
 	var keys = self.keys.keys()
+	var values = self.keys.values()
+#	print(keys)
+#	print(values)
+#	print(word_id)
 	for k in word_id:
-		s += keys[k] + " "
+		var at = values.find(float(k))
+		print(at)
+		s += keys[at] + " "
 	return s
 
 func train(input:String, output:String):
-	var inputs_id = words_to_vectors(input)
-	var outputs_id = words_to_vectors(output)
+	var inputs_id:PackedInt64Array = words_to_vectors(input)
+	var outputs_id:PackedInt64Array = words_to_vectors(output)
 	outputs_id.append(1)
 	var output_len = outputs_id.size()
 	var output_false
 	
-	encoder.init_all()
-	decoder.init_all()
+	for c in range(10):
 	
-	push_encoder(inputs_id)
-	decoder.move_memory(encoder)
-	output_false = push_decoder(output_len)
-	
-	var expected:PackedInt64Array
-	var expecteds:Array
-	expecteds.resize(output_len)
-	var key_size = keys.size()
-	for i in range(output_len):
-		expected = []
-		expected.resize(key_size)
-		expected.fill(0)
-		expected[outputs_id[i]] = 1
-		expecteds[i] = expected
-	
-	var vec2word_input = decoder.get_all_stm_col()
-	var decoder_error = transpose( vec2word._train_many_with_expected(vec2word_input, expecteds) )
-	var embedding_output_vectors
-	
-	decoder_input = transpose(decoder_input)
-#	print(decoder_input)
-#	print(decoder_error)
-	embedding_output_vectors = decoder.train_with_errors_get_input_error(decoder_input, decoder_error)
-	embedding_output_vectors = transpose(embedding_output_vectors)
-	print(embedding_output_vectors)
-	var embedding_output_input:Array
-	embedding_output_input.resize(output_len)
-	embedding_output_input[0] = []
-	embedding_output_input[0].resize(key_size)
-	embedding_output_input[0][1] = 1
-	for i in range(1, output_len):
-		embedding_output_input = []
-		embedding_output_input.resize(key_size)
-		embedding_output_input.fill(0)
-		embedding_output_input[outputs_id[i-1]] = 1
-		expecteds[i-1] = embedding_output_input
-	embedding_output._train_with_error(embedding_output_input, embedding_output_vectors)
+		encoder.init_all()
+		decoder.init_all()
+		
+		push_encoder(inputs_id)
+		decoder.move_memory(encoder)
+		output_false = push_decoder(output_len)
+#
+#		_train_decoder(output_false, outputs_id)
+#		print("returning because debug")
+#		return null
+		
+		var expected:PackedInt64Array
+		var expecteds:Array
+		expecteds.resize(output_len)
+		var key_size = keys.size()
+		for i in range(output_len):
+			expected = []
+			expected.resize(key_size)
+			expected.fill(0)
+			expected[outputs_id[i]] = 1
+			expecteds[i] = expected
+		
+		var vec2word_input = decoder.get_all_stm_col()
+		var decoder_error = transpose( vec2word._train_many_with_expected(vec2word_input, expecteds) )
+		var embedding_output_vectors
+		
+		decoder_input = transpose(decoder_input)
+	#	print(decoder_input)
+	#	print(decoder_error)
+		embedding_output_vectors = decoder.train_with_errors_get_input_error(decoder_input, decoder_error)
+		embedding_output_vectors = transpose(embedding_output_vectors)
+#		print(embedding_output_vectors)
+		var embedding_output_inputs:Array
+		var embedding_output_input:Array
+		embedding_output_inputs.resize(output_len)
+		embedding_output_inputs[0] = []
+		embedding_output_inputs[0].resize(key_size)
+		embedding_output_inputs[0].fill(0)
+		embedding_output_inputs[0][1] = 1
+		for i in range(1, output_len):
+			embedding_output_input = []
+			embedding_output_input.resize(key_size)
+			embedding_output_input.fill(0)
+			embedding_output_input[outputs_id[i-1]] = 1
+			embedding_output_inputs[i] = embedding_output_input
+		print(embedding_output_vectors)
+		print(embedding_output_inputs)
+		for i in range(output_len):
+			embedding_output._train_with_error(embedding_output_inputs[i], embedding_output_vectors[i])
 #	print()
 #	vec2word._train_many_with_expected()
+
+func _train_decoder(output:PackedInt64Array, expected:PackedInt64Array):
+	var len = expected.size()
+	var expected_array:PackedInt64Array
+	var expecteds_array:Array
+	expecteds_array.resize(len)
+	var key_size = keys.size()
+	for i in range(len):
+		expected_array = []
+		expected_array.resize(key_size)
+		expected_array.fill(0)
+		expected_array[expected[i]] = 1
+		expecteds_array[i] = expected_array
+	
+	for i in range(1000):
+		vec2word._train_many_with_expected(decoder_input, expecteds_array)
+#	print(highest(vec2word.forward(decoder_input[0])))
+#	print(keys.keys()[highest(vec2word.forward(decoder_input[0]))])
+#	print(expecteds_array)
 
 func transpose(data:Array):
 	var row_len = data.size()
@@ -250,7 +286,7 @@ func split_sentence(sentence:String):
 		split.append(s)
 	return split
 
-func words_to_vectors(sentence:String):
+func words_to_vectors(sentence:String)->PackedInt64Array:
 	var packedid:PackedInt64Array = []
 	var splits:PackedStringArray = sentence.split(" ")
 	

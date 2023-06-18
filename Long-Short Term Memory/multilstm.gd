@@ -103,6 +103,13 @@ func get_output():
 		outputs[o] = cells[o].stm[-1]
 	return outputs
 
+func get_input_error(errors:Array):
+	var all:Array
+	all.resize(cell_count)
+	for c in range(cell_count):
+		all[c] = cells[c].get_all_error_for_input_with_errors(errors[c])
+	return all
+
 func move_memory(multilstm:MultiLSTM):
 	if self.cell_count != multilstm.cell_count:
 		printerr("expected same cell count!")

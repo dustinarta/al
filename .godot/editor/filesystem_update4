@@ -1,10 +1,7 @@
 res://Sentence Embedding/1/gui.tscn
-res://Long-Short Term Memory/lstm.gd
-res://Long-Short Term Memory/test5.gd
-res://Long-Short Term Memory/test6.gd
-res://Neural Network/3/nn3.gd
-res://Neural Network/3/test5.gd
 res://Sentence Embedding/1/sem.gd
-res://Neural Network/3/test6.gd
 res://Sentence Embedding/1/test2.gd
+res://Sentence Embedding/1/gui.gd
+res://Long-Short Term Memory/lstm.gd
 res://Long-Short Term Memory/multilstm.gd
+res://Neural Network/3/nn3.gd

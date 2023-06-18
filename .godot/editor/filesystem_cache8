@@ -1,5 +1,5 @@
 2a60927148abd1d33b818b535e306557
-::res://::1686971477
+::res://::1687054745
 ai logo.png::CompressedTexture2D::2774366399910235203::1668783325::1677829033::1::::<><>::
 ai logo.svg::CompressedTexture2D::8187573020341992674::1668782914::1677829033::1::::<><>::
 dataset-key2.json::JSON::-1::1675419991::0::1::::<><>::
@@ -100,16 +100,16 @@ node.tscn::PackedScene::-1::1666701969::0::1::::<><>::res://gd node/node.gd
 ::res://GLOBAL/::1669557824
 matrix.gd::GDScript::-1::1669557824::0::1::::Matrix<>Reference<>::
 thread server.gd::GDScript::-1::1667125296::0::1::::ThreadServer<>Reference<>::
-::res://Long-Short Term Memory/::1686927289
-lstm.gd::GDScript::-1::1686927080::0::1::::LSTM<>RefCounted<>::
+::res://Long-Short Term Memory/::1687017157
+lstm.gd::GDScript::-1::1687017157::0::1::::LSTM<>RefCounted<>::
 model.json::JSON::-1::1686219321::0::1::::<><>::
-multilstm.gd::GDScript::-1::1686892270::0::1::::MultiLSTM<>RefCounted<>::
+multilstm.gd::GDScript::-1::1687016565::0::1::::MultiLSTM<>RefCounted<>::
 test1.gd::GDScript::-1::1686750540::0::1::::<>EditorScript<>::
 test2.gd::GDScript::-1::1686750588::0::1::::<>EditorScript<>::
 test3.gd::GDScript::-1::1686750599::0::1::::<>EditorScript<>::
 test4.gd::GDScript::-1::1686750656::0::1::::<>EditorScript<>::
-test5.gd::GDScript::-1::1686927224::0::1::::<>EditorScript<>::
-test6.gd::GDScript::-1::1686927289::0::1::::<>EditorScript<>::
+test5.gd::GDScript::-1::1686971912::0::1::::<>EditorScript<>::
+test6.gd::GDScript::-1::1686971963::0::1::::<>EditorScript<>::
 ::res://Neural Network/::1686378130
 dl.gd::GDScript::-1::1684403102::0::1::::DL<>RefCounted<>::
 test dl 1.gd::GDScript::-1::1672155725::0::1::::<>RefCounted<>::
@@ -124,13 +124,14 @@ test 6.gd::GDScript::-1::1674975833::0::1::::<>RefCounted<>::
 ::res://Neural Network/2/::1684402567
 nn2.gd::GDScript::-1::1684402280::0::1::::NN2<>RefCounted<>::
 test1.gd::GDScript::-1::1684402567::0::1::::<>EditorScript<>::
-::res://Neural Network/3/::1686913728
-nn3.gd::GDScript::-1::1686913728::0::1::::NN3<>RefCounted<>::
+::res://Neural Network/3/::1687017924
+nn3.gd::GDScript::-1::1687017924::0::1::::NN3<>RefCounted<>::
 test1.gd::GDScript::-1::1686750759::0::1::::<>EditorScript<>::
 test2.gd::GDScript::-1::1686750771::0::1::::<>EditorScript<>::
 test3.gd::GDScript::-1::1686750781::0::1::::<>EditorScript<>::
 test4.gd::GDScript::-1::1686759294::0::1::::<>EditorScript<>::
-test5.gd::GDScript::-1::1686913636::0::1::::<>EditorScript<>::
+test5.gd::GDScript::-1::1686992846::0::1::::<>EditorScript<>::
+test6.gd::GDScript::-1::1686993860::0::1::::<>EditorScript<>::
 test performa.gd::GDScript::-1::1686380086::0::1::::<>EditorScript<>::
 ::res://Neural Network/editor/::1677829032
 circle selected.svg::CompressedTexture2D::8439960507438417546::1670134700::1677829032::1::::<><>::
@@ -200,14 +201,14 @@ value editor.tscn::PackedScene::-1::1675424626::0::1::::<><>::res://Sentence Bas
 main.gd::GDScript::-1::1674652989::0::1::::<>Control<>::
 main.tscn::PackedScene::-1::1674723386::0::1::::<><>::res://Sentence Based Algorithm/Inheritance Editor/main.gd<>res://English/editor/1/theme.tres
 ::res://Sentence Embedding/::1686561465
-::res://Sentence Embedding/1/::1686927298
+::res://Sentence Embedding/1/::1687017924
 create.gd::GDScript::-1::1686828121::0::1::::<>EditorScript<>::
 gui.gd::GDScript::-1::1686836004::0::1::::<>Control<>::
-gui.tscn::PackedScene::2011199435538092938::1686927298::0::1::::<><>::res://Sentence Embedding/1/gui.gd
+gui.tscn::PackedScene::2011199435538092938::1687017924::0::1::::<><>::res://Sentence Embedding/1/gui.gd
 model1.json::JSON::-1::1686836667::0::1::::<><>::
-sem.gd::GDScript::-1::1686836454::0::1::::SEM<>RefCounted<>::
+sem.gd::GDScript::-1::1687017637::0::1::::SEM<>RefCounted<>::
 test1.gd::GDScript::-1::1686750859::0::1::::<>EditorScript<>::
-test2.gd::GDScript::-1::1686792447::0::1::::<>EditorScript<>::
+test2.gd::GDScript::-1::1687013396::0::1::::<>EditorScript<>::
 ::res://Speech Pusher/::1677829032
 Add.svg::CompressedTexture2D::5039246468532326559::1665667511::1677829032::1::::<><>::
 Close.svg::CompressedTexture2D::7413688182396661874::1665667511::1677829032::1::::<><>::

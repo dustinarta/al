@@ -615,15 +615,24 @@ func get_all_error_for_stm_with_error(error:float)->PackedFloat64Array:
 		error = futureerror
 	return futureerrors
 
-func get_all_error_for_input_with_error(error:float)->float:
+func get_all_error_for_input_with_errors(errors:PackedFloat64Array)->PackedFloat64Array:
+	var repeat:int = stm.size()-1
+	var futureerrors:PackedFloat64Array = []
 	var futureerror:float = 0.0
+	var error:float
+	var w
 	var res = forward_result[-1]
-	var simplecodecode = (1 - pow( ltm[1], 2 ) ) * error * res[3]
-	futureerror += tanh(ltm[1]) * error * ((1 - res[3]) * res[3]) * weights[3][0]
-	futureerror += simplecodecode  * res[1] * (1 - pow(res[2], 2)) * weights[2][0]
-	futureerror += simplecodecode  * res[2] * ((1 - (res[1])) * res[1]) * weights[1][0]
-	futureerror += simplecodecode * ltm[0] * ((1 - (res[0])) * res[0]) * weights[0][0]
-	return futureerror
+	var simplecodecode
+	for rep in range(repeat-1, -1, -1):
+		res = forward_result[rep]
+		error = errors[rep]
+		simplecodecode = (1 - pow( ltm[rep+1], 2 ) ) * error * res[3]
+		futureerror += tanh(ltm[1]) * error * ((1 - res[3]) * res[3]) * weights[3][0]
+		futureerror += simplecodecode  * res[1] * (1 - pow(res[2], 2)) * weights[2][0]
+		futureerror += simplecodecode  * res[2] * ((1 - (res[1])) * res[1]) * weights[1][0]
+		futureerror += simplecodecode * ltm[rep] * ((1 - (res[0])) * res[0]) * weights[0][0]
+		futureerrors[rep] = futureerror
+	return futureerrors
 
 func softmax(numbers:PackedFloat64Array):
 	var size = numbers.size()
