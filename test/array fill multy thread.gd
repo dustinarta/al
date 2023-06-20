@@ -6,7 +6,7 @@ Multy thead fill is okay
 """
 
 var array:Array = []
-var size = 1000000
+var size = 7863
 
 func _run():
 	

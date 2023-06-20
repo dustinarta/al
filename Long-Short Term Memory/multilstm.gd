@@ -55,18 +55,85 @@ func forward_col(inputs:Array):
 #	for c in range(cell_count):
 #		cells[c]
 
+var arg1
+var arg2
+var arg3
+var arg4
+
+
 func train_with_errors_get_input_error(inputs:Array, errors:Array, rate:float = 0.01, memory:Array = []):
 	var ret = []
-	ret.resize(cell_count)
-	for c in range(cell_count):
-		ret[c] = cells[c]._train_with_errors_get_input_error(inputs[c], errors[c], rate, memory)
+	if cell_count < 10:
+		ret.resize(cell_count)
+		for c in range(cell_count):
+			ret[c] = cells[c]._train_with_errors_get_input_error(inputs[c], errors[c], rate, memory)
+	else:
+		var t1 = Thread.new()
+		var t2 = Thread.new()
+		arg1 = inputs
+		arg2 = errors
+		arg3 = rate
+		arg4 = memory
+		t1.start( Callable(self, "_multi_thread1_train_with_errors_get_input_error") )
+		t2.start( Callable(self, "_multi_thread2_train_with_errors_get_input_error") )
+		var ret1 = t1.wait_to_finish()
+		var ret2 = t2.wait_to_finish()
+		ret.append_array( ret1 )
+		ret.append_array( ret2 )
+	return ret
+
+func _multi_thread1_train_with_errors_get_input_error():
+	var ret = []
+	var at = 0
+	ret.resize(cell_count/2)
+	for c in range(cell_count/2):
+		ret[c] = cells[c+at]._train_with_errors_get_input_error(arg1[c+at], arg2[c+at], arg3, arg4)
+	return ret
+
+func _multi_thread2_train_with_errors_get_input_error():
+	var ret = []
+	var at = cell_count/2
+	ret.resize(cell_count/2)
+	for c in range(cell_count/2):
+		ret[c] = cells[c+at]._train_with_errors_get_input_error(arg1[c+at], arg2[c+at], arg3, arg4)
 	return ret
 
 func train_with_error_get_input_error(inputs:Array, errors:Array, rate:float = 0.01, memory:Array = []):
 	var ret = []
-	ret.resize(cell_count)
-	for c in range(cell_count):
-		ret[c] = cells[c]._train_with_error_get_input_error(inputs[c], errors[c], rate, memory)
+#	if true:
+	if cell_count < 10:
+		ret.resize(cell_count)
+		for c in range(cell_count):
+			ret[c] = cells[c]._train_with_error_get_input_error(inputs[c], errors[c], rate, memory)
+	else:
+		var t1 = Thread.new()
+		var t2 = Thread.new()
+		arg1 = inputs
+		arg2 = errors
+		arg3 = rate
+		arg4 = memory
+		t1.start( Callable(self, "_multi_thread1_train_with_error_get_input_error") )
+		t2.start( Callable(self, "_multi_thread2_train_with_error_get_input_error") )
+		var ret1 = t1.wait_to_finish()
+		var ret2 = t2.wait_to_finish()
+		ret.append_array( ret1 )
+		ret.append_array( ret2 )
+	return ret
+
+func _multi_thread1_train_with_error_get_input_error():
+	var ret = []
+	var at = 0
+	ret.resize(cell_count/2)
+	for c in range(cell_count/2):
+		ret[c] = cells[c+at]._train_with_error_get_input_error(arg1[c+at], arg2[c+at], arg3, arg4)
+	return ret
+
+func _multi_thread2_train_with_error_get_input_error():
+	var ret = []
+	var at = cell_count/2
+	ret.resize(cell_count/2)
+	for c in range(cell_count/2):
+		ret[c] = cells[c+at]._train_with_error_get_input_error(arg1[c+at], arg2[c+at], arg3, arg4)
 	return ret
 
 func get_ltm_and_stm():
