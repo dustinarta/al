@@ -1329,6 +1329,241 @@ func _train_many_with_error(inputs:Array, errors:Array, rate:float = 0.01):
 					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
 	return futureerror
 
+func _train_many_by_id_with_error(inputs:PackedInt64Array, errors:Array, rate:float = 0.01):
+	var inputsize = layers.back()["i"]
+	var outputsize = layers.back()["o"]
+	var w = layers.back()["w"]
+	var b = layers.back()["b"]
+	var a = layers.back()["a"]
+#	print("error original ", errors)
+	var error:PackedFloat64Array = []
+	var futureerror:PackedFloat64Array = []
+	var simplecode:PackedFloat64Array = []
+	var thisinput:int
+	var derivatives:PackedFloat64Array = []
+#	print("errors top", errors)
+	if layers.size() == 1:
+		if is_biased:
+			printerr("not fixed")
+			return
+			inputsize = layers[-1]["i"]
+			outputsize = layers[-1]["o"]
+			w = layers[-1]["w"]
+			b = layers[-1]["b"]
+			a = layers[-1]["a"]
+			error = errors
+			futureerror = []
+			futureerror.resize(inputsize)
+			simplecode.resize(outputsize)
+			thisinput = forward_result[-2]
+			derivatives = derivative_activations(forward_result[-1], a)
+			for o in range(outputsize):
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					futureerror[i] += simplecode[o] * w[o * inputsize + i]
+#					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+					b[o] -= simplecode[o]
+	#		print(error)
+			#####################################################
+			#hidden layer
+			for layer in range(layers.size()-2, 0, -1):
+	#			print(layer)
+				inputsize = layers[layer]["i"]
+				outputsize = layers[layer]["o"]
+				w = layers[layer]["w"]
+				b = layers[layer]["b"]
+				a = layers[layer]["a"]
+				error = futureerror
+				futureerror = []
+				futureerror.resize(inputsize)
+				simplecode.resize(outputsize)
+				thisinput = forward_result[layer-1]
+				derivatives = derivative_activations(forward_result[layer], a)
+				for o in range(outputsize):
+					simplecode[o] = error[o] * derivatives[o]
+				
+				for i in range(inputsize):
+					for o in range(outputsize):
+						futureerror[i] += simplecode[o] * w[o * inputsize + i]
+#						w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+						b[o] -= simplecode[o]
+	#		print(error)
+			####################################################
+			#input layer
+			inputsize = layers[0]["i"]
+			outputsize = layers[0]["o"]
+			w = layers[0]["w"]
+			b = layers[0]["b"]
+			error = futureerror
+			futureerror = []
+			futureerror.resize(inputsize)
+			simplecode.resize(outputsize)
+#			thisinput = inputs #error
+			derivatives = derivative_activations(forward_result[0], a)
+			for o in range(outputsize):
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					futureerror[i] += simplecode[o] * w[o * inputsize + i]
+#					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+					b[o] -= simplecode[o]
+		else:
+			"""fixed"""
+			var repeat = inputs.size()
+			for rep in repeat:
+				inputsize = layers[0]["i"]
+				outputsize = layers[0]["o"]
+				w = layers[0]["w"]
+				a = layers[0]["a"]
+				####################################################
+				#input layer
+				error = errors[rep]
+				futureerror = []
+				futureerror.resize(inputsize)
+				simplecode.resize(outputsize)
+				thisinput = inputs[rep]
+				derivatives = derivative_activations(forward_result[0], a)
+	#			print("error ", error)
+				for o in range(outputsize):
+					simplecode[o] = error[o] * derivatives[o]
+				
+#				for i in range(inputsize):
+				for o in range(outputsize):
+#						futureerror[i] += simplecode[o] * w[o * inputsize + i]
+					w[o * inputsize + thisinput] -= simplecode[o] * rate
+	# more than 1 layer
+	else:
+		printerr("not fixed")
+		return
+		if is_biased:
+			inputsize = layers[-1]["i"]
+			outputsize = layers[-1]["o"]
+			w = layers[-1]["w"]
+			b = layers[-1]["b"]
+			a = layers[-1]["a"]
+			error = errors
+			futureerror = []
+			futureerror.resize(inputsize)
+			simplecode.resize(outputsize)
+			thisinput = forward_result[-2]
+			derivatives = derivative_activations(forward_result[-1], a)
+			for o in range(outputsize):
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					futureerror[i] += simplecode[o] * w[o * inputsize + i]
+#					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+					b[o] -= simplecode[o]
+	#		print(error)
+			#####################################################
+			#hidden layer
+			for layer in range(layers.size()-2, 0, -1):
+	#			print(layer)
+				inputsize = layers[layer]["i"]
+				outputsize = layers[layer]["o"]
+				w = layers[layer]["w"]
+				b = layers[layer]["b"]
+				a = layers[layer]["a"]
+				error = futureerror
+				futureerror = []
+				futureerror.resize(inputsize)
+				simplecode.resize(outputsize)
+				thisinput = forward_result[layer-1]
+				derivatives = derivative_activations(forward_result[layer], a)
+				for o in range(outputsize):
+					simplecode[o] = error[o] * derivatives[o]
+				
+				for i in range(inputsize):
+					for o in range(outputsize):
+						futureerror[i] += simplecode[o] * w[o * inputsize + i]
+#						w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+						b[o] -= simplecode[o]
+	#		print(error)
+			####################################################
+			#input layer
+			inputsize = layers[0]["i"]
+			outputsize = layers[0]["o"]
+			w = layers[0]["w"]
+			b = layers[0]["b"]
+			error = futureerror
+			futureerror = []
+			futureerror.resize(inputsize)
+			simplecode.resize(outputsize)
+#			thisinput = inputs #error
+			derivatives = derivative_activations(forward_result[0], a)
+			for o in range(outputsize):
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					futureerror[i] += simplecode[o] * w[o * inputsize + i]
+#					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+					b[o] -= simplecode[o]
+		else:
+			inputsize = layers[-1]["i"]
+			outputsize = layers[-1]["o"]
+			w = layers[-1]["w"]
+			a = layers[-1]["a"]
+			error = errors
+			futureerror = []
+			futureerror.resize(inputsize)
+			simplecode.resize(outputsize)
+			thisinput = forward_result[-2]
+			derivatives = derivative_activations(forward_result[-1], a)
+			for o in range(outputsize):
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					futureerror[i] += simplecode[o] * w[o * inputsize + i]
+#					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+	#		print(error)
+			#####################################################
+			#hidden layer
+			for layer in range(layers.size()-2, 0, -1):
+	#			print(layer)
+				inputsize = layers[layer]["i"]
+				outputsize = layers[layer]["o"]
+				w = layers[layer]["w"]
+				a = layers[layer]["a"]
+				error = futureerror
+				futureerror = []
+				futureerror.resize(inputsize)
+				simplecode.resize(outputsize)
+				thisinput = forward_result[layer-1]
+				derivatives = derivative_activations(forward_result[layer], a)
+				for o in range(outputsize):
+					simplecode[o] = error[o] * derivatives[o]
+				
+				for i in range(inputsize):
+					for o in range(outputsize):
+						futureerror[i] += simplecode[o] * w[o * inputsize + i]
+#						w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+	#		print(error)
+			####################################################
+			#input layer
+			inputsize = layers[0]["i"]
+			outputsize = layers[0]["o"]
+			w = layers[0]["w"]
+			error = futureerror
+			futureerror = []
+			futureerror.resize(inputsize)
+			simplecode.resize(outputsize)
+#			thisinput = inputs #error
+			derivatives = derivative_activations(forward_result[0], a)
+			for o in range(outputsize):
+				simplecode[o] = error[o] * derivatives[o]
+			
+			for i in range(inputsize):
+				for o in range(outputsize):
+					futureerror[i] += simplecode[o] * w[o * inputsize + i]
+#					w[o * inputsize + i] -= simplecode[o] * thisinput[i]
+	return futureerror
+
 func _train_many_with_expected(inputs:Array, expecteds:Array):
 	var repeat:int = inputs.size()
 	var inputsize = layers.back()["i"]

@@ -12,7 +12,7 @@ func _run():
 #	sem.train2("kamu sudah mandi", "aku belum mandi")
 #	sem.train2("siapa namamu", "namaku manusia")
 	var start = Time.get_ticks_msec()
-	sem.train_many(
+	sem.train_many2(
 		[
 			"kamu sudah mandi",
 			"siapa namamu"
@@ -20,7 +20,7 @@ func _run():
 		[
 			"aku belum mandi",
 			"namaku manusia"
-		], 1000
+		]
 	)
 	print("time elapsed ", float(Time.get_ticks_msec()-start)/1000)
 #	sem.save("res://Sentence Embedding/1/model1.json")

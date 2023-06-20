@@ -339,6 +339,57 @@ func train_many(inputs:PackedStringArray, outputs:PackedStringArray, train_time:
 		embedding_input_input = id_to_vectors( embedding_input_input )
 		embedding_input._train_many_with_error( embedding_input_input, embedding_input_error )
 
+func train_many2(inputs:PackedStringArray, outputs:PackedStringArray, train_time:int = 1000):
+	if inputs.size() != outputs.size():
+		printerr("expected inputs and output with the same size!")
+		return null
+	var size = inputs.size()
+	var inputs_ids:Array[PackedInt64Array]
+	inputs_ids.resize(size)
+	var outputs_ids:Array[PackedInt64Array]
+	outputs_ids.resize(size)
+	
+	for i in range(size):
+		inputs_ids[i] = words_to_vectors(inputs[i])
+		outputs_ids[i] = words_to_vectors(outputs[i])
+		outputs_ids[i].append(1)
+	
+	var inputs_id:PackedInt64Array
+	var outputs_id:PackedInt64Array
+	var output_len
+	var output_false
+	
+	for c in range(size, train_time+size):
+		var at = c % size
+		
+		inputs_id = inputs_ids[at]
+		outputs_id = outputs_ids[at]
+		output_len = outputs_id.size()
+		
+		output_false = push_by_id_to_id(inputs_id, output_len)
+		var vec2word_input = decoder.get_all_stm_col()
+		var decoder_error = vec2word._train_many_with_expected(vec2word_input, id_to_vectors(outputs_id))
+		decoder_error = transpose(decoder_error)
+#		print(decoder_input)
+		
+		var embedding_output_input = output_false.duplicate()
+		embedding_output_input.remove_at(embedding_output_input.size()-1)
+		embedding_output_input.insert(0, 1)
+#		print(embedding_output_input)
+#		print(decoder_error)
+		var encoder_error = decoder.get_total_stm_error(decoder_error)
+		var embedding_output_error = decoder.train_with_errors_get_input_error( transpose(decoder_input), decoder_error )
+		embedding_output_error = transpose( embedding_output_error )
+#		print(embedding_output_input)
+#		print(embedding_output_error)
+		embedding_output._train_many_by_id_with_error( embedding_output_input, embedding_output_error )
+#		print(transpose(encoder_input))
+#		print(encoder_error)
+		var embedding_input_error = encoder.train_with_error_get_input_error( transpose(encoder_input), encoder_error)
+		embedding_input_error = transpose( embedding_input_error )
+		var embedding_input_input = inputs_id.duplicate()
+		embedding_input._train_many_by_id_with_error( embedding_input_input, embedding_input_error )
+
 func _train_decoder(output:PackedInt64Array, expected:PackedInt64Array):
 	var len = expected.size()
 	var expected_array:PackedInt64Array

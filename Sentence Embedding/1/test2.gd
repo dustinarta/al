@@ -21,7 +21,7 @@ func _run():
 			"namaku manusia"
 		]
 	)
-	sem.save("res://Sentence Embedding/1/model1.json")
+#	sem.save("res://Sentence Embedding/1/model1.json")
 	res = sem.push_to_id("kamu sudah mandi")
 	print(sem.wordid_to_sentence(res))
 	res = sem.push_to_id("siapa namamu")

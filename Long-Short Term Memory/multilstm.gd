@@ -63,7 +63,7 @@ var arg4
 
 func train_with_errors_get_input_error(inputs:Array, errors:Array, rate:float = 0.01, memory:Array = []):
 	var ret = []
-	if cell_count < 10:
+	if true:
 		ret.resize(cell_count)
 		for c in range(cell_count):
 			ret[c] = cells[c]._train_with_errors_get_input_error(inputs[c], errors[c], rate, memory)
@@ -101,7 +101,7 @@ func _multi_thread2_train_with_errors_get_input_error():
 func train_with_error_get_input_error(inputs:Array, errors:Array, rate:float = 0.01, memory:Array = []):
 	var ret = []
 #	if true:
-	if cell_count < 10:
+	if true:
 		ret.resize(cell_count)
 		for c in range(cell_count):
 			ret[c] = cells[c]._train_with_error_get_input_error(inputs[c], errors[c], rate, memory)
