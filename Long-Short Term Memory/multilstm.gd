@@ -62,6 +62,13 @@ func train_with_errors_get_input_error(inputs:Array, errors:Array, rate:float = 
 		ret[c] = cells[c]._train_with_errors_get_input_error(inputs[c], errors[c], rate, memory)
 	return ret
 
+func train_with_error_get_input_error(inputs:Array, errors:Array, rate:float = 0.01, memory:Array = []):
+	var ret = []
+	ret.resize(cell_count)
+	for c in range(cell_count):
+		ret[c] = cells[c]._train_with_error_get_input_error(inputs[c], errors[c], rate, memory)
+	return ret
+
 func get_ltm_and_stm():
 	var all:Array
 	all.resize(cell_count)
@@ -108,6 +115,13 @@ func get_input_error(errors:Array):
 	all.resize(cell_count)
 	for c in range(cell_count):
 		all[c] = cells[c].get_all_error_for_input_with_errors(errors[c])
+	return all
+
+func get_total_stm_error(errors:Array):
+	var all:Array
+	all.resize(cell_count)
+	for c in range(cell_count):
+		all[c] = cells[c].get_total_error_for_stm_with_errors(errors[c])
 	return all
 
 func move_memory(multilstm:MultiLSTM):

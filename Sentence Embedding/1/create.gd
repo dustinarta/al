@@ -14,7 +14,7 @@ func _run():
 			"dimana rumahmu",
 			"rumahku di bontang"
 		],
-		10
+		100
 	)
 	sem.save("res://Sentence Embedding/1/model1.json")
 	print(sem.keys)

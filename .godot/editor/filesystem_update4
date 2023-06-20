@@ -1,7 +1,5 @@
 res://Sentence Embedding/1/gui.tscn
+res://Long-Short Term Memory/lstm.gd
 res://Sentence Embedding/1/sem.gd
 res://Sentence Embedding/1/test2.gd
-res://Sentence Embedding/1/gui.gd
-res://Long-Short Term Memory/lstm.gd
-res://Long-Short Term Memory/multilstm.gd
-res://Neural Network/3/nn3.gd
+res://Sentence Embedding/1/create.gd
