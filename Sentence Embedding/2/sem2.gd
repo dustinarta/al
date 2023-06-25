@@ -1,8 +1,13 @@
 @tool
 extends RefCounted
-class_name SEM
+class_name SEM2
 
-const SPESIAL_CHAR:PackedStringArray =[".", ",", ":", ";", "!", "?"]
+const SPESIAL_CHAR:PackedStringArray = [
+	"\\.", "\\,", "\\:", "\\;", "\\!", "\\?",
+	"\"\\", "\\\"", "(\\", "\\)","[\\", "\\]", "{\\", "\\}", "<\\", "\\>", 
+	"+", "-", "*", "/", "%", "\\", "<", ">",
+	" ", "\t", "\n"
+]
 
 var embedding_input:NN3
 var embedding_output:NN3

@@ -13,7 +13,9 @@ func init(count:int):
 	cells.resize(count)
 	for c in range(cell_count):
 		cells[c] = LSTM.new().init()
+	return self
 
+# Array[PackedFloat64Array]
 func forward(inputs:Array):
 	if inputs.size() != cell_count:
 		printerr("Invalid input count! expected ", cell_count, " but given ", inputs.size())
@@ -48,7 +50,6 @@ func forward_col(inputs:Array):
 	for c in range(size):
 		for i in range(length):
 			results[i] = cells[i].forward([inputs[c][i]])
-	
 	return results
 
 #func train_with_error(errors:PackedFloat64Array):

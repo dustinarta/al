@@ -7,13 +7,13 @@ var sem:SEM
 
 func _ready():
 	sem = SEM.new()
-	sem.load("res://Sentence Embedding/1/model1.json")
+	sem.load("res://Sentence Embedding/1/model2.json")
 #	sem.push("kamu sudah mandi")
 	print("goodbye")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	pass
+	print("\a")
 
 
 func _on_push_pressed():
