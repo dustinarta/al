@@ -1,3 +1,4 @@
 res://Sentence Embedding/1/gui.tscn
 res://Matrix/matrix.gd
-res://Matrix/test1.gd
+res://Matrix/test2.gd
+res://Matrix/test3.gd

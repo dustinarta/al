@@ -28,4 +28,4 @@ func _run():
 		]
 	)
 #	print(mat1.mul(mat2))
-	print(mat3.determinan())
+	print(mat3.append_col(mat2))
