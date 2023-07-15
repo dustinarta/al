@@ -1,4 +1,2 @@
-res://Sentence Embedding/1/gui.tscn
-res://Matrix/matrix.gd
-res://Matrix/test2.gd
-res://Matrix/test3.gd
+res://Data Structure/ds.gd
+res://Data Structure/test2.gd

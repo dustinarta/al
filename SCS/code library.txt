@@ -1,0 +1,3 @@
+
+function print(...):
+	# output data to console

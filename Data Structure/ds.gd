@@ -1,6 +1,8 @@
 @tool
 extends Node
 
+const E = 2.7182818284
+
 class Table:
 	var column_name:PackedStringArray
 	var column_type:Array[DataType]
@@ -117,3 +119,70 @@ func forEach(function:Callable, elements:Array):
 	for i in range(elements.size()):
 		result[i] = function.call(elements[i])
 	return result
+
+func softmax(numbers:PackedFloat64Array)->PackedFloat64Array:
+	var size = numbers.size()
+	var exp:PackedFloat64Array
+	var total:float = 0.0
+	exp.resize(size)
+	for e in range(size):
+		var res = pow(E, numbers[e])
+		exp[e] = res
+		total += res
+	for e in range(size):
+		exp[e] /= total
+	return exp
+
+func mean(numbers:PackedFloat64Array)->float:
+	var size:int = numbers.size()
+	var result:float = 0.0
+	for num in numbers:
+		result += num
+	return result/size
+
+func deviation(numbers:PackedFloat64Array)->float:
+	var size:int = numbers.size()
+	var mean:float = mean(numbers)
+	var result:float = 0.0
+	
+	for i in range(size):
+		result += pow( (mean-numbers[i]) , 2)
+	
+	return sqrt( result/size )
+
+func minmax_normalization(numbers:PackedFloat64Array):
+	var size:int = numbers.size()
+	var min:float = self.min(numbers)
+	var denominator:float = self.max(numbers) - min
+	var results:PackedFloat64Array
+	results.resize(size)
+	for i in range(size):
+		results[i] = (numbers[i] - min) / denominator
+	return results
+
+func batch_normalization(numbers:PackedFloat64Array):
+	var size:int = numbers.size()
+	var mean = mean(numbers)
+	var denominator = deviation(numbers)
+	var results:PackedFloat64Array
+	results.resize(size)
+	for i in range(size):
+		results[i] = (numbers[i] - mean) / denominator
+	return results
+
+func min(numbers:PackedFloat64Array)->float:
+	var min:float = numbers[0]
+	for num in numbers:
+		if num < min:
+			min = num
+	return min
+
+func max(numbers:PackedFloat64Array)->float:
+	var max:float = numbers[0]
+	for num in numbers:
+		if num > max:
+			max = num
+	return max
+
+#func quicksort(array:Array):
+#	pass

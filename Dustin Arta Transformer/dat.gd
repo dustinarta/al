@@ -67,23 +67,24 @@ func add_words_with_sentence(sentence:String):
 	add_words(result)
 
 func sentence_standard_split(sentence:String)->PackedStringArray:
-	var packedsentence = sentence.split(" ")
-	var sentence_count = packedsentence.size()
-	
-	var result:PackedStringArray
-	var char:String
-	char = word[-1]
-	if SPESIAL_CHAR.has(char):
-		result.append( words_keys[ "<"+char ] )
-		word = word.left(word.length()-1)
-	for i in range(sentence_count):
-		var s = packedsentence[i]
-		if SPESIAL_CHAR.has(s[-1]):
-			result.append(s[-1] + " ")
-			result.append(s.left(s.length()-1))
-		else:
-			result.append(s)
-	return result
+	return []
+#	var packedsentence = sentence.split(" ")
+#	var sentence_count = packedsentence.size()
+#
+#	var result:PackedStringArray
+#	var char:String
+#	char = word[-1]
+#	if SPESIAL_CHAR.has(char):
+#		result.append( words_keys[ "<"+char ] )
+#		word = word.left(word.length()-1)
+#	for i in range(sentence_count):
+#		var s = packedsentence[i]
+#		if SPESIAL_CHAR.has(s[-1]):
+#			result.append(s[-1] + " ")
+#			result.append(s.left(s.length()-1))
+#		else:
+#			result.append(s)
+#	return result
 
 func sentence_to_id(sentence:String):
 	var packedsentence = sentence.split(" ")

@@ -12,13 +12,13 @@ config_version=5
 
 config/name="al"
 run/main_scene="res://English/editor/2/Main.tscn"
-config/features=PackedStringArray("4.0")
+config/features=PackedStringArray("4.1")
 
 [autoload]
 
 En="*res://English/src/en.gd"
 English="*res://English/src/english.gd"
-SBA="*res://Sentence Based Algorithm/sba.gd"
+SBA="*res://Sentence Based Algorithm/1/sba.gd"
 BOW="*res://Block Of Words/bow.gd"
 DS="*res://Data Structure/ds.gd"
 DAT="*res://Dustin Arta Transformer/dat.gd"

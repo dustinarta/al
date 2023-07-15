@@ -34,6 +34,25 @@ static func create(data:Array[PackedFloat64Array])->Matrix:
 	
 	return this
 
+func append_row(column:PackedFloat64Array)->Matrix:
+	if col_size != column.size():
+		printerr("invalid column size!")
+	
+	data.append(column)
+	
+	row_size += 1
+	return self
+
+func append_col(row:PackedFloat64Array)->Matrix:
+	if row_size != row.size():
+		printerr("invalid column size!")
+	
+	for r in range(row_size):
+		data[r].append(row[r])
+	
+	col_size += 1
+	return self
+
 func fill(_data:Array[PackedFloat64Array]):
 	if _data.size() == row_size:
 		if _data[0].size() == col_size:
@@ -283,25 +302,6 @@ func add_row(column:PackedFloat64Array):
 	data.append(column)
 	row_size += 1
 
-func append_col(mat:Matrix)->Matrix:
-	if row_size != mat.row_size:
-		printerr("must be the same row size!")
-		return
-	
-	for r in range(row_size):
-		data[r].append_array(mat.data[r].duplicate())
-	col_size += mat.col_size
-	return self
-
-func append_row(mat:Matrix)->Matrix:
-	if col_size != mat.col_size:
-		printerr("must be the same row size!")
-		return
-	
-	data.append_array(mat.data.duplicate(true))
-	row_size += mat.row_size
-	return self
-
 func concat_col(mat:Matrix)->Matrix:
 	if row_size != mat.row_size:
 		printerr("must be the same row size!")
@@ -366,6 +366,24 @@ func get_col_size()->int:
 func get_size()->int:
 	return row_size * col_size
 
+func is_size(row:int, col:int)->bool:
+	if data.size() == row:
+		for column in data:
+			if column.size() != col:
+				return false
+		return true
+	else:
+		return false
+
+static func _is_size(data:Array[PackedFloat64Array], row:int, col:int):
+	if data.size() == row:
+		for column in data:
+			if column.size() != col:
+				return false
+		return true
+	else:
+		return false
+
 func is_equal_shape(mat:Matrix)->bool:
 	if self.get_row_size() == mat.get_row_size():
 		if self.get_col_size() == mat.get_col_size():
@@ -385,3 +403,27 @@ func _to_string():
 	for  i in range(row_size):
 		s += str(data[i]) + "\n"
 	return s
+
+func _to_dict():
+	var dict:Dictionary = {
+		"row" : row_size,
+		"col" : col_size,
+		"data" : data.duplicate(true)
+	}
+
+func load(path:String):
+	var file = FileAccess.open(path, FileAccess.READ)
+	var dict:Dictionary = JSON.parse_string(
+		file.get_as_text()
+	)
+	self.row_size = dict["row"]
+	self.col_size = dict["col"]
+	self.data = dict["data"]
+	file.close()
+
+func save(path:String):
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	file.store_string(
+		JSON.stringify(_to_dict())
+	)
+	file.close()

@@ -13,6 +13,6 @@ func _run():
 #			"<EOS>"
 #		]
 #	)
-	DAT.add_words_with_sentence("i have a cat, horse, and dog")
+#	DAT.add_words_with_sentence("i have a cat, horse, and dog")
 	DAT.save()
 	DAT.encode([0])
