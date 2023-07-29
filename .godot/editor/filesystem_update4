@@ -1,2 +1,6 @@
-res://Data Structure/ds.gd
-res://Data Structure/test2.gd
+res://English/editor/2/Main.tscn
+res://English/editor/1/theme.tres
+res://Sentence Based Algorithm/3/sba3.gd
+res://Sentence Based Algorithm/3/test1.gd
+res://English/src/english.gd
+res://English/dataset-key2.json

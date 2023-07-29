@@ -49,12 +49,12 @@ class SP:
 			print("Undefined \"" + self.speech + "\"")
 			return
 		var my_o = o.duplicate(true)
-#		print("creating ", s, " ", o)
+		#print("creating ", s, " ", o)
 		self.type = my_o[0]
 		self.each_type = my_o.slice(1)
-#		print(self.type.size())
-#		print(self.type)
-#		print(self.each_type)
+		#print(self.type.size())
+		#print(self.type)
+		#print(self.each_type)
 	
 	func _to_string():
 		var a = [type]
@@ -133,7 +133,7 @@ class Phrase:
 				break
 			speechpos.append(pos)
 			pos += 1
-#		print(typeof(speechpos[0]), typeof(speechtype), speechpos[0], speechtype)
+		#print(typeof(speechpos[0]), typeof(speechtype), speechpos[0], speechtype)
 		for i in range(speechpos.size()):
 			if self.speechtype[speechpos[i]][1] == speechtype:
 				return speechpos[i]
@@ -153,7 +153,7 @@ class Phrase:
 		var result:Array = []
 		var pos:int = from
 		speechpos = find_speech_all(speech, pos)
-#		print(typeof(speechpos[0]), typeof(speechtype), speechpos[0], speechtype)
+		#print(typeof(speechpos[0]), typeof(speechtype), speechpos[0], speechtype)
 		for i in range(speechpos.size()):
 			if self.speechtype[speechpos[i]][1] == speechtype:
 				result.append(speechpos[i])
@@ -204,8 +204,8 @@ class Phrase:
 				var type = self.speechtype[i]
 				s += self.speech[i] + ", "
 			s = s.substr(0, s.length()-2)
-#			s.erase(s.length()-1, " ".unicode_at(0))
-#			s.erase(s.length()-1, ",".unicode_at(0))
+			#s.erase(s.length()-1, " ".unicode_at(0))
+			#s.erase(s.length()-1, ",".unicode_at(0))
 			s += " ]"
 		else:
 			var key = En.PHRASE_TYPE.keys()
@@ -693,18 +693,18 @@ class Collection:
 		str = str.substr(0, str.length()-1)
 		return str
 	
-#	func find_type(type:int, from:int = -1):
-#
-#		for i in range(count):
-#			if (phrases[i] as Phrase).type == type:
-#				return i
-#
-#		return -1
+	#func find_type(type:int, from:int = -1):
+	#
+	#	for i in range(count):
+	#		if (phrases[i] as Phrase).type == type:
+	#			return i
+	#
+	#	return -1
 
 var path = "res://English/dataset-key2.json"
 
 var _has_init = false
-func init(path:String):
+func init(path:String = self.path):
 	if _has_init == true:
 		return
 	
@@ -712,7 +712,7 @@ func init(path:String):
 	
 	_has_init = true
 
-func read(sentence:String) -> Collection:
+func read(sentence:String)->Collection:
 	var each = parse(sentence.to_lower())
 	var results:Array = []
 	results.append("\"" + str(sentence) + "\"")
@@ -849,7 +849,7 @@ func save_data():
 	f.store_string(JSON.stringify(data, "\t"))
 	f.close()
 
-func load_data(path):
+func load_data(path = self.path):
 	var f = FileAccess.open(path, FileAccess.READ)
 	var s = f.get_as_text()
 	f.close()

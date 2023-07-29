@@ -186,3 +186,10 @@ func max(numbers:PackedFloat64Array)->float:
 
 #func quicksort(array:Array):
 #	pass
+
+class Pointer:
+	extends RefCounted
+	var data
+	func write(input):
+		data = input
+		return self
