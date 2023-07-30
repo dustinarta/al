@@ -1,6 +1,8 @@
 extends RefCounted
 class_name Matrix
 
+const E = 2.7182818284
+
 var row_size:int
 var col_size:int
 var data:Array[PackedFloat64Array]
@@ -82,6 +84,26 @@ func ones():
 func zeros():
 	for i in range(row_size):
 		data[i].fill(0)
+
+func add_self(mat:Matrix)->Matrix:
+	if not is_equal_shape(mat):
+		printerr("false dimension of matrix!")
+	for r in range(row_size):
+		var my_row = self.data[r]
+		var your_row = mat.data[r]
+		for c in range(col_size):
+			my_row[c] += your_row[c]
+	return self
+
+func min_self(mat:Matrix)->Matrix:
+	if not is_equal_shape(mat):
+		printerr("false dimension of matrix!")
+	for r in range(row_size):
+		var my_row = self.data[r]
+		var your_row = mat.data[r]
+		for c in range(col_size):
+			my_row[c] -= your_row[c]
+	return self
 
 func add(mat:Matrix)->Matrix:
 	if not is_equal_shape(mat):
@@ -241,25 +263,29 @@ static func _mul_t(mat1:Matrix, mat2:Matrix, from:int, to:int):
 		result[r-from] = row_result
 	return result
 
-func add_by_number(number:float)->void:
+func add_self_by_number(number:float)->Matrix:
 	for r in range(row_size):
 		for c in range(col_size):
 			data[r][c] += number
+	return self
 
-func min_by_number(number:float)->void:
+func min_self_by_number(number:float)->Matrix:
 	for r in range(row_size):
 		for c in range(col_size):
 			data[r][c] -= number
+	return self
 
-func mul_by_number(number:float)->void:
+func mul_self_by_number(number:float)->Matrix:
 	for r in range(row_size):
 		for c in range(col_size):
 			data[r][c] *= number
+	return self
 
-func div_by_number(number:float)->void:
+func div_self_by_number(number:float)->Matrix:
 	for r in range(row_size):
 		for c in range(col_size):
 			data[r][c] /= number
+	return self
 
 func transpose()->Matrix:
 	var result:Matrix = Matrix.new().init(self.col_size, self.row_size)
@@ -301,6 +327,25 @@ func determinan():
 			print(v)
 	
 	return right - left
+
+func softmax()->Matrix:
+	var result:Matrix = Matrix.new().init(row_size, col_size)
+	var size = row_size
+	var exp:PackedFloat64Array
+	var numbers:PackedFloat64Array
+	var total:float = 0.0
+	exp.resize(size)
+	for r in range(row_size):
+		numbers = data[r]
+		total = 0.0
+		for c in range(col_size):
+			var res = pow(E, numbers[c])
+			exp[c] = res
+			total += res
+		for c in range(col_size):
+			exp[c] /= total
+		result.data[r] = exp
+	return result
 
 func add_row(column:PackedFloat64Array):
 	data.append(column)

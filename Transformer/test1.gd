@@ -7,4 +7,5 @@ func _run():
 	t.load("res://Transformer/test memory.json")
 	#t.positional_encoding(4, 4)
 #	print(t.positional_encoding(4, 8))
-	print(t.words_to_vectors("i have a dog"))
+#	print(t.words_to_vectors("i have a dog"))
+	print(t.encode("i have a dog"))
