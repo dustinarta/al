@@ -1,6 +1,7 @@
 res://English/editor/2/Main.tscn
 res://English/editor/1/theme.tres
-res://Sentence Based Algorithm/3/sba3.gd
-res://Sentence Based Algorithm/3/test1.gd
-res://English/src/english.gd
-res://English/dataset-key2.json
+res://Transformer/transfomer.gd
+res://Transformer/create.gd
+res://Transformer/test memory.json
+res://Matrix/matrix.gd
+res://Transformer/test1.gd

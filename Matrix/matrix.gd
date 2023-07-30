@@ -58,14 +58,18 @@ func fill(_data:Array[PackedFloat64Array]):
 		if _data[0].size() == col_size:
 			data = _data
 			return self
-#	print(_data.size(), " ", row_size)
-#	print(_data[0].size(), " ", col_size)
 	printerr("invalid size!")
+
+func fill_force(_data:Array[PackedFloat64Array]):
+	row_size = _data.size()
+	col_size = _data[0].size()
+	data = _data
+	return self
 
 func duplicate()->Matrix:
 	var result:Matrix = Matrix.new()
 	
-	result.data.append_array(data.duplicate(true))
+	result.data = data.duplicate(true)
 	result.row_size = row_size
 	result.col_size = col_size
 	
@@ -87,7 +91,7 @@ func add(mat:Matrix)->Matrix:
 		var my_row = self.data[r]
 		var your_row = mat.data[r]
 		var this_row:PackedFloat64Array
-		this_row.resize(row_size)
+		this_row.resize(col_size)
 		for c in range(col_size):
 			this_row[c] = my_row[c] + your_row[c]
 		result.add_row(this_row)
@@ -410,6 +414,17 @@ func _to_dict():
 		"col" : col_size,
 		"data" : data.duplicate(true)
 	}
+	return dict
+
+func load_from_dict(_data:Dictionary):
+	row_size = _data["row"]
+	col_size = _data["col"]
+	data.resize(row_size)
+	for d in range(row_size):
+		data[d] = _data["data"][d] as PackedFloat64Array
+#	var __data = (_data["data"] as Array[PackedFloat64Array]).duplicate(true)
+#	data = __data
+	return self
 
 func load(path:String):
 	var file = FileAccess.open(path, FileAccess.READ)

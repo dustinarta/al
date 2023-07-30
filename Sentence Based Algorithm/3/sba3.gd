@@ -10,14 +10,17 @@ func read(input:String):
 	var collection = English.read(input)
 	var limit:int = collection.elements.size() - 1
 	var ptr = DS.Pointer.new().write(0)
+	var sentence:Sentence = Sentence.new()
 	while ptr.data < limit:
 		var clause = parse_phrase(collection, ptr)
+		sentence.append(clause)
+	print(sentence)
 
 func parse_phrase(collection:English.Collection, from:DS.Pointer = DS.Pointer.new().write(0)):
 	var subject = PhraseNounBig.new()
 	var verb
 	var object = PhraseNounBig.new()
-	var preposition
+	var prepositions:Array[PhrasePreposition]
 	var conjunction
 	
 	var aftercomma:bool = false
@@ -52,16 +55,29 @@ func parse_phrase(collection:English.Collection, from:DS.Pointer = DS.Pointer.ne
 			elif phrase.type == En.PHRASE_TYPE.Prepositional:
 				print("catch preposition")
 				var thisclause:PhrasePreposition = eat_preposition(collection.elements, from)
-				preposition = thisclause
+				prepositions.append(thisclause)
+			elif phrase.type == En.PHRASE_TYPE.Conjunctive:
+				if verb == null:
+#					printerr("eat conjunction")
+					conjunction = eat_conjunction(phrase)
+				else:
+					break
+				
 		from.data += 1
-	print(subject)
-	print(verb)
-	print(object)
-	print(preposition)
-	var clause = ClauseIndependent.new()
+	print("subject ", subject)
+	print("verb ", verb)
+	print("object ", object)
+	print("prepositions ", prepositions)
+	var clause
+	if conjunction == null:
+		clause = ClauseIndependent.new()
+	else:
+		clause = ClauseDependent.new()
+		clause.conjunction = conjunction
 	clause.subject = subject
 	clause.verb = verb
 	clause.object = object
+	clause.prepositions = prepositions
 	return clause
 
 func eat_adverb(phrase:English.Phrase):
@@ -144,6 +160,9 @@ func eat_nouns(elements:Array, from:DS.Pointer):
 			elif phrase.type == En.PHRASE_TYPE.Pronoun:
 				newclause = eat_pronoun(phrase)
 			elif phrase.type == En.PHRASE_TYPE.Conjunctive:
+				if !phrase.speechtype[0][1] == En.Conjunction.Coordinating:
+					from.data -= 1
+					break
 				conjunction = eat_conjunction(phrase)
 				last = true
 				from.data += 1
@@ -229,6 +248,13 @@ func eat_preposition(elements:Array, from:DS.Pointer):
 	if from.data < elements.size():
 		phrase = elements[from.data]
 		thisclause.emptypreposition = false
+		var noun = eat_nouns(elements, from)
+		if noun == null:
+			thisclause.emptypreposition = true
+			from.data -= 1
+		else:
+			thisclause.noun = noun
+		return thisclause
 		if phrase.type == En.PHRASE_TYPE.Noun:
 			thisclause.noun = eat_noun(phrase)
 		elif phrase.type == En.PHRASE_TYPE.Pronoun:
@@ -241,23 +267,58 @@ func eat_preposition(elements:Array, from:DS.Pointer):
 		from.data -= 1
 	return thisclause
 
-class Clause:
-	var subject
-	var end:String
+class Sentence:
+	var clauses:Array[Clause]
+	
+	func append(clause:Clause):
+		clauses.append(clause)
+	
+	func to_str():
+		var s:String = ""
+		for clause in clauses:
+			s += clause.to_str() + clause.end
+		return s
+	
+	func _to_string():
+		return to_str()
 
-class ClauseComplete:
+class Clause:
+	var subject:PhraseNounBig
+	var end:String
+	
+	func to_str():
+		pass
+	
+	func _to_string():
+		return to_str()
+
+class ClauseIndependent:
 	extends Clause
 	
 	var verb:PhraseVerb
 	var object:PhraseNounBig
-	#var prepositions
-
-class ClauseIndependent:
-	extends ClauseComplete
+	var prepositions:Array[PhrasePreposition]
+	
+	func to_str():
+		var s:String = ""
+		if !subject.is_empty():
+			s += subject.to_str() + " "
+		if !verb.is_null():
+			s += verb.to_str() + " "
+		if !object.is_empty():
+			s += object.to_str() + " "
+		if !prepositions.is_empty():
+			for preposition in prepositions:
+				s += preposition.to_str() + " "
+		return s
 
 class ClauseDependent:
-	extends ClauseComplete
+	extends ClauseIndependent
 	var conjunction:PhraseConjunction
+	
+	func to_str():
+		var s:String = conjunction.to_str() + " " + super.to_str()
+		return s
 
 class Phrase:
 	var main:PackedStringArray#: set = set_main
@@ -359,7 +420,7 @@ class PhraseConjunction:
 
 class PhrasePreposition:
 	extends Phrase
-	var noun:Phrase
+	var noun:PhraseNounBig
 	var emptypreposition:bool = true
 	
 	func to_str():
