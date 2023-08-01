@@ -1,7 +1,6 @@
 res://English/editor/2/Main.tscn
 res://English/editor/1/theme.tres
-res://Transformer/test memory.json
-res://Transformer/create.gd
 res://Transformer/transfomer.gd
 res://Matrix/matrix.gd
 res://Transformer/test1.gd
+res://Matrix/test4.gd

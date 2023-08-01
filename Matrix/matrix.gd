@@ -116,7 +116,7 @@ func add(mat:Matrix)->Matrix:
 		this_row.resize(col_size)
 		for c in range(col_size):
 			this_row[c] = my_row[c] + your_row[c]
-		result.add_row(this_row)
+		result.append_row(this_row)
 	return result
 
 func min(mat:Matrix)->Matrix:
@@ -130,7 +130,7 @@ func min(mat:Matrix)->Matrix:
 		this_row.resize(row_size)
 		for c in range(col_size):
 			this_row[c] = my_row[c] - your_row[c]
-		result.add_row(this_row)
+		result.append_row(this_row)
 	return result
 
 func mul(mat:Matrix)->Matrix:
@@ -298,6 +298,20 @@ func transpose()->Matrix:
 		result.data[r] = arr
 	return result
 
+func self_transpose()->Matrix:
+	var result:Matrix = Matrix.new().init(self.col_size, self.row_size)
+	
+	for r in range(self.col_size):
+		var arr:PackedFloat64Array = []
+		arr.resize(self.row_size)
+		for c in range(self.row_size):
+			arr[c] = self.data[c][r]
+		result.data[r] = arr
+	self.row_size = result.row_size
+	self.col_size = result.col_size
+	self.data = result.data
+	return self
+
 func determinan():
 	if not is_square():
 		printerr("cannot find determinan on non-square matrix!")
@@ -347,9 +361,23 @@ func softmax()->Matrix:
 		result.data[r] = exp
 	return result
 
-func add_row(column:PackedFloat64Array):
-	data.append(column)
-	row_size += 1
+func self_mask_topright(value:float)->Matrix:
+	for r in range(row_size):
+		var row = data[r]
+		for c in range(r+1, col_size):
+			row[c] = value
+	return self
+
+func add_row()->Matrix:
+	var result:PackedFloat64Array
+	result.resize(col_size)
+	
+	for c in range(col_size):
+		var res:float = 0.0
+		for r in range(row_size):
+			res += data[r][c]
+		result[c] = res
+	return Matrix.new().fill_force([result])
 
 func concat_col(mat:Matrix)->Matrix:
 	if row_size != mat.row_size:
@@ -371,6 +399,27 @@ func concat_row(mat:Matrix)->Matrix:
 	result.data.append_array(mat.data.duplicate(true))
 	result.row_size += mat.row_size
 	return result
+
+func self_concat_row(mat:Matrix)->Matrix:
+	if col_size != mat.col_size:
+		printerr("must be the same row size!")
+		return
+	
+	data.append_array(mat.data.duplicate(true))
+	row_size += mat.row_size
+	return self
+
+func sub_row(from:int, to:int)->Matrix:
+	return Matrix.new().fill_force( data.slice(from, to, 1, true) )
+
+func self_concat_row_by_array(data:Array[PackedFloat64Array])->Matrix:
+	if col_size != data.size():
+		printerr("must be the same row size!")
+		return
+	
+	data.append_array(data.duplicate(true))
+	row_size += data.size()
+	return self
 
 func to_line()->PackedFloat64Array:
 	var result:PackedFloat64Array

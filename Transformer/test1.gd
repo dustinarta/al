@@ -9,3 +9,6 @@ func _run():
 #	print(t.positional_encoding(4, 8))
 #	print(t.words_to_vectors("i have a dog"))
 	print(t.encode("i have a dog"))
+#	print(t.decode("#S"))
+#	print(t.decode("NC"))
+#	t.save("res://Transformer/test memory.json")
