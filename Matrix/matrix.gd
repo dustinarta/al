@@ -1,4 +1,5 @@
 extends RefCounted
+## Class for Matrix Object
 class_name Matrix
 
 const E = 2.7182818284
@@ -40,6 +41,15 @@ func append_row(column:PackedFloat64Array)->Matrix:
 	if col_size != column.size():
 		printerr("invalid column size!")
 	
+	var result:Matrix = self.duplicate()
+	result.data.append(column)
+	result.row_size += 1
+	return result
+
+func self_append_row(column:PackedFloat64Array)->Matrix:
+	if col_size != column.size():
+		printerr("invalid column size!")
+	
 	data.append(column)
 	
 	row_size += 1
@@ -76,6 +86,32 @@ func duplicate()->Matrix:
 	result.col_size = col_size
 	
 	return result
+
+func duplicate_shufle()->Matrix:
+	var result:Matrix = Matrix.new()
+	
+	result.data = data.duplicate(true)
+	result.data.shuffle()
+	
+	for r in range( row_size ):
+		var row = result.data[r]
+		for c in range( col_size ):
+			row[randi() % col_size] = randf_range(-0.9, 0.9)
+	
+	result.row_size = row_size
+	result.col_size = col_size
+	
+	return result
+
+func shufle()->Matrix:
+	var random = RandomNumberGenerator.new()
+	for r in range( row_size ):
+		var row = data[r]
+		row.fill( random.randf_range(-0.9, 0.9) )
+		random.seed = randi()
+		for c in range( col_size ):
+			row[random.randi() % col_size] = random.randf_range(-0.9, 0.9)
+	return self
 
 func ones():
 	for i in range(row_size):
@@ -152,7 +188,7 @@ func mul(mat:Matrix)->Matrix:
 		result.data[r] = row_result
 	return result
 
-# multiplication matrix with auto transposed
+## multiplication matrix with auto transposed
 func mul_t(mat:Matrix)->Matrix:
 	if not self.col_size == mat.col_size:
 		printerr("Cant multiply invalid shape!")
@@ -344,12 +380,13 @@ func determinan():
 
 func softmax()->Matrix:
 	var result:Matrix = Matrix.new().init(row_size, col_size)
-	var size = row_size
+	var size = col_size
 	var exp:PackedFloat64Array
 	var numbers:PackedFloat64Array
 	var total:float = 0.0
 	exp.resize(size)
 	for r in range(row_size):
+		exp = exp.duplicate()
 		numbers = data[r]
 		total = 0.0
 		for c in range(col_size):

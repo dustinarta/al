@@ -1,9 +1,11 @@
 extends RefCounted
 class_name Transformer
 
+### Constant
 var VECTOR_SIZE:int
 var INPUT_SIZE:int
 var OUTPUT_SIZE:int
+#####
 
 ### Learnable
 var Encode_Query:Matrix
@@ -35,6 +37,9 @@ var decoder_result:PackedStringArray
 var decoder_input:PackedInt64Array
 var decoder_input_vector:Matrix
 
+var sequence_length:int
+var output_keys:PackedStringArray
+
 static func create(path:String, vector_size:int, input:Array, output:Array):
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	var input_size:int = input.size()
@@ -49,6 +54,7 @@ static func create(path:String, vector_size:int, input:Array, output:Array):
 	for i in range(vector_size):
 		(array as Array).shuffle()
 		w[i] = array.duplicate()
+		array[i] = randf_range(-0.9, 0.9)
 	var matrix:Matrix = Matrix.new()
 	matrix.fill_force(w)
 	var matrix_data = matrix._to_dict()
@@ -71,23 +77,23 @@ static func create(path:String, vector_size:int, input:Array, output:Array):
 	
 	
 	var data = {
-		"encode_q" : matrix_data,
-		"encode_k" : matrix_data,
-		"encode_v" : matrix_data,
-		"decode1_q" : matrix_data,
-		"decode1_k" : matrix_data,
-		"decode1_v" : matrix_data,
-		"decode2_q" : matrix_data,
-		"decode2_k" : matrix_data,
-		"decode2_v" : matrix_data,
+		"encode_q" : matrix.shufle()._to_dict(),
+		"encode_k" : matrix.shufle()._to_dict(),
+		"encode_v" : matrix.shufle()._to_dict(),
+		"decode1_q" : matrix.shufle()._to_dict(),
+		"decode1_k" : matrix.shufle()._to_dict(),
+		"decode1_v" : matrix.shufle()._to_dict(),
+		"decode2_q" : matrix.shufle()._to_dict(),
+		"decode2_k" : matrix.shufle()._to_dict(),
+		"decode2_v" : matrix.shufle()._to_dict(),
 		"vector_size" : vector_size,
 		"input_size" : input_size,
 		"output_size" : output_size,
 		"words_input_id" : words_input_id,
 		"words_output_id" : words_output_id,
-		"words_encode_vector" : words_input_matrix._to_dict(),
-		"words_decode_vector" : words_output_matrix._to_dict(),
-		"words_output_vector" : Matrix.new().fill_force(words_output_vector).transpose()._to_dict(),
+		"words_encode_vector" : words_input_matrix.shufle()._to_dict(),
+		"words_decode_vector" : words_output_matrix.shufle()._to_dict(),
+		"words_output_vector" : Matrix.new().fill_force(words_output_vector).transpose().shufle().shufle()._to_dict(),
 		"pe_cache" : Matrix.new().init(0, vector_size)._to_dict()
 	}
 	
@@ -99,6 +105,7 @@ static func create(path:String, vector_size:int, input:Array, output:Array):
 
 func _init():
 	decoder_input_vector = Matrix.new().init(1, VECTOR_SIZE)
+	decoder_result.append("#S")
 
 func save(path:String):
 	var file = FileAccess.open(path, FileAccess.WRITE)
@@ -153,10 +160,21 @@ func load(path:String):
 	Words_decode_vector = Matrix.new().load_from_dict(data["words_decode_vector"])
 	Words_output_vector = Matrix.new().load_from_dict(data["words_output_vector"])
 	PE_cache = Matrix.new().load_from_dict(data["pe_cache"])
+	
+	output_keys = Words_output_id.keys()
 
 func encode(input:String):
 	var input_split = split_string(input)
-	var input_vector = input_words_to_vectors( input_split )
+	sequence_length = input_split.size()
+	var input_vector = Matrix.new().init(0, VECTOR_SIZE)
+	input_vector.self_append_row( 
+		Words_encode_vector.data[ Words_input_id["#S"] ]
+	)
+	input_vector.self_concat_row( input_words_to_vectors( input_split ) )
+	input_vector.self_append_row( 
+		Words_encode_vector.data[ Words_input_id["#E"] ] 
+	)
+#	return input_vector
 	var pos_encoding = positional_encoding(input_vector.row_size)
 	
 	input_vector.add_self(pos_encoding)
@@ -165,17 +183,13 @@ func encode(input:String):
 	var input_key = input_vector.mul_t(Encode_Key)
 	var input_value = input_vector.mul_t(Encode_Value)
 	Encode_Result = \
-	input_query.mul_t(input_key) \
-	.div_self_by_number(sqrt(VECTOR_SIZE)).softmax() \
-	.mul(input_value)
+	input_query.mul_t(input_key).div_self_by_number(sqrt(VECTOR_SIZE)).softmax().mul(input_value)
 #	input_value.mul_t(
 #		input_query.transpose().mul(input_key).div_self_by_number(sqrt(VECTOR_SIZE)).softmax()
 #	).add_row()
 	return Encode_Result
 
-func decode(next_input:String):
-	decoder_result.append(next_input)
-	
+func decode():
 	var input_vector = output_words_to_vectors(decoder_result)
 	
 	var pos_encoding = positional_encoding(input_vector.row_size)
@@ -186,21 +200,45 @@ func decode(next_input:String):
 	var input_key = input_vector.mul_t(Decode1_Key)
 	var input_value = input_vector.mul_t(Decode1_Value)
 	
-	Decode1_Result = input_value.mul_t(
-		input_query.transpose().mul(input_key).self_mask_topright(-INF).div_self_by_number(sqrt(VECTOR_SIZE)).softmax()
-	).add_row()
+	Decode1_Result = \
+	input_query.mul_t(input_key).self_mask_topright(-INF) \
+	.div_self_by_number(sqrt(VECTOR_SIZE)).softmax() \
+	.mul(input_value)
+	
+#	print(input_query.mul_t(input_key))
+#	print(Decode1_Result)
 	
 	input_query = Decode1_Result.mul_t(Decode2_Query)
 	input_key = Encode_Result.mul_t(Decode2_Key)
 	input_value = Encode_Result.mul_t(Decode2_Value)
 	
-	return input_query.mul_t(input_key)
+#	return Decode1_Result
 	
-	Decode2_Result = input_value.mul_t(
-		input_query.mul_t(input_key).div_self_by_number(sqrt(VECTOR_SIZE)).softmax()
-	).add_row()
+	Decode2_Result = \
+	input_query.mul_t(input_key) \
+	.div_self_by_number(sqrt(VECTOR_SIZE)).softmax() \
+	.mul(input_value).softmax()
 	
-	return Decode2_Result
+#	print(input_query.mul_t(input_key)\
+#	.div_self_by_number(sqrt(VECTOR_SIZE)).softmax()#.mul(input_value)
+#	)
+#	print(Decode2_Result)
+	
+#	var result = Decode2_Result.mul( Words_output_vector ).softmax()
+#	var next = output_keys[ highest(result.data[0]) ]
+#	decoder_result.append( next )
+	var result:PackedStringArray
+	result.resize(sequence_length)
+	for i in range(sequence_length):
+		result[i] = output_keys[ highest( Decode2_Result.data[i + 1] ) ]
+	
+	return result
+
+func setup_decoder():
+	decoder_result.resize(sequence_length+2)
+	decoder_result.fill("#P")
+	decoder_result[0] = "#S"
+	decoder_result[-1] = "#E"
 
 func input_words_to_vectors(split:PackedStringArray):
 	var result:Array[PackedFloat64Array]
@@ -264,3 +302,17 @@ func generate_positional_encoding(from:int, to:int):
 			result[d*2+1] = cos( i / pow(10000, (d/float(VECTOR_SIZE))) )
 		results[i] = result
 	return matrix.fill_force(results)
+
+func highest(numbers:PackedFloat64Array)->float:
+	var highest:int = 0
+	for i in range(numbers.size()):
+		if numbers[highest] < numbers[i]:
+			highest = i
+	return highest
+
+func max(numbers:PackedFloat64Array)->float:
+	var max:float = numbers[0]
+	for num in numbers:
+		if num > max:
+			max = num
+	return max

@@ -45,8 +45,8 @@ func _run():
 #			"NN", "PN", "PP", "VB", "AJ", "AV", "PR", "CE", "CS", "IJ"
 #		]
 #	)
-	Transformer.create(
-		"res://Transformer/test memory.json", 8,
+	SimpleTransformer.create(
+		"res://Simple Transformer/test memory.json", 8,
 		input.keys(),
 		output.keys()
 	)
