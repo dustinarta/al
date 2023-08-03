@@ -20,8 +20,9 @@ var Output_vector:Matrix
 ###
 
 var PE_cache
+var output_keys:PackedStringArray
 
-var output_keys
+var result:Array
 
 static func create(path:String, vector_size:int, input:Array, output:Array):
 	var file = FileAccess.open(path, FileAccess.WRITE)
@@ -59,9 +60,9 @@ static func create(path:String, vector_size:int, input:Array, output:Array):
 	var output_matrix:Matrix = Matrix.new().fill_force(output_vector)
 	
 	var data:Dictionary = {
-		"query" : matrix.shufle()._to_dict(),
-		"key" : matrix.shufle()._to_dict(),
-		"value" : matrix.shufle()._to_dict(),
+		"query" : matrix.shufle().duplicate()._to_dict(),
+		"key" : matrix.shufle().duplicate()._to_dict(),
+		"value" : matrix.shufle().duplicate()._to_dict(),
 		"vector_size" : vector_size,
 		"input_size" : input_size,
 		"output_size" : output_size,
@@ -120,8 +121,35 @@ func load(path:String):
 	
 	output_keys = Output_id.keys()
 
-func forward():
-	pass
+func forward(input:String):
+	var input_split = split_string(input)
+#	sequence_length = input_split.size()
+	var input_vector = input_words_to_vectors( input_split )
+#	return input_vector
+	var pos_encoding = positional_encoding(input_vector.row_size)
+	
+	input_vector.add_self(pos_encoding)
+	
+	var input_query = input_vector.mul(Query)
+	var input_key = input_vector.mul(Key)
+	var input_value = input_vector.mul(Value)
+	var output = \
+	input_query.mul_t(input_key).div_self_by_number(sqrt(VECTOR_SIZE)).softmax().mul(input_value)
+	
+#	print("before softmax")
+	output = output.mul_t( Output_vector ).softmax()
+#	print("after softmax")
+	
+	var result:PackedStringArray
+	result.resize(output.row_size)
+	for i in range(output.row_size):
+		result[i] = output_keys[ highest( output.data[i] ) ]
+	return result
+
+func backward(input:String, expected:String):
+	var output_vector = output_words_to_vectors( expected.split(" ") )
+	
+	return output_vector
 
 func input_words_to_vectors(split:PackedStringArray):
 	var result:Array[PackedFloat64Array]
@@ -173,7 +201,7 @@ func generate_positional_encoding(from:int, to:int):
 		results[i] = result
 	return matrix.fill_force(results)
 
-func highest(numbers:PackedFloat64Array)->float:
+func highest(numbers:PackedFloat64Array)->int:
 	var highest:int = 0
 	for i in range(numbers.size()):
 		if numbers[highest] < numbers[i]:

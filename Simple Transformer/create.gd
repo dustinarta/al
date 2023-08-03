@@ -5,9 +5,9 @@ extends EditorScript
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
 	var input = {
-		"#S" : "Start of Sentence", 
-		"#E" : "End of Sentence", 
-		"#P" : "Padding", 
+#		"#S" : "Start of Sentence", 
+#		"#E" : "End of Sentence", 
+#		"#P" : "Padding", 
 		"," : "Comma"
 	}
 	input.merge( 
@@ -16,9 +16,9 @@ func _run():
 		)
 	)
 	var output = {
-		"#S" : "Start of Sentence", 
-		"#E" : "End of Sentence", 
-		"#P" : "Padding", 
+#		"#S" : "Start of Sentence", 
+#		"#E" : "End of Sentence", 
+#		"#P" : "Padding", 
 		",E" : "Comma for element", 
 		",S" : "Comma for sentence", 
 		"NC" : "Noun common", 

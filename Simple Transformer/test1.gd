@@ -6,4 +6,8 @@ extends EditorScript
 func _run():
 	var st = SimpleTransformer.new()
 	st.load("res://Simple Transformer/test memory.json")
-	st.forward()
+	var res
+	res = st.forward("i have a dog")
+#	res = st.backward("i", "P_")
+	print(res)
+#	st.save("res://Simple Transformer/test memory.json")

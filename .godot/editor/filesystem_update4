@@ -1,11 +1,8 @@
 res://English/editor/2/Main.tscn
 res://English/editor/1/theme.tres
-res://Transformer/create.gd
-res://Transformer/test memory.json
-res://Transformer/transfomer.gd
-res://Transformer/test1.gd
+res://Simple Transformer/learning test.gd
 res://Matrix/matrix.gd
-res://Simple Transformer/simple transformer.gd
-res://Simple Transformer/create.gd
-res://Simple Transformer/test1.gd
-res://Simple Transformer/test memory.json
+res://Simple Transformer/matrix learn.gd
+res://Simple Transformer/nn learn.gd
+res://Simple Transformer/matrix learn2.gd
+res://Simple Transformer/matrix learn3.gd

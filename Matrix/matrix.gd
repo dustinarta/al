@@ -144,7 +144,7 @@ func min_self(mat:Matrix)->Matrix:
 func add(mat:Matrix)->Matrix:
 	if not is_equal_shape(mat):
 		printerr("false dimension of matrix!")
-	var result:Matrix = Matrix.new()
+	var result:Matrix = Matrix.new().init(row_size, col_size)
 	for r in range(row_size):
 		var my_row = self.data[r]
 		var your_row = mat.data[r]
@@ -152,21 +152,21 @@ func add(mat:Matrix)->Matrix:
 		this_row.resize(col_size)
 		for c in range(col_size):
 			this_row[c] = my_row[c] + your_row[c]
-		result.append_row(this_row)
+		result.data[r] = this_row
 	return result
 
 func min(mat:Matrix)->Matrix:
 	if not is_equal_shape(mat):
 		printerr("false dimension of matrix!")
-	var result:Matrix = Matrix.new()
+	var result:Matrix = Matrix.new().init(row_size, col_size)
 	for r in range(row_size):
 		var my_row = self.data[r]
 		var your_row = mat.data[r]
 		var this_row:PackedFloat64Array
-		this_row.resize(row_size)
+		this_row.resize(col_size)
 		for c in range(col_size):
 			this_row[c] = my_row[c] - your_row[c]
-		result.append_row(this_row)
+		result.data[r] = this_row
 	return result
 
 func mul(mat:Matrix)->Matrix:
@@ -332,6 +332,7 @@ func transpose()->Matrix:
 		for c in range(self.row_size):
 			arr[c] = self.data[c][r]
 		result.data[r] = arr
+#	print(result)
 	return result
 
 func self_transpose()->Matrix:
@@ -396,6 +397,7 @@ func softmax()->Matrix:
 		for c in range(col_size):
 			exp[c] /= total
 		result.data[r] = exp
+		print(exp)
 	return result
 
 func self_mask_topright(value:float)->Matrix:
