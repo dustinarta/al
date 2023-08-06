@@ -19,8 +19,8 @@ func _run():
 			[0.3, 0.1, -0.3, 0.2]
 		]
 	)
-	print( mat1.mul(mat2) )
-	print( mat2.transpose().mul_t(mat1).transpose() )
+	print( mat1.mul(mat2).transpose() )
+	print( mat2.transpose().mul_t(mat1) )
 	return
 	var mat3 = mat1.mul(mat2)
 #	print(mat3)

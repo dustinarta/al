@@ -11,11 +11,11 @@ var data:Array[PackedFloat64Array]
 func _init():
 	pass
 
-func init(row:int, col:int)->Matrix:
+func init(row:int, col:int, fill_value:float = 0.0)->Matrix:
 	self.data.resize(row)
 	var array:PackedFloat64Array
 	array.resize(col)
-	array.fill(0)
+	array.fill(fill_value)
 	for i in range(row):
 		self.data[i] = array.duplicate()
 	self.row_size = row
@@ -36,6 +36,36 @@ static func create(data:Array[PackedFloat64Array])->Matrix:
 	this.data = data
 	
 	return this
+
+static func mean(matrixs:Array[Matrix])->Matrix:
+	var mat = matrixs[0]
+	var matrix_count:int = matrixs.size()
+	
+	for i in range(1, matrix_count):
+		if mat.is_equal_shape( matrixs[i] ) == false:
+			printerr("Invalid size for mean!")
+			return null
+	
+	var result:Matrix = Matrix.new().init(mat.row_size, mat.col_size)
+	var row_size = mat.row_size
+	var col_size = mat.col_size
+	for r in range(row_size):
+		var row:PackedFloat64Array = []
+		row.resize(col_size)
+		var matrix_row:Array[PackedFloat64Array]
+		matrix_row.resize(matrix_count)
+		
+		for m in range(matrix_count):
+			matrix_row[m] = matrixs[m].data[r]
+		
+		for c in range(col_size):
+			var element:float = 0
+			for m in range(matrix_count):
+				element += matrix_row[m][c]
+			row[c] = element / matrix_count
+		result.data[r] = row
+	
+	return result
 
 func append_row(column:PackedFloat64Array)->Matrix:
 	if col_size != column.size():
@@ -113,6 +143,13 @@ func shufle()->Matrix:
 			row[random.randi() % col_size] = random.randf_range(-0.9, 0.9)
 	return self
 
+func self_randomize(from:float = 10.0, to:float = 10.0)->Matrix:
+	for r in range(row_size):
+		var row = self.data[r]
+		for c in range(col_size):
+			row[c] = randf_range(from, to)
+	return self
+
 func ones():
 	for i in range(row_size):
 		data[i].fill(1)
@@ -143,7 +180,7 @@ func min_self(mat:Matrix)->Matrix:
 
 func add(mat:Matrix)->Matrix:
 	if not is_equal_shape(mat):
-		printerr("false dimension of matrix!")
+		printerr("false dimension of matrix! for add")
 	var result:Matrix = Matrix.new().init(row_size, col_size)
 	for r in range(row_size):
 		var my_row = self.data[r]
@@ -157,7 +194,7 @@ func add(mat:Matrix)->Matrix:
 
 func min(mat:Matrix)->Matrix:
 	if not is_equal_shape(mat):
-		printerr("false dimension of matrix!")
+		printerr("false dimension of matrix! for min")
 	var result:Matrix = Matrix.new().init(row_size, col_size)
 	for r in range(row_size):
 		var my_row = self.data[r]
@@ -186,6 +223,21 @@ func mul(mat:Matrix)->Matrix:
 				res += self_row[i] * mat.data[i][c]
 			row_result[c] = res
 		result.data[r] = row_result
+	return result
+
+func mul2(mat:Matrix)->Matrix:
+	if not is_equal_shape(mat):
+		printerr("false dimension of matrix! for mul2")
+		return null
+	var result:Matrix = Matrix.new().init(row_size, col_size)
+	for r in range(row_size):
+		var my_row = self.data[r]
+		var your_row = mat.data[r]
+		var this_row:PackedFloat64Array
+		this_row.resize(col_size)
+		for c in range(col_size):
+			this_row[c] = my_row[c] * your_row[c]
+		result.data[r] = this_row
 	return result
 
 ## multiplication matrix with auto transposed
@@ -397,7 +449,16 @@ func softmax()->Matrix:
 		for c in range(col_size):
 			exp[c] /= total
 		result.data[r] = exp
-		print(exp)
+	return result
+
+func derivative_softmax()->Matrix:
+	var result:Matrix = Matrix.new().init(row_size, col_size)
+	for r in range(row_size):
+		var row = result.data[r]
+		var my_row = self.data[r]
+		for c in range(col_size):
+			var val:float = my_row[c]
+			row[c] = val * (1 - val)
 	return result
 
 func self_mask_topright(value:float)->Matrix:

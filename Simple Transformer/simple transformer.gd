@@ -28,41 +28,22 @@ static func create(path:String, vector_size:int, input:Array, output:Array):
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	var input_size:int = input.size()
 	var output_size:int = output.size()
-	var w:Array[PackedFloat64Array]
-	var array:PackedFloat64Array
-	w.resize(vector_size)
-	array.resize(vector_size)
-	array.fill(0.1)
-	for i in range(randi_range(0, vector_size)):
-		array[i] = randf_range(-0.9, 0.9)
-	for i in range(vector_size):
-		(array as Array).shuffle()
-		w[i] = array.duplicate()
-		array[i] = randf_range(-0.9, 0.9)
-	var matrix:Matrix = Matrix.new()
-	matrix.fill_force(w)
-	var matrix_data = matrix._to_dict()
+	var matrix:Matrix = Matrix.new().init(vector_size, vector_size).self_randomize(-5.0, 5.0)
 	
 	var input_id:Dictionary
-	var input_vector:Array[PackedFloat64Array]
-	input_vector.resize(input_size)
 	for i in range(input_size):
-		input_vector[i] = array.duplicate()
 		input_id[ input[i] ] = i
-	var input_matrix:Matrix = Matrix.new().fill_force(input_vector)
+	var input_matrix:Matrix = Matrix.new().init(input_size, vector_size).self_randomize(-2.0, 2.0)
 	
 	var output_id:Dictionary
-	var output_vector:Array[PackedFloat64Array]
-	output_vector.resize(output_size)
 	for i in range(output_size):
-		output_vector[i] = array.duplicate()
 		output_id[ output[i] ] = i
-	var output_matrix:Matrix = Matrix.new().fill_force(output_vector)
+	var output_matrix:Matrix = Matrix.new().init(output_size, vector_size).self_randomize(-2.0, 2.0)
 	
 	var data:Dictionary = {
-		"query" : matrix.shufle().duplicate()._to_dict(),
-		"key" : matrix.shufle().duplicate()._to_dict(),
-		"value" : matrix.shufle().duplicate()._to_dict(),
+		"query" : matrix.self_randomize(-2.0, 2.0).duplicate()._to_dict(),
+		"key" : matrix.self_randomize(-2.0, 2.0).duplicate()._to_dict(),
+		"value" : matrix.self_randomize(-2.0, 2.0).duplicate()._to_dict(),
 		"vector_size" : vector_size,
 		"input_size" : input_size,
 		"output_size" : output_size,
@@ -123,21 +104,25 @@ func load(path:String):
 
 func forward(input:String):
 	var input_split = split_string(input)
-#	sequence_length = input_split.size()
+	
 	var input_vector = input_words_to_vectors( input_split )
-#	return input_vector
+	self.result.append(input_vector.duplicate())
 	var pos_encoding = positional_encoding(input_vector.row_size)
 	
 	input_vector.add_self(pos_encoding)
-	
+	self.result.append(input_vector.duplicate())
 	var input_query = input_vector.mul(Query)
 	var input_key = input_vector.mul(Key)
 	var input_value = input_vector.mul(Value)
-	var output = \
-	input_query.mul_t(input_key).div_self_by_number(sqrt(VECTOR_SIZE)).softmax().mul(input_value)
+	self.result.append([input_query, input_key, input_value])
+	var s = input_query.mul_t(input_key).div_self_by_number(sqrt(VECTOR_SIZE)).softmax()
+#	print("S is ", s.data)
+	self.result.append(s)
+	var attention = s.mul(input_value)
 	
 #	print("before softmax")
-	output = output.mul_t( Output_vector ).softmax()
+	var output = attention.mul_t( Output_vector ).softmax()
+	self.result.append(output)
 #	print("after softmax")
 	
 	var result:PackedStringArray
@@ -147,9 +132,45 @@ func forward(input:String):
 	return result
 
 func backward(input:String, expected:String):
-	var output_vector = output_words_to_vectors( expected.split(" ") )
+	var forward_result = forward(input)
+	var output_split = expected.split(" ")
+	var output_vector = output_words_to_vectors( output_split )
 	
-	return output_vector
+	var input_vector:Matrix = self.result[0]
+	var input_vector_pe:Matrix = self.result[1]
+	var input_query:Matrix = self.result[2][0]
+	var input_key:Matrix = self.result[2][1]
+	var input_value:Matrix = self.result[2][2]
+	var s:Matrix = self.result[3]
+	var s_d:Matrix = s.derivative_softmax()
+	var output:Matrix = self.result[4]
+	var output_d:Matrix = output.derivative_softmax()
+#	print(output)
+#	print(output.derivative_softmax())
+	var expected_output:Matrix = generate_output( output_split )
+	var error:Matrix = output.min(expected_output)
+	
+	var new_wQ = input_vector_pe.transpose().mul( (error.mul2(output_d)).mul(Output_vector).mul_t(input_value).mul2(s_d).mul(input_key) )
+	new_wQ.mul_self_by_number(0.1)
+	Query.min_self(new_wQ)
+	
+	var new_wK = (error.mul2(output_d)).mul(Output_vector).mul_t(input_value).mul2(s_d).mul(input_vector_pe).transpose().mul(input_query)
+	new_wK.mul_self_by_number(0.1)
+	Key.min_self(new_wK)
+	
+	var new_wV = input_vector_pe.transpose().mul_t(s).mul(error.mul2(output_d)).mul( Output_vector )#
+	new_wV.mul_self_by_number(0.1)
+	Value.min_self(new_wV)
+	
+	var new_O = error.mul2(output_d).transpose().mul(s).mul(input_value)
+	new_O.mul_self_by_number(0.1)
+	Output_vector.min_self(new_O)
+#	print(new_O)
+	
+	return new_O
+
+func clean()->void:
+	self.result.clear()
 
 func input_words_to_vectors(split:PackedStringArray):
 	var result:Array[PackedFloat64Array]
@@ -188,6 +209,19 @@ func positional_encoding(length:int):
 	else:
 		return PE_cache.sub_row(0, length)
 
+func generate_output(split:PackedStringArray):
+	var count = split.size()
+	var result:Matrix = Matrix.new().init(count, OUTPUT_SIZE)
+	var array:Array[PackedFloat64Array]
+	array.resize(count)
+	for i in range(count):
+		var row:PackedFloat64Array
+		row.resize(OUTPUT_SIZE)
+		row[ self.Output_id[ split[i] ] ] = 1
+		array[i] = row
+	result.fill_force(array)
+	return result
+
 func generate_positional_encoding(from:int, to:int):
 	var matrix:Matrix = Matrix.new()
 	var results:Array[PackedFloat64Array]
@@ -198,7 +232,7 @@ func generate_positional_encoding(from:int, to:int):
 		for d in range(VECTOR_SIZE/2):
 			result[d*2] = sin( i / pow(10000, (d/float(VECTOR_SIZE))) )
 			result[d*2+1] = cos( i / pow(10000, (d/float(VECTOR_SIZE))) )
-		results[i] = result
+		results[i - from] = result
 	return matrix.fill_force(results)
 
 func highest(numbers:PackedFloat64Array)->int:
