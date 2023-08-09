@@ -1,0 +1,58 @@
+{
+	"words": {
+		"i": {
+			"#": "P_"
+		},
+		"have": {
+			"#": "VA"
+		},
+		"a": {
+			"#": "JA"
+		},
+		"dog": {
+			"#": "NC"
+		},
+		"the": {
+			"great": {
+				"alexander": {
+					"#": "NP"
+				}
+			},
+			"thinker": {
+				"#": "NP"
+			}
+		},
+		"is": {
+			"#": "VA"
+		},
+		"good": {
+			"#": "J_"
+		},
+		"man": {
+			"#": "NC"
+		}
+	},
+	"types": {
+		",E": "Comma for element",
+		",S": "Comma for sentence",
+		"NC": "Noun common",
+		"NP": "Noun proper",
+		"P_": "Pronoun",
+		"PP": "Pronoun Posessive",
+		"PR": "Pronoun Relative",
+		"V_": "Verb",
+		"VA": "Verb Auxilary",
+		"VM": "Verb Modal",
+		"VP": "Verb Participle",
+		"J_": "Adjective",
+		"JA": "Adjective Article",
+		"BE": "Adverb for element",
+		"BS": "Adverb for sentence",
+		"R_": "Preposition",
+		"CE": "Conjunction for element",
+		"CS": "Conjunction for sentence",
+		"IJ": "Interjection",
+		"UW": "Unknown word",
+		"US": "Unknown symbol"
+	}
+}

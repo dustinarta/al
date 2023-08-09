@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cwijd7caaha1r"]
 
-[ext_resource type="Script" path="res://Attention Parser/parser.gd" id="1_73mut"]
+[ext_resource type="Script" path="res://Attention Parser/1/parser.gd" id="1_73mut"]
 
 [node name="parser" type="Control"]
 layout_mode = 3

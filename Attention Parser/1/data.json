@@ -16,7 +16,7 @@
 			"a": {
 
 			},
-			"matrix": "{ \"row\": 1, \"col\": 17, \"data\": [[-1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, -1]] }"
+			"matrix": "{ \"row\": 1, \"col\": 17, \"data\": [[-1, -1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1]] }"
 		},
 		"smart": {
 			"b": {
@@ -77,8 +77,11 @@
 		"NP": "Noun proper",
 		"P_": "Pronoun",
 		"PP": "Pronoun Posessive",
+		"PR": "Pronoun Relative",
 		"V_": "Verb",
 		"VA": "Verb Auxilary",
+		"VM": "Verb Modal",
+		"VP": "Verb Participle",
 		"J_": "Adjective",
 		"JA": "Adjective Article",
 		"BE": "Adverb for element",

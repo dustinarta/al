@@ -100,9 +100,12 @@ func set_name_auto(words:PackedStringArray, types:PackedInt64Array, index:int):
 
 func set_word(word:String, word_type:int):
 	if Words.has(word):
-		var row = Words[word]["matrix"].data[0]
+		var word_data = Words[word]
+		var row = word_data["matrix"].data[0]
 		if highest(row) == word_type:
 			return
+		else:
+			row[word_type] = 0
 	else:
 		var matrix:Matrix = Matrix.new().init(1, Types_count, -1)
 		matrix.data[0][word_type] = 1
@@ -116,6 +119,9 @@ func set_word(word:String, word_type:int):
 func set_word_with_string(word:String, word_type_s:String):
 	var word_type:int = Types_d[word_type_s]
 	set_word(word, word_type)
+
+func get_name(words:PackedStringArray, types:PackedInt64Array, index:int):
+	pass
 
 func learn(word_s, type_s):
 	var words:PackedStringArray = parse_word(word_s)
@@ -134,26 +140,29 @@ func learn(word_s, type_s):
 			continue
 		set_word(words[i], types[i])
 		i += 1
-	
 
 func read(sentence:String):
 	var words = parse_word(sentence)
 	var size = words.size()
 	var result:PackedStringArray
 	result.resize(words.size())
-	
-	for w in range(size):
+	var w:int = 0
+	while w < size:
 		var word = words[w]
-		if Words.has(word):
-			var self_matrix:Matrix = Words[word]["matrix"]
-			var row = self_matrix.data[0]
-			result[w] = Types_s[ highest(row) ]
-#			if w > 1:
-#			
-			
+		if word in ",.:;'\"":
+			printerr("unwritten for spesial character")
 		else:
-			result[w] = "UW"
+			if Words.has(word):
+				var self_matrix:Matrix = Words[word]["matrix"]
+				var row = self_matrix.data[0]
+				result[w] = Types_s[ highest(row) ]
+			else:
+				result[w] = "UW"
+		w += 1
 	return result
+
+func is_spesial_character(sc:String):
+	return sc in ",.:;'\""
 
 func parse_word(sentence:String):
 	sentence = sentence.to_lower()
@@ -185,5 +194,9 @@ func highest(numbers:PackedFloat64Array):
 			highest = i
 	return highest
 
+func parse(words:PackedStringArray, types:PackedInt64Array):
+	pass
+
 class Phrase:
 	var type:En.PHRASE_TYPE
+	
