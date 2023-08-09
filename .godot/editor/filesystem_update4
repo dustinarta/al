@@ -1,7 +1,5 @@
 res://English/editor/2/Main.tscn
 res://English/editor/1/theme.tres
-res://Simple Transformer/matrix learn9.gd
-res://Simple Transformer/matrix learn8.gd
-res://Simple Transformer/simple transformer.gd
-res://Simple Transformer/test1.gd
-res://Simple Transformer/test memory.json
+res://Attention Parser/test1.gd
+res://Attention Parser/data.json
+res://Attention Parser/ap.gd

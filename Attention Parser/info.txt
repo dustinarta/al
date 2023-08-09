@@ -1,0 +1,20 @@
+Word type {
+	",E" : "Comma for element", 
+	",S" : "Comma for sentence", 
+	"NC" : "Noun common", 
+	"NP" : "Noun proper", 
+	"P_" : "Pronoun", 
+	"PP" : "Personal Pronoun", 
+	"V_" : "Verb", 
+	"VA" : "Verb Auxilary", 
+	"J_" : "Adjective", 
+	"BE" : "Adverb for element", 
+	"BS" : "Adverb for sentence", 
+	"R_" : "Preposition", 
+	"CE" : "Conjunction for element", 
+	"CS" : "Conjunction for sentence", 
+	"IJ" : "Interjection",
+	"UW" : "Unknown word",
+	"US" : "Unknown symbol"
+}
+	

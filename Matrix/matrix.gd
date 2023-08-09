@@ -321,7 +321,6 @@ func _mul_t_fast(mat:Matrix, thread_count)->Matrix:
 static func _mul(mat1:Matrix, mat2:Matrix, from:int, to:int):
 	var result:Array[PackedFloat64Array]
 	result.resize(to - from)
-#	print(from, to)
 	for r in range(from, to):
 		var row_result:PackedFloat64Array = []
 		row_result.resize(mat2.col_size)
@@ -337,7 +336,6 @@ static func _mul(mat1:Matrix, mat2:Matrix, from:int, to:int):
 static func _mul_t(mat1:Matrix, mat2:Matrix, from:int, to:int):
 	var result:Array[PackedFloat64Array]
 	result.resize(to - from)
-#	print(from, to)
 	for r in range(from, to):
 		var row_result:PackedFloat64Array = []
 		row_result.resize(mat2.row_size)
@@ -375,16 +373,37 @@ func div_self_by_number(number:float)->Matrix:
 			data[r][c] /= number
 	return self
 
+func min_self_selected_row(numbers:PackedFloat64Array, at:int)->Matrix:
+	if numbers.size() != col_size:
+		printerr("Invalid col size for add_self_selected_row!")
+		return null
+	if at > row_size:
+		printerr("Invalid row index for add_self_selected_row!")
+		return null
+	var row = data[at]
+	for c in range(col_size):
+		row[c] += numbers[c]
+	return self
+
+func min_self_selected_col(numbers:PackedFloat64Array, at:int)->Matrix:
+	if numbers.size() != row_size:
+		printerr("Invalid row size for add_self_selected_row!")
+		return null
+	if at > col_size:
+		printerr("Invalid col index for add_self_selected_row!")
+		return null
+	for r in range(row_size):
+		data[r][at] += numbers[r]
+	return self
+
 func transpose()->Matrix:
 	var result:Matrix = Matrix.new().init(self.col_size, self.row_size)
-	
 	for r in range(self.col_size):
 		var arr:PackedFloat64Array = []
 		arr.resize(self.row_size)
 		for c in range(self.row_size):
 			arr[c] = self.data[c][r]
 		result.data[r] = arr
-#	print(result)
 	return result
 
 func self_transpose()->Matrix:
@@ -512,6 +531,8 @@ func self_concat_row(mat:Matrix)->Matrix:
 func sub_row(from:int, to:int)->Matrix:
 	return Matrix.new().fill_force( data.slice(from, to, 1, true) )
 
+#func 
+
 func self_concat_row_by_array(data:Array[PackedFloat64Array])->Matrix:
 	if col_size != data.size():
 		printerr("must be the same row size!")
@@ -547,6 +568,16 @@ func foreach_row(callable:Callable):
 	for r in range(row_size):
 		result[r] = callable.call(data[r])
 	
+	return result
+
+func get_row(at:int)->PackedFloat64Array:
+	return data[at].duplicate()
+
+func get_col(at:int)->PackedFloat64Array:
+	var result:PackedFloat64Array
+	result.resize(row_size)
+	for r in range(row_size):
+		result[r] = data[r][at]
 	return result
 
 func set_row_size(v):
@@ -597,12 +628,21 @@ func is_square()->bool:
 		return false
 
 func _to_string():
-	var s:String
-	for  i in range(row_size):
-		s += str(data[i]) + "\n"
-	return s
+#	var s:String
+#	for  i in range(row_size):
+#		s += str(data[i]) + "\n"
+#	return s
+	return str(_to_dict())
 
 func _to_dict():
+	var dict:Dictionary = {
+		"row" : row_size,
+		"col" : col_size,
+		"data" : data.duplicate(true)
+	}
+	return dict
+
+func to_dict():
 	var dict:Dictionary = {
 		"row" : row_size,
 		"col" : col_size,
@@ -619,6 +659,10 @@ func load_from_dict(_data:Dictionary):
 #	var __data = (_data["data"] as Array[PackedFloat64Array]).duplicate(true)
 #	data = __data
 	return self
+
+func load_from_string(_data_s:String):
+	var _data = JSON.parse_string(_data_s)
+	return load_from_dict(_data)
 
 func load(path:String):
 	var file = FileAccess.open(path, FileAccess.READ)

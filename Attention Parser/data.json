@@ -1,0 +1,93 @@
+{
+	"words": {
+		"is": {
+			"b": {
+
+			},
+			"a": {
+
+			},
+			"matrix": "{ \"row\": 1, \"col\": 17, \"data\": [[-1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1]] }"
+		},
+		"a": {
+			"b": {
+
+			},
+			"a": {
+
+			},
+			"matrix": "{ \"row\": 1, \"col\": 17, \"data\": [[-1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, -1]] }"
+		},
+		"smart": {
+			"b": {
+
+			},
+			"a": {
+
+			},
+			"matrix": "{ \"row\": 1, \"col\": 17, \"data\": [[-1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, -1]] }"
+		},
+		"man": {
+			"b": {
+
+			},
+			"a": {
+
+			},
+			"matrix": "{ \"row\": 1, \"col\": 17, \"data\": [[-1, -1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]] }"
+		},
+		"like": {
+			"b": {
+
+			},
+			"a": {
+
+			},
+			"matrix": "{ \"row\": 1, \"col\": 17, \"data\": [[-1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]] }"
+		}
+	},
+	"names": {
+		"the": {
+			"thinker": {
+
+			},
+			"alexander": {
+				"great": {
+
+				}
+			},
+			"great": {
+				"alexander": {
+
+				}
+			}
+		},
+		"alexander": {
+			"the": {
+				"great": {
+
+				}
+			}
+		}
+	},
+	"types": {
+		",E": "Comma for element",
+		",S": "Comma for sentence",
+		"NC": "Noun common",
+		"NP": "Noun proper",
+		"P_": "Pronoun",
+		"PP": "Pronoun Posessive",
+		"V_": "Verb",
+		"VA": "Verb Auxilary",
+		"J_": "Adjective",
+		"JA": "Adjective Article",
+		"BE": "Adverb for element",
+		"BS": "Adverb for sentence",
+		"R_": "Preposition",
+		"CE": "Conjunction for element",
+		"CS": "Conjunction for sentence",
+		"IJ": "Interjection",
+		"UW": "Unknown word",
+		"US": "Unknown symbol"
+	}
+}

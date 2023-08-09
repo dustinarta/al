@@ -103,82 +103,141 @@ func load(path:String):
 	output_keys = Output_id.keys()
 
 func forward(input:String):
+	clean()
 	var input_split = split_string(input)
+	var input_id = input_words_to_ids(input_split)
+	self.result.append(input_id)
 	
-	var input_vector = input_words_to_vectors( input_split )
+	var input_vector = input_ids_to_vectors( input_id )
 	self.result.append(input_vector.duplicate())
-	var pos_encoding = positional_encoding(input_vector.row_size)
 	
+	var pos_encoding = positional_encoding(input_vector.row_size)
 	input_vector.add_self(pos_encoding)
 	self.result.append(input_vector.duplicate())
+	
 	var input_query = input_vector.mul(Query)
 	var input_key = input_vector.mul(Key)
 	var input_value = input_vector.mul(Value)
 	self.result.append([input_query, input_key, input_value])
+	
 	var s = input_query.mul_t(input_key).div_self_by_number(sqrt(VECTOR_SIZE)).softmax()
-#	print("S is ", s.data)
 	self.result.append(s)
-	var attention = s.mul(input_value)
+	
+	var attention = s.mul(input_value).add(input_vector)
 	
 #	print("before softmax")
 	var output = attention.mul_t( Output_vector ).softmax()
 	self.result.append(output)
 #	print("after softmax")
 	
+	var output_id:PackedInt64Array
+	output_id.resize(output.row_size)
 	var result:PackedStringArray
 	result.resize(output.row_size)
 	for i in range(output.row_size):
-		result[i] = output_keys[ highest( output.data[i] ) ]
+		var id = highest(output.data[i])
+		output_id[i] = id
+		result[i] = output_keys[ id ]
+	self.result.append(output_id)
 	return result
 
-func backward(input:String, expected:String):
+func backward(input:String, expected:String, rate:float = 0.1):
 	var forward_result = forward(input)
 	var output_split = expected.split(" ")
 	var output_vector = output_words_to_vectors( output_split )
 	
-	var input_vector:Matrix = self.result[0]
-	var input_vector_pe:Matrix = self.result[1]
-	var input_query:Matrix = self.result[2][0]
-	var input_key:Matrix = self.result[2][1]
-	var input_value:Matrix = self.result[2][2]
-	var s:Matrix = self.result[3]
+	var input_id:PackedInt64Array = self.result[0]
+	var input_vector:Matrix = self.result[1]
+	var input_vector_pe:Matrix = self.result[2]
+	var input_query:Matrix = self.result[3][0]
+	var input_key:Matrix = self.result[3][1]
+	var input_value:Matrix = self.result[3][2]
+	var s:Matrix = self.result[4]
 	var s_d:Matrix = s.derivative_softmax()
-	var output:Matrix = self.result[4]
+	var output:Matrix = self.result[5]
 	var output_d:Matrix = output.derivative_softmax()
-#	print(output)
+	var output_id:PackedInt64Array = self.result[6]
+#	print(output_id)
 #	print(output.derivative_softmax())
 	var expected_output:Matrix = generate_output( output_split )
 	var error:Matrix = output.min(expected_output)
 	
+	rate = 0.1
 	var new_wQ = input_vector_pe.transpose().mul( (error.mul2(output_d)).mul(Output_vector).mul_t(input_value).mul2(s_d).mul(input_key) )
-	new_wQ.mul_self_by_number(0.1)
+	new_wQ.mul_self_by_number(rate)
 	Query.min_self(new_wQ)
-	
+
 	var new_wK = (error.mul2(output_d)).mul(Output_vector).mul_t(input_value).mul2(s_d).mul(input_vector_pe).transpose().mul(input_query)
-	new_wK.mul_self_by_number(0.1)
+	new_wK.mul_self_by_number(rate)
 	Key.min_self(new_wK)
-	
+
 	var new_wV = input_vector_pe.transpose().mul_t(s).mul(error.mul2(output_d)).mul( Output_vector )#
-	new_wV.mul_self_by_number(0.1)
+	new_wV.mul_self_by_number(rate)
 	Value.min_self(new_wV)
 	
-	var new_O = error.mul2(output_d).transpose().mul(s).mul(input_value)
-	new_O.mul_self_by_number(0.1)
-	Output_vector.min_self(new_O)
-#	print(new_O)
+	var new_wO = error.mul2(output_d).transpose().mul( s.mul(input_value) )
+#	var new_wO = s.mul(input_value).transpose().mul(error.mul2(output_d)).transpose()
+	new_wO.mul_self_by_number(0.1)
+	Output_vector.min_self(new_wO)
+#	print(new_wO)
 	
-	return new_O
+	var new_wI1 = (error.mul2(output_d)).mul(Output_vector).mul_t(input_value).mul2(s_d).mul(input_key).mul_t(Query)
+	var new_wI2 = (error.mul2(output_d)).mul(Output_vector).mul_t(input_value).mul2(s_d).transpose().mul(input_query).mul_t(Key)
+	var new_wI3 = s.transpose().mul(error.mul2(output_d)).mul(Output_vector).mul_t(Value)
+	var new_wI = new_wI1.add(new_wI2).add(new_wI3).mul_self_by_number(0.1)
+	new_wI.mul_self_by_number(0.1)
+	for i in range(input_id.size()):
+		Input_vector.min_self_selected_row( new_wI.data[i], input_id[i] )
+	
+#	print(new_wO)
+	return true
 
 func clean()->void:
 	self.result.clear()
 
-func input_words_to_vectors(split:PackedStringArray):
+func input_ids_to_vectors(ids:PackedInt64Array):
+	var size:int = ids.size()
+	var matrix:Matrix = Matrix.new()
+	var result:Array[PackedFloat64Array]
+	result.resize(size)
+	for i in range(size):
+		result[i] = Input_vector.data[i] as PackedFloat64Array
+	matrix.fill_force(result)
+	return matrix
+
+func input_words_to_ids(split:PackedStringArray)->PackedInt64Array:
+	var size:int = split.size()
+	var result:PackedInt64Array
+	result.resize(size)
+	for i in range(size):
+		result[i] = Input_id[split[i]]
+	return result
+
+func input_words_to_vectors(split:PackedStringArray)->Matrix:
 	var result:Array[PackedFloat64Array]
 	var matrix:Matrix = Matrix.new()
 	for s in split:
 		result.append( Input_vector.data[Input_id[s]] as PackedFloat64Array )
 	matrix.fill_force(result)
 	return matrix
+
+func output_ids_to_vectors(ids:PackedInt64Array):
+	var size:int = ids.size()
+	var matrix:Matrix = Matrix.new()
+	var result:Array[PackedFloat64Array]
+	result.resize(size)
+	for i in range(size):
+		result[i] = Output_vector.get_col(ids[i]) as PackedFloat64Array
+	matrix.fill_force(result)
+	return matrix
+
+func output_words_to_ids(split:PackedStringArray)->PackedInt64Array:
+	var size:int = split.size()
+	var result:PackedInt64Array
+	result.resize(size)
+	for i in range(size):
+		result[i] = Output_id[split[i]]
+	return result
 
 func output_words_to_vectors(split:PackedStringArray):
 	var result:Array[PackedFloat64Array]

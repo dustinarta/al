@@ -1,9 +1,9 @@
-CodeEdit
-VBoxContainer
 Button
 TextEdit
-Label
 HBoxContainer
+VBoxContainer
+CodeEdit
+Label
 LineEdit
 PanelContainer
 Panel

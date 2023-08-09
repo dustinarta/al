@@ -46,7 +46,7 @@ func _run():
 #		]
 #	)
 	SimpleTransformer.create(
-		"res://Simple Transformer/test memory.json", 8,
+		"res://Simple Transformer/test memory.json", 64,
 		input.keys(),
 		output.keys()
 	)

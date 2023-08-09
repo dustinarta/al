@@ -1,0 +1,48 @@
+[gd_scene load_steps=2 format=3 uid="uid://cwijd7caaha1r"]
+
+[ext_resource type="Script" path="res://Attention Parser/parser.gd" id="1_73mut"]
+
+[node name="parser" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_73mut")
+
+[node name="main_container" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="input_cointainer" type="VBoxContainer" parent="main_container"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="main_container/input_cointainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="input_text" type="TextEdit" parent="main_container/input_cointainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "a a s 		  cefcvevc
+evfvrfv
+rvvr"
+draw_tabs = true
+draw_spaces = true
+
+[node name="Button" type="Button" parent="main_container/input_cointainer/HBoxContainer"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "Update"
+
+[node name="edit_container" type="VBoxContainer" parent="main_container"]
+layout_mode = 2
+size_flags_vertical = 6

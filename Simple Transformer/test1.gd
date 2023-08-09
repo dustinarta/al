@@ -10,14 +10,23 @@ func _run():
 #	res = st.forward("i have")
 #	print(res)
 #	return
-	res = st.backward("i have", "P_ V_")
-	return
+	res = st.backward("i have a dog", "P_ V_ J_ NC")
+#	return
 #	print(res)
-#	for i in range(10):
-#		res = st.backward("i", "P_")
+	for i in range(100):
+		res = st.backward("i have a dog", "P_ V_ J_ NC")
+		if res == null:
+			printerr("error")
+			break
+#		res = st.backward("i have", "P_ V_")
+#		if res == null:
+#			printerr("error")
+#			break
 	
 	res = st.forward("i have")
 	print(res)
+	res = st.forward("i have a dog")
+	print(res)
 #	print(st.Output_vector)
 #	print( st.generate_output(["P_", "PP", ",E"]) )
-#	st.save("res://Simple Transformer/test memory.json")
+	st.save("res://Simple Transformer/test memory.json")
