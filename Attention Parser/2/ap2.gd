@@ -96,6 +96,28 @@ func get_name(words:PackedStringArray, index:int, result:PackedStringArray):
 		break
 	return index
 
+func get_branch(words:PackedStringArray, index:int, result:PackedStringArray)->bool:
+	var size = words.size()
+	if index+1 == size:
+		return false
+	var j:int = 1
+	var i:int = index
+	var word_block:Dictionary = Words[words[i]]
+	if word_block.has(">W"):
+		word_block = word_block[">W"]
+#		print("here")
+		while i+1 < size:
+			var next_word = words[i+1]
+#			print("next_word ", next_word)
+			if word_block.has(next_word):
+				word_block = word_block[next_word]
+			else:
+				if word_block.has("#"):
+					result[index] = word_block["#"]
+					return true
+			i += 1
+	return false
+
 func read(sentence:String):
 	var words:PackedStringArray = parse_word(sentence)
 	var size = words.size()
@@ -104,16 +126,42 @@ func read(sentence:String):
 	var i:int = 0
 	while i < size:
 		var word = words[i]
-		var j = get_name(words, i, result)
-		if j > i:
-			i = j
-			continue
+#		var j = get_name(words, i, result)
+		if i+1 != size:
+			var j:int = i
+			var word_block:Dictionary = Words[words[j]]
+			if word_block.has(">W"):
+				word_block = word_block[">W"]
+		#		print("here")
+				while j+1 < size:
+					var next_word = words[j+1]
+		#			print("next_word ", next_word)
+					if word_block.has(next_word):
+						word_block = word_block[next_word]
+					else:
+						if word_block.has("#"):
+							result[i] = word_block["#"]
+						break
+					j += 1
+				if j != i:
+					i += 1
+					continue
+			j = i + 1
+			if word_block.has(">T"):
+				word_block = word_block[">T"]
+				var next_block = Words[words[j]]
+				if next_block.has("#"):
+					var next_type = next_block["#"]
+					if word_block.has(next_type):
+						result[i] = word_block[next_type]
+						i += 1
+						continue
 		if Words.has(word):
 			result[i] = Words[word]["#"]
 		i += 1
 	return result
 
-func learn(word_s:String, type_s:String):
+func learn_base(word_s:String, type_s:String):
 	var words:PackedStringArray = parse_word(word_s)
 	var types:PackedStringArray = type_s.split(" ", false)
 	var size = words.size()
@@ -132,10 +180,15 @@ func learn(word_s:String, type_s:String):
 				"#" : types[i]
 			}
 		i += 1
-	
 
 func is_spesial_character(sc:String):
 	return sc in ",.:;'\""
+
+func is_aplhabet(letter:String):
+	return letter in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func is_number(number:String):
+	return number in "0123456789"
 
 func parse_word(sentence:String):
 	sentence = sentence.to_lower()
@@ -166,3 +219,171 @@ func highest(numbers:PackedFloat64Array):
 		if numbers[i] > numbers[highest]:
 			highest = i
 	return highest
+
+func parse_phrase(words:PackedStringArray, types:PackedStringArray):
+	var size:int = words.size()
+	var packedphrase = PackedPhrase.new()
+	var i = 0
+	while i < size:
+		var type:String = types[i]
+		var type1:String = type[0]
+		var type2:String = type[1]
+		if type1 == "N":
+			var phrase:Phrase = Phrase.parse_noun(words, types, i, size)
+			if phrase == null:
+				printerr("parsing error! at index ", i)
+				return null
+			i += phrase.size
+			packedphrase.append(
+				phrase
+			)
+		elif type1 == "J":
+			var phrase:Phrase = Phrase.parse_adjective(words, types, i, size)
+			if phrase == null:
+				printerr("parsing error! at index ", i)
+				return null
+			i += phrase.size
+			packedphrase.append(
+				phrase
+			)
+		elif type1 == "V":
+			var phrase:Phrase = Phrase.parse_verb(words, types, i, size)
+			if phrase == null:
+				printerr("parsing error! at index ", i)
+				return null
+			i += phrase.size
+			packedphrase.append(
+				phrase
+			)
+		print(i)
+	return packedphrase
+
+class PackedPhrase:
+	var phrases:Array[Phrase]
+	
+	func _init():
+		pass
+	
+	func append(phrase:Phrase):
+		phrases.append(phrase)
+	
+	func _to_string():
+		return str(phrases)
+	
+
+class Phrase:
+	var phrasetype:En.PHRASE_TYPE
+	var words:PackedStringArray
+	var types:PackedStringArray
+	var size:int
+	
+	func _init():
+		size = 0
+	
+	func append(word:String, type:String):
+		words.append(word)
+		types.append(type)
+		size += 1
+	
+	func steal(phrase:Phrase):
+		words.append_array(phrase.words)
+		types.append_array(phrase.types)
+		size += phrase.size
+	
+	func _to_string():
+		var s:String = "["
+		s += " ".join(words) + ", "
+		s += " ".join(types) + "]"
+		return s
+	
+	static func parse_noun(words:PackedStringArray, types:PackedStringArray, index:int, limit:int)->Phrase:
+		var phrase:Phrase = Phrase.new()
+		var i:int = index
+		var type = types[i]
+		var type1 = type[0]
+		var type2 = type[1]
+		if type1 != "N":
+			return null
+		if type2 == "P":
+			while i < limit:
+				type = types[i]
+				if type == "NP":
+					phrase.append(words[i], "NP")
+				else:
+					break
+				i += 1
+			return phrase
+		elif type2 == "C":
+			while i < limit:
+				type = types[i]
+				if type == "NC":
+					phrase.append(words[i], "NC")
+				else:
+					break
+				i += 1
+			return phrase
+		else:
+			printerr("Unrecognized ", type)
+		return null
+	
+	static func parse_verb(words:PackedStringArray, types:PackedStringArray, index:int, limit:int)->Phrase:
+		var phrase:Phrase = Phrase.new()
+		var i:int = index
+		var type = types[i]
+		var type1 = type[0]
+		var type2 = type[1]
+		if type1 != "V":
+			return null
+		phrase.append(words[index], type)
+		if type2 == "A":
+			i += 1
+			if i >= limit:
+				return phrase
+			var next_type = types[i]
+			var next_type1 = next_type[0]
+			var next_type2 = next_type[1]
+			
+			if next_type1 == "V":
+				if next_type2 == "_":
+					phrase.append(words[i], "V_")
+				elif next_type2 == "A":
+					phrase.append(words[i], "VA")
+				return phrase
+		elif type2 == "M":
+			i += 1
+			if i >= limit:
+				return phrase
+			var next_type = types[i]
+			var next_type1 = next_type[0]
+			var next_type2 = next_type[1]
+			
+			if next_type1 == "V":
+				if next_type2 == "A":
+					phrase.append(words[i], "VA")
+				return phrase
+		elif type2 == "_":
+			return phrase
+		return null
+	
+	static func parse_adjective(words:PackedStringArray, types:PackedStringArray, index:int, limit:int)->Phrase:
+		var phrase:Phrase = Phrase.new()
+		var i:int = index
+		var type = types[i]
+		var type1 = type[0]
+		var type2 = type[1]
+		if type1 != "J":
+			return null
+		phrase.append(words[i], type)
+		if type2 == "A":
+			i += 1
+			if i >= limit:
+				return phrase
+			var next_type = types[i]
+			var next_type1 = next_type[0]
+			var next_type2 = next_type[1]
+			if next_type1 == "N":
+				phrase.steal(
+					Phrase.parse_noun(words, types, i, limit)
+				)
+				return phrase
+		return null

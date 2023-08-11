@@ -8,15 +8,27 @@ func _run():
 	ap.load("res://Attention Parser/2/data.json")
 	var res
 #	res = ap.read("i have a dog")
-	res = ap.read("the thinker is a good man")
+#	res = ap.read("the great alexander is a good man")
+#	res = ap.read("he move the table")
+	res = ap.parse_phrase(
+		"the dog is running".split(" "), 
+		"JA NC VA V_".split(" ")
+	)
 	print(res)
 #	ap.Words["the"]["thinker"]
-#	ap.learn(
-#		"i have a dog",
-#		"P_ VA JA NC"
+#	ap.learn_base(
+#		"is running",
+#		"VA V_"
 #	)
 #	ap.learn(
 #		"the thinker is a good man",
 #		"NP NP VA JA J_ NC"
 #	)
+	
+#	ap.learn(
+#		"myself yourself themself ourself himself herself itself",
+#		"P_ P_ P_ P_ P_ P_ P_"
+#	)
+	
+	
 #	ap.save("res://Attention Parser/2/data.json")

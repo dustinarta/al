@@ -13,14 +13,31 @@
 			"#": "NC"
 		},
 		"the": {
-			"great": {
+			">W": {
+				"great": {
+					"alexander": {
+						"#": "NP"
+					}
+				},
+				"thinker": {
+					"#": "NP"
+				}
+			},
+			"#": "JA"
+		},
+		"thinker": {
+			"#": "NP"
+		},
+		"great": {
+			">W": {
 				"alexander": {
 					"#": "NP"
 				}
 			},
-			"thinker": {
-				"#": "NP"
-			}
+			"#": "J_"
+		},
+		"alexander": {
+			"#": "NP"
 		},
 		"is": {
 			"#": "VA"
@@ -30,11 +47,106 @@
 		},
 		"man": {
 			"#": "NC"
+		},
+		"like": {
+			"#": "V_"
+		},
+		"you": {
+			"#": "P_"
+		},
+		"they": {
+			"#": "P_"
+		},
+		"we": {
+			"#": "P_"
+		},
+		"he": {
+			"#": "P_"
+		},
+		"she": {
+			"#": "P_"
+		},
+		"it": {
+			"#": "P_"
+		},
+		"me": {
+			"#": "P_"
+		},
+		"them": {
+			"#": "P_"
+		},
+		"us": {
+			"#": "P_"
+		},
+		"him": {
+			"#": "P_"
+		},
+		"her": {
+			">T": {
+				"J_": "PP",
+				"BE": "PP",
+				"NC": "PP"
+			},
+			"#": "P_"
+		},
+		"mine": {
+			"#": "P_"
+		},
+		"yours": {
+			"#": "P_"
+		},
+		"ours": {
+			"#": "P_"
+		},
+		"his": {
+			">T": {
+				"J_": "PP",
+				"BE": "PP",
+				"NC": "PP"
+			},
+			"#": "P_"
+		},
+		"hers": {
+			"#": "P_"
+		},
+		"myself": {
+			"#": "P_"
+		},
+		"yourself": {
+			"#": "P_"
+		},
+		"themself": {
+			"#": "P_"
+		},
+		"ourself": {
+			"#": "P_"
+		},
+		"himself": {
+			"#": "P_"
+		},
+		"herself": {
+			"#": "P_"
+		},
+		"itself": {
+			"#": "P_"
+		},
+		"move": {
+			"#": "V_"
+		},
+		"table": {
+			"#": "NC"
+		},
+		"running": {
+			"#": "V_"
 		}
 	},
 	"types": {
 		",E": "Comma for element",
 		",S": "Comma for sentence",
+		"'_": "Single Quote",
+		"\"_": "Double Quote",
+		"UW": "Unknown word",
+		"US": "Unknown symbol",
 		"NC": "Noun common",
 		"NP": "Noun proper",
 		"P_": "Pronoun",
@@ -51,8 +163,6 @@
 		"R_": "Preposition",
 		"CE": "Conjunction for element",
 		"CS": "Conjunction for sentence",
-		"IJ": "Interjection",
-		"UW": "Unknown word",
-		"US": "Unknown symbol"
+		"IJ": "Interjection"
 	}
 }
