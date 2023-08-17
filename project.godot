@@ -21,7 +21,6 @@ English="*res://English/src/english.gd"
 SBA="*res://Sentence Based Algorithm/1/sba.gd"
 BOW="*res://Block Of Words/bow.gd"
 DS="*res://Data Structure/ds.gd"
-DAT="*res://Dustin Arta Transformer/dat.gd"
 
 [display]
 

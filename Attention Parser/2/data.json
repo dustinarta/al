@@ -1,5 +1,9 @@
 {
 	"words": {
+		",": {
+			"#": ",_",
+			"?": [",E", ",S"]
+		},
 		"i": {
 			"#": "P_"
 		},
@@ -10,6 +14,9 @@
 			"#": "JA"
 		},
 		"dog": {
+			"#": "NC"
+		},
+		"cat": {
 			"#": "NC"
 		},
 		"the": {
@@ -42,6 +49,9 @@
 		"is": {
 			"#": "VA"
 		},
+		"are": {
+			"#": "VA"
+		},
 		"good": {
 			"#": "J_"
 		},
@@ -50,6 +60,9 @@
 		},
 		"like": {
 			"#": "V_"
+		},
+		"big": {
+			"#": "J_"
 		},
 		"you": {
 			"#": "P_"
@@ -84,10 +97,25 @@
 		"her": {
 			">T": {
 				"J_": "PP",
-				"BE": "PP",
+				"BV": "PP",
 				"NC": "PP"
 			},
 			"#": "P_"
+		},
+		"my": {
+			"#": "PP"
+		},
+		"your": {
+			"#": "PP"
+		},
+		"their": {
+			"#": "PP"
+		},
+		"our": {
+			"#": "PP"
+		},
+		"its": {
+			"#": "PP"
 		},
 		"mine": {
 			"#": "P_"
@@ -101,7 +129,7 @@
 		"his": {
 			">T": {
 				"J_": "PP",
-				"BE": "PP",
+				"BV": "PP",
 				"NC": "PP"
 			},
 			"#": "P_"
@@ -130,6 +158,12 @@
 		"itself": {
 			"#": "P_"
 		},
+		"this": {
+			"#": "PP"
+		},
+		"that": {
+			"#": "PP"
+		},
 		"move": {
 			"#": "V_"
 		},
@@ -138,15 +172,100 @@
 		},
 		"running": {
 			"#": "V_"
+		},
+		"boy": {
+			"#": "NC"
+		},
+		"in": {
+			"#": "R_"
+		},
+		"on": {
+			"#": "R_"
+		},
+		"at": {
+			"#": "R_"
+		},
+		"run": {
+			"#": "V_"
+		},
+		"and": {
+			"#": "C_",
+			"?": ["CE", "CS"]
+		},
+		"or": {
+			"#": "C_",
+			"?": ["CE", "CS"]
+		},
+		"but": {
+			"#": "C_",
+			"?": ["CE", "CS"]
+		},
+		"if": {
+			"#": "CS"
+		},
+		"too": {
+			"#": "BM"
+		},
+		"very": {
+			"#": "BM"
+		},
+		"so": {
+			"#": "CS",
+			"?": ["BM", "CS"]
+		},
+		"what": {
+			"#": "PR"
+		},
+		"who": {
+			"#": "PR"
+		},
+		"whos": {
+			"#": "PR"
+		},
+		"whose": {
+			"#": "PR"
+		},
+		"which": {
+			"#": "PR"
+		},
+		"where": {
+			"#": "PR"
+		},
+		"when": {
+			"#": "PR"
+		},
+		"why": {
+			"#": "PR"
+		},
+		"how": {
+			"#": "PR"
+		},
+		"quickly": {
+			"#": "BV"
+		},
+		"climb": {
+			"#": "V_"
+		},
+		"tree": {
+			"#": "NC"
+		},
+		"fell": {
+			"#": "V_"
+		},
+		"backyard": {
+			"#": "NC"
+		},
+		"almost": {
+			"#": "BV"
+		},
+		"climbing": {
+			"#": "V_"
 		}
 	},
 	"types": {
-		",E": "Comma for element",
-		",S": "Comma for sentence",
-		"'_": "Single Quote",
-		"\"_": "Double Quote",
 		"UW": "Unknown word",
-		"US": "Unknown symbol",
+		"UY": "Unknown symbol",
+		"N_": "Noun",
 		"NC": "Noun common",
 		"NP": "Noun proper",
 		"P_": "Pronoun",
@@ -158,11 +277,25 @@
 		"VP": "Verb Participle",
 		"J_": "Adjective",
 		"JA": "Adjective Article",
-		"BE": "Adverb for element",
+		"B_" : "Adverb",
+		"BM": "Adverb Modifier",
+		"BV": "Adverb for verb",
 		"BS": "Adverb for sentence",
 		"R_": "Preposition",
-		"CE": "Conjunction for element",
-		"CS": "Conjunction for sentence",
-		"IJ": "Interjection"
+		"F_": "Infinitive",
+		"C_" : "Conjunction",
+		"CE": "Conjunction of element",
+		"CS": "Conjunction of sentence",
+		"I_": "Interjection",
+		",_": "Comma",
+		",E": "Comma for element",
+		",S": "Comma for sentence",
+		"._": "Period",
+		":_": "Double Colon",
+		";_": "Semi Colon",
+		"'_": "Single Quote",
+		"\"_": "Double Quote",
+		"/_": "Forward Slash",
+		"\\_": "Backward Slash"
 	}
 }

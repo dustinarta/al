@@ -6,15 +6,26 @@ extends EditorScript
 func _run():
 	var ap = AP2.new()
 	ap.load("res://Attention Parser/2/data.json")
-	var res
+	var res1
+	var res2
 #	res = ap.read("i have a dog")
 #	res = ap.read("the great alexander is a good man")
 #	res = ap.read("he move the table")
-	res = ap.parse_phrase(
-		"the dog is running".split(" "), 
-		"JA NC VA V_".split(" ")
+#	res = ap.parse_phrase(
+#		"the dog is running in park".split(" "), 
+#		"JA NC VA V_ R_ NC".split(" ")
+#	)
+	res1 = ap.parse_phrase_s(
+#		"my dog is too big"
+#		"he climb the tree and he fell"
+		"my dog and cat are climbing the very big tree in that backyard and almost fell"
 	)
-	print(res)
+	print(res1)
+	res2 = ap.guess_phrase(res1)
+	print(res2)
+	res1.apply(res2)
+	print(res1)
+	
 #	ap.Words["the"]["thinker"]
 #	ap.learn_base(
 #		"is running",

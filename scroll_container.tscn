@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://2q8nlc3uykw1"]
+
+[node name="ScrollContainer" type="ScrollContainer"]
+custom_minimum_size = Vector2(100, 0)
+offset_right = 40.0
+offset_bottom = 40.0
+scroll_horizontal = 16
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Text1"
+
+[node name="Label2" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Text1"
+
+[node name="Label3" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Text1"
+
+[node name="Label4" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Text1"

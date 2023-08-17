@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://b0nmi7sy51qjx"]
+
+[node name="phrase_data" type="VBoxContainer"]

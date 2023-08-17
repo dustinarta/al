@@ -1,0 +1,65 @@
+{
+	"sentence": "my dog and cat are climbing the very big tree in that backyard and almost fell",
+	"data": [
+		[
+			{
+				"@": "subject",
+				"C": "and",
+				"$": [
+					{
+						"#": "P",
+						"P": "my",
+						"$": ["dog"]
+					},
+					{
+						"#": "N",
+						"$": ["cat"]
+					}
+				]
+			},
+			{
+				"@": "verb",
+				"A": "are",
+				"$": ["climbing"],
+				"O": {
+					"@": "object",
+					"$": {
+						"#": "N",
+						"J": [
+							{
+								"#": "J",
+								"B": "very",
+								"$": "big"
+							}
+						],
+						"$": ["tree"]
+					}
+				}
+			},
+			{
+				"@": "preposition",
+				"$": "in",
+				"O": {
+					"@": "object",
+					"$": {
+						"#": "P",
+						"P": "that",
+						"J": [],
+						"$": ["backyard"]
+					}
+				}
+			}
+		],
+		[
+			{
+				"@": "conjunction",
+				"$": "and"
+			},
+			{
+				"@": "verb",
+				"B<": "almost",
+				"$": ["fell"]
+			}
+		]
+	]
+}

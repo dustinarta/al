@@ -44,9 +44,8 @@ func _clause(paragraph:Array):
 #		pass
 
 func save(path)->void:
-	var file = File.new()
-	file.open(path, File.WRITE)
-	file.store_string(JSON.print(_data, "\t"))
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(_data, "\t", false))
 	
 #func find_description(req:Array):
 #	var reqlen = req.size()

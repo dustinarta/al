@@ -1,0 +1,92 @@
+[gd_scene load_steps=3 format=3 uid="uid://mnwrkd2x7sdp"]
+
+[ext_resource type="Script" path="res://Attention Parser/2/learn.gd" id="1_srvkm"]
+
+[sub_resource type="Theme" id="Theme_kstps"]
+BoxContainer/constants/separation = 10
+MarginContainer/constants/margin_bottom = 20
+MarginContainer/constants/margin_left = 20
+MarginContainer/constants/margin_right = 20
+MarginContainer/constants/margin_top = 20
+
+[node name="learn" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_kstps")
+script = ExtResource("1_srvkm")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="maincontainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="inputcontainer" type="HBoxContainer" parent="MarginContainer/maincontainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="inputtext" type="TextEdit" parent="MarginContainer/maincontainer/inputcontainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(700, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="inputbutton" type="Button" parent="MarginContainer/maincontainer/inputcontainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 4
+text = "Push"
+
+[node name="BoxContainer" type="BoxContainer" parent="MarginContainer/maincontainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/maincontainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/maincontainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/maincontainer/HBoxContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="editcontainer" type="ScrollContainer" parent="MarginContainer/maincontainer/HBoxContainer/PanelContainer/MarginContainer"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+
+[node name="elementcontainer" type="HBoxContainer" parent="MarginContainer/maincontainer/HBoxContainer/PanelContainer/MarginContainer/editcontainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="learnbutton" type="Button" parent="MarginContainer/maincontainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Learn"
+
+[node name="topphrasecontainer" type="ScrollContainer" parent="MarginContainer/maincontainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="phrasecontainer" type="HBoxContainer" parent="MarginContainer/maincontainer/topphrasecontainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[connection signal="pressed" from="MarginContainer/maincontainer/inputcontainer/inputbutton" to="." method="_on_inputbutton_pressed"]
+[connection signal="pressed" from="MarginContainer/maincontainer/HBoxContainer/learnbutton" to="." method="_on_learnbutton_pressed"]

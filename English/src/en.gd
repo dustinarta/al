@@ -83,7 +83,8 @@ enum PHRASE_TYPE {
 	Conjunctive,
 	Prepositional,
 	Infinitive,
-	Gerund
+	Gerund,
+	Symbol
 }
 
 enum CLAUSE_TYPE {
@@ -97,6 +98,11 @@ enum CLAUSE_TYPE {
 }
 
 var speech_list = [Noun.keys(), Pronoun.keys(), Verb.keys(), Adjective.keys(), Adverb.keys(), Conjunction.keys(), Preposition.keys(), Interjection.keys()]
+
+var phrase_list:PackedStringArray
+
+func _init():
+	phrase_list = PHRASE_TYPE.keys()
 
 static func speech_parse_string(current_type_int) -> String:
 	var speech_list = [Noun.keys(), Pronoun.keys(), Verb.keys(), Adjective.keys(), Adverb.keys(), Conjunction.keys(), Preposition.keys(), Interjection.keys()]

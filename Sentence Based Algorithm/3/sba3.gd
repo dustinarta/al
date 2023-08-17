@@ -1,5 +1,8 @@
 extends RefCounted
+## Using English Phrase Class
 class_name SBA3
+
+
 
 var sentences
 
