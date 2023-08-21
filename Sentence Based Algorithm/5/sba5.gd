@@ -13,23 +13,56 @@ func init_ap():
 func read_s(sentence:String):
 	return read(ap.parse_phrase_s(sentence))
 
-func read(packedphrase:AP2.PackedPhrase):
-	var guess = ap.guess_phrase(packedphrase)
-	packedphrase.apply(guess)
-	
-	var index:DS.Pointer = DS.Pointer.new()
+func read(packedphrase:AP2.PackedPhrase, index:DS.Pointer = DS.Pointer.new()):
+	var sentence:Sentence = Sentence.new()
+	var clause:Array[Dictionary]
 	index.data = -1
 	var limit:int = packedphrase.size()
 	var phrases:Array[AP2.Phrase] = packedphrase.phrases
 	while index.data+1 < limit:
 		index.data += 1
 		var phrase = phrases[index.data]
-		if phrase.phrasetype == En.PHRASE_TYPE.Noun:
+		if (phrase.phrasetype == En.PHRASE_TYPE.Noun
+			or 
+			phrase.phrasetype == En.PHRASE_TYPE.Pronoun):
 			var noun = eat_nouns(phrases, index, limit)
-			return noun
+			if not clause_has(clause, "subject"):
+				noun["@"] = "subject"
+			else:
+				noun["@"] = "noun?"
+			clause.append(noun)
 		elif phrase.phrasetype == En.PHRASE_TYPE.Verb:
 			var verb = eat_verb(phrases, index, limit)
-	
+			if clause_has(clause, "verb"):
+				verb["@"] = "verb?"
+			clause.append(verb)
+		elif phrase.phrasetype == En.PHRASE_TYPE.Relative:
+			clause.append({
+				"@": "relative",
+				"$": phrase.words[0]
+			})
+		elif phrase.phrasetype == En.PHRASE_TYPE.Adverb:
+			clause.append({
+				"@": "adverb",
+				"$": phrase.words.duplicate()
+			})
+		elif phrase.phrasetype == En.PHRASE_TYPE.Prepositional:
+			var preposition = eat_preposition(phrases, index, limit)
+			clause.append(preposition)
+		elif phrase.phrasetype == En.PHRASE_TYPE.Conjunctive:
+			sentence.clauses.append(clause)
+			clause = []
+			clause.append({
+				"@": "conjunction",
+				"$": phrase.words[0]
+			})
+		elif phrase.phrasetype == En.PHRASE_TYPE.Infinitive:
+			var infinitive = eat_infinitive(phrases, index, limit)
+			clause.append(infinitive)
+		else:
+			printerr("uncacthed! ", En.phrase_list[phrase.phrasetype])
+	sentence.clauses.append(clause)
+	return sentence
 
 func eat_noun(phrase:AP2.Phrase):
 	var words:PackedStringArray = phrase.words
@@ -50,6 +83,12 @@ func eat_noun(phrase:AP2.Phrase):
 		return clause
 	elif phrase.phrasetype == En.PHRASE_TYPE.Pronoun:
 		var clause = create_noun("P")
+		var pronoun = phrase.find_type("P")
+		if pronoun == -1:
+			printerr("invalid pronoun")
+			return null
+		clause["P"] = words[pronoun]
+		clause["J"] = digest_adjectives(phrase)
 		var nouns = phrase.find_type_all("NC")
 		if nouns.is_empty():
 			nouns = phrase.find_type_all("NP")
@@ -59,13 +98,21 @@ func eat_noun(phrase:AP2.Phrase):
 			for i in range(nouns.size()):
 				value[i] = words[ nouns[i] ]
 			clause["$"] = value
-		var pronoun = phrase.find_type("P")
-		if pronoun == -1:
-			printerr("invalid pronoun")
-			return null
-		clause["P"] = words[pronoun]
-		clause["J"] = digest_adjectives(phrase)
 		return clause
+	elif phrase.phrasetype == En.PHRASE_TYPE.Adjective:
+		var clause = {
+			"#": "J"
+		}
+		var adverb = phrase.find_type("B")
+		if adverb != -1:
+			clause["B"] = words[adverb]
+		var adjective = phrase.find_type("J")
+		if adjective == -1:
+			printerr("false adjective phrase")
+		clause["$"] = words[adjective]
+		return clause
+	else:
+		printerr("invalid noun phrase!")
 
 func eat_nouns(phrases:Array[AP2.Phrase], index:DS.Pointer, limit:int):
 	var nouns:Dictionary
@@ -78,6 +125,9 @@ func eat_nouns(phrases:Array[AP2.Phrase], index:DS.Pointer, limit:int):
 		noun = eat_noun(phrase)
 		nouns_p.append(noun)
 	elif phrase.phrasetype == En.PHRASE_TYPE.Pronoun:
+		noun = eat_noun(phrase)
+		nouns_p.append(noun)
+	elif phrase.phrasetype == En.PHRASE_TYPE.Adjective:
 		noun = eat_noun(phrase)
 		nouns_p.append(noun)
 	else:
@@ -99,6 +149,9 @@ func eat_nouns(phrases:Array[AP2.Phrase], index:DS.Pointer, limit:int):
 			elif nextphrase.phrasetype == En.PHRASE_TYPE.Pronoun:
 				noun = eat_noun(nextphrase)
 				nouns_p.append(noun)
+			elif nextphrase.phrasetype == En.PHRASE_TYPE.Adjective:
+				noun = eat_noun(nextphrase)
+				nouns_p.append(noun)
 			elif nextphrase.phrasetype == En.PHRASE_TYPE.Conjunctive:
 				if nextphrase.types[0] != "CE":
 					break
@@ -113,8 +166,12 @@ func eat_nouns(phrases:Array[AP2.Phrase], index:DS.Pointer, limit:int):
 				elif phrase.phrasetype == En.PHRASE_TYPE.Pronoun:
 					noun = eat_noun(phrase)
 					nouns_p.append(noun)
+				elif phrase.phrasetype == En.PHRASE_TYPE.Adjective:
+					noun = eat_noun(phrase)
+					nouns_p.append(noun)
 				else:
 					printerr("WTF")
+				index.data = i
 				break
 		elif phrase.phrasetype == En.PHRASE_TYPE.Conjunctive:
 			if phrase.types[0] != "CE":
@@ -130,6 +187,13 @@ func eat_nouns(phrases:Array[AP2.Phrase], index:DS.Pointer, limit:int):
 			elif nextphrase.phrasetype == En.PHRASE_TYPE.Pronoun:
 				noun = eat_noun(nextphrase)
 				nouns_p.append(noun)
+			elif nextphrase.phrasetype == En.PHRASE_TYPE.Adjective:
+				noun = eat_noun(nextphrase)
+				nouns_p.append(noun)
+			index.data = i
+			break
+		else:
+			break
 		i += 1
 #	print(nouns_p.size())
 	if nouns_p.size() == 1:
@@ -143,7 +207,7 @@ func eat_nouns(phrases:Array[AP2.Phrase], index:DS.Pointer, limit:int):
 			"C": conjunction,
 			"$": nouns_p
 		}
-	index.data = i-1
+	
 	return nouns
 
 func digest_adjectives(phrase:AP2.Phrase):
@@ -199,6 +263,80 @@ func eat_verb(phrases:Array[AP2.Phrase], index:DS.Pointer, limit:int):
 		for v in range(verbs.size()):
 			verbs_p[v] = words[ verbs[v] ]
 		verb["$"] = verbs_p
+	
+	index.data += 1
+	if index.data >= limit:
+		index.data -= 1
+		return verb
+	var nextphrase = phrases[index.data]
+	if nextphrase.phrasetype == En.PHRASE_TYPE.Noun:
+		var noun = eat_nouns(phrases, index, limit)
+		noun["@"] = "object"
+		verb["O"] = noun
+	elif nextphrase.phrasetype == En.PHRASE_TYPE.Pronoun:
+		var noun = eat_nouns(phrases, index, limit)
+		noun["@"] = "object"
+		verb["O"] = noun
+	elif nextphrase.phrasetype == En.PHRASE_TYPE.Adjective:
+		var noun = eat_nouns(phrases, index, limit)
+		noun["@"] = "object"
+		verb["O"] = noun
+	else:
+		index.data -= 1
+	return verb
+
+func eat_preposition(phrases:Array[AP2.Phrase], index:DS.Pointer, limit:int):
+	var phrase:AP2.Phrase = phrases[index.data]
+	if phrase.phrasetype != En.PHRASE_TYPE.Prepositional:
+		printerr("false verb phrase")
+	var words:PackedStringArray = phrase.words
+	var preposition:Dictionary = {
+		"@": "preposition",
+		"$": words[0],
+		"O": null
+	}
+	index.data += 1
+	if index.data >= limit:
+		index.data -= 1
+		return preposition
+	var nextphrase = phrases[index.data]
+	if nextphrase.phrasetype == En.PHRASE_TYPE.Noun:
+		var noun = eat_nouns(phrases, index, limit)
+		noun["@"] = "object"
+		preposition["O"] = noun
+	elif nextphrase.phrasetype == En.PHRASE_TYPE.Pronoun:
+		var noun = eat_nouns(phrases, index, limit)
+		noun["@"] = "object"
+		preposition["O"] = noun
+	elif nextphrase.phrasetype == En.PHRASE_TYPE.Adjective:
+		var noun = eat_nouns(phrases, index, limit)
+		noun["@"] = "object"
+		preposition["O"] = noun
+	else:
+		index.data -= 1
+	return preposition
+
+func eat_infinitive(phrases:Array[AP2.Phrase], index:DS.Pointer, limit:int):
+	var phrase:AP2.Phrase = phrases[index.data]
+	if phrase.phrasetype != En.PHRASE_TYPE.Infinitive:
+		printerr("false verb phrase")
+	var words:PackedStringArray = phrase.words
+	var infinitive:Dictionary = {
+		"@": "infinitive",
+		"$": words[0]
+	}
+	index.data += 1
+	if index.data >= limit:
+		index.data -= 1
+		return infinitive
+	var nextphrase = phrases[index.data]
+	if nextphrase.phrasetype == En.PHRASE_TYPE.Verb:
+		var verb = eat_verb(phrases, index, limit)
+		infinitive["V"] = verb
+	else:
+		printerr("false infinitive")
+		return null
+	return infinitive
 
 func create_noun(type_s:String)->Dictionary:
 	return {
@@ -258,14 +396,28 @@ func create_preposition()->Dictionary:
 		"O": null
 	}
 
+func clause_has(clause:Array[Dictionary], part:String):
+	for c in clause:
+		if c["@"] == part:
+			return true
+
 class Sentence:
 	var sentence:String
-	var data:Array
+	var clauses:Array
 	
 	func has_part(part_s:String):
-		for sentence in data:
+		for sentence in clauses:
 			for clause in sentence:
 				if clause["@"] == part_s:
 					return true
 		return false
+	
+	func to_str()->String:
+		var s:String = JSON.stringify(
+			clauses, "\t", false
+		)
+		return s
+	
+	func _to_string():
+		return to_str()
 	

@@ -15,11 +15,15 @@ func _run():
 #		"the dog is running in park".split(" "), 
 #		"JA NC VA V_ R_ NC".split(" ")
 #	)
+	res1 = ap.read_s("is big")
+	print(res1)
+	
 	res1 = ap.parse_phrase_s(
 #		"my dog is too big"
 #		"he climb the tree and he fell"
 #		"my dog and cat are climbing the very big tree in that backyard and almost fell"
-		"cat, dog, and frog are animal"
+#		"cat, dog, and frog are animal"
+		"not only me"
 	)
 	print(res1)
 	res2 = ap.guess_phrase(res1)

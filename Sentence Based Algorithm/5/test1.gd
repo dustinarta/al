@@ -10,13 +10,18 @@ func _run():
 	var res2
 	ap.load("res://Attention Parser/2/data.json")
 	sba.ap = ap
-	var sentence = "the dog, frog, and big cat"
+	var sentence
+#	sentence = "the dog, frog, and big cat are climbing the tree"
+#	sentence = "the dog and the cat is big and strong"
+#	sentence = "what is a dog in that tree"
+#	sentence = "is not only to save my dog"
+	sentence = "my dog is big if he was strong"
 #	res = ap.read_s("the big dog")
 	res1 = ap.parse_phrase_s(sentence)
 	res2 = ap.guess_phrase(res1)
 	res1.apply(res2)
 	print(res1)
 	res1 = sba.read(res1)
-	res1 = JSON.stringify(res1, "\t", false)
+#	res1 = JSON.stringify(res1, "\t", false)
 	
 	print(res1)

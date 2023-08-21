@@ -143,7 +143,7 @@ func shufle()->Matrix:
 			row[random.randi() % col_size] = random.randf_range(-0.9, 0.9)
 	return self
 
-func self_randomize(from:float = 10.0, to:float = 10.0)->Matrix:
+func self_randomize(from:float = -10.0, to:float = 10.0)->Matrix:
 	for r in range(row_size):
 		var row = self.data[r]
 		for c in range(col_size):

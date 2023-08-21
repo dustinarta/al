@@ -381,11 +381,15 @@ func guess_phrase(packedphrase:PackedPhrase):
 			if after != null and before != null:
 				if ((before.phrasetype == En.PHRASE_TYPE.Noun 
 					or 
-					before.phrasetype == En.PHRASE_TYPE.Pronoun)
+					before.phrasetype == En.PHRASE_TYPE.Pronoun
+					or 
+					before.phrasetype == En.PHRASE_TYPE.Adjective)
 					and 
 					(after.phrasetype == En.PHRASE_TYPE.Noun 
 					or 
-					after.phrasetype == En.PHRASE_TYPE.Pronoun)):
+					after.phrasetype == En.PHRASE_TYPE.Pronoun
+					or 
+					before.phrasetype == En.PHRASE_TYPE.Adjective)):
 					var before2
 					var after2
 					if i-2 >= 0:
@@ -475,6 +479,16 @@ func guess_phrase(packedphrase:PackedPhrase):
 							result.append(
 								[i, now.words[0], ",E"]
 							)
+		elif now.phrasetype == En.PHRASE_TYPE.Prepositional:
+			before = null
+			after = null
+			if i-1 >= 0:
+				before = phrases[i-1]
+			if i+1 < limit:
+				after = phrases[i+1]
+			if after != null:
+				if now.words[0] == "to" and after.phrasetype == En.PHRASE_TYPE.Verb:
+					now.phrasetype = En.PHRASE_TYPE.Infinitive
 	return result
 
 class PackedPhrase:
@@ -609,7 +623,7 @@ class Phrase:
 					new_phrase
 				)
 		elif type2 == "R":
-			phrase.phrasetype == En.PHRASE_TYPE.Relative
+			phrase.phrasetype = En.PHRASE_TYPE.Relative
 		return phrase
 	
 	static func parse_verb(words:PackedStringArray, types:PackedStringArray, index:int, limit:int)->Phrase:
@@ -650,7 +664,7 @@ class Phrase:
 					phrase.append(words[i], "VA")
 				return phrase
 		elif type2 == "_":
-			return phrase
+			pass
 		return phrase
 	
 	static func parse_adjective(words:PackedStringArray, types:PackedStringArray, index:int, limit:int)->Phrase:
@@ -664,7 +678,8 @@ class Phrase:
 			print("not adjective")
 			return null
 		phrase.append(words[i], type)
-		phrase.phrasetype == En.PHRASE_TYPE.Adjective
+		phrase.phrasetype = En.PHRASE_TYPE.Adjective
+#		print("adjective", phrase)
 		while i < limit:
 #			print("i ", i, " ", words[i])
 			if phrase.phrasetype == En.PHRASE_TYPE.Noun:
@@ -794,6 +809,20 @@ class Phrase:
 				phrase.steal(
 					new_phrase
 				)
+		elif type2 == "E":
+			i += 1
+			if i >= limit:
+				return phrase
+			var next_type = types[i]
+			var next_type1 = next_type[0]
+			var next_type2 = next_type[1]
+			if next_type1 == "B":
+				if next_type2 == "E":
+					var new_phrase = Phrase.parse_adverb(words, types, i, limit)
+					phrase.phrasetype = new_phrase.phrasetype
+					phrase.steal(
+						new_phrase
+					)
 		return phrase
 	
 	static func parse_preposition(words:PackedStringArray, types:PackedStringArray, index:int, limit:int)->Phrase:

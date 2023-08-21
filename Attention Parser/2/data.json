@@ -55,6 +55,9 @@
 		"is": {
 			"#": "VA"
 		},
+		"was": {
+			"#": "VA"
+		},
 		"are": {
 			"#": "VA"
 		},
@@ -266,6 +269,21 @@
 		},
 		"climbing": {
 			"#": "V_"
+		},
+		"only": {
+			"#": "BE"
+		},
+		"not": {
+			"#": "BE"
+		},
+		"strong": {
+			"#": "J_"
+		},
+		"to": {
+			"#": "R_"
+		},
+		"save": {
+			"#": "V_"
 		}
 	},
 	"types": {
@@ -286,6 +304,7 @@
 		"B_" : "Adverb",
 		"BM": "Adverb Modifier",
 		"BV": "Adverb for verb",
+		"BE": "Adverb for element",
 		"BS": "Adverb for sentence",
 		"R_": "Preposition",
 		"F_": "Infinitive",
