@@ -5,23 +5,14 @@ extends EditorScript
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
 	var sba = SBA5.new()
-	var ap = AP2.new()
-	var res1
-	var res2
-	ap.load("res://Attention Parser/2/data.json")
-	sba.ap = ap
-	var sentence
-#	sentence = "the dog, frog, and big cat are climbing the tree"
-#	sentence = "the dog and the cat is big and strong"
-#	sentence = "what is a dog in that tree"
-#	sentence = "is not only to save my dog"
-	sentence = "my dog is big if he was strong"
-#	res = ap.read_s("the big dog")
-	res1 = ap.parse_phrase_s(sentence)
-	res2 = ap.guess_phrase(res1)
-	res1.apply(res2)
-	print(res1)
-	res1 = sba.read(res1)
-#	res1 = JSON.stringify(res1, "\t", false)
-	
-	print(res1)
+	var ap = AP2_2.new()
+	ap.init_ap()
+	var res = ap.read_s("i have a dog")
+	var clause1 = res.clauses[0]
+	var clause2 = res.clauses[0].duplicate()
+#	print(clause2)
+#	print(sba.clause_equal(clause1, clause2))
+	sba.clauses.append(
+		ap.read_s("i have a dog").clauses[0].to_dict()
+	)
+	sba.save()

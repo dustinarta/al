@@ -257,11 +257,12 @@ func highest(numbers:PackedFloat64Array):
 func parse_phrase_s(sentence:String):
 	var words:PackedStringArray = parse_word(sentence)
 	var types:PackedStringArray = read(words)
-	return parse_phrase(words, types)
+	return parse_phrase(words, types, sentence)
 
-func parse_phrase(words:PackedStringArray, types:PackedStringArray):
+func parse_phrase(words:PackedStringArray, types:PackedStringArray, sentence:String = ""):
 	var size:int = words.size()
 	var packedphrase = PackedPhrase.new()
+	packedphrase.sentence = sentence
 	var i = 0
 	while i < size:
 		var type:String = types[i]
@@ -435,7 +436,7 @@ func guess_phrase(packedphrase:PackedPhrase):
 					and 
 					after.phrasetype == En.PHRASE_TYPE.Verb ):
 					result.append(
-						[i, now.words[0], "B_"]
+						[i, now.words[0], "BV"]
 					)
 			elif after != null:
 				if after.phrasetype == En.PHRASE_TYPE.Verb:
@@ -486,13 +487,29 @@ func guess_phrase(packedphrase:PackedPhrase):
 				before = phrases[i-1]
 			if i+1 < limit:
 				after = phrases[i+1]
+			var word = now.words[0]
 			if after != null:
-				if now.words[0] == "to" and after.phrasetype == En.PHRASE_TYPE.Verb:
+				if word == "to" and after.phrasetype == En.PHRASE_TYPE.Verb:
 					now.phrasetype = En.PHRASE_TYPE.Infinitive
+				elif word == "as":
+					if (after.phrasetype == En.PHRASE_TYPE.Noun 
+						or 
+						after.phrasetype == En.PHRASE_TYPE.Pronoun
+						or 
+						before.phrasetype == En.PHRASE_TYPE.Adjective):
+							var after2
+							if i+2 < limit:
+								after2 = phrases[i+2]
+							if after2 != null:
+								if after2.phrasetype == En.PHRASE_TYPE.Verb:
+									now.types[0] = "CS"
+									now.phrasetype = En.PHRASE_TYPE.Conjunctive
+						
 	return result
 
 class PackedPhrase:
 	var phrases:Array[Phrase]
+	var sentence:String
 	
 	func _init():
 		pass
@@ -562,6 +579,9 @@ class Phrase:
 		words.append_array(phrase.words)
 		types.append_array(phrase.types)
 		size += phrase.size
+	
+	func get_word()->String:
+		return " ".join(words)
 	
 	func _to_string():
 		var s:String = En.phrase_list[phrasetype] + "["
@@ -677,6 +697,7 @@ class Phrase:
 		if type1 != "J":
 			print("not adjective")
 			return null
+#		print(words[i])
 		phrase.append(words[i], type)
 		phrase.phrasetype = En.PHRASE_TYPE.Adjective
 #		print("adjective", phrase)
@@ -722,10 +743,13 @@ class Phrase:
 						)
 						i += new_phrase.size
 						continue
+					else:
+						return phrase
 				elif type2 == "_":
 					if i+1 >= limit:
 						return phrase
 					i += 1
+#					print("catch ", words[i], types[i])
 					var nexttype = types[i]
 					var nexttype1 = nexttype[0]
 					var nexttype2 = nexttype[1]
@@ -760,6 +784,8 @@ class Phrase:
 						)
 						i += new_phrase.size
 						continue
+					else:
+						return phrase
 			else:
 				break
 			i += 1
