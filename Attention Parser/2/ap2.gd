@@ -1,7 +1,7 @@
 extends RefCounted
 class_name AP2
 
-const SYMBOLS = ",.:;'\""
+const SYMBOLS:String = ",.:;'\""
 
 var Words:Dictionary
 var Types:Dictionary
@@ -367,12 +367,15 @@ func guess_phrase(packedphrase:PackedPhrase):
 	var limit = packedphrase.size()
 	
 	var result:Array
-	
+	var afterconjunction:bool = false
 	var i:int = -1
 	while i+1 < limit:
 		i += 1
 		now = phrases[i]
 		if now.phrasetype == En.PHRASE_TYPE.Conjunctive:
+			if now.types[0] == "CS":
+				afterconjunction = true
+				continue
 			before = null
 			after = null
 			if i-1 >= 0:
@@ -480,6 +483,13 @@ func guess_phrase(packedphrase:PackedPhrase):
 							result.append(
 								[i, now.words[0], ",E"]
 							)
+					elif afterconjunction:
+						result.append(
+							[i, now.words[0], ",S"]
+						)
+						afterconjunction = false
+					else:
+						printerr("free ,")
 		elif now.phrasetype == En.PHRASE_TYPE.Prepositional:
 			before = null
 			after = null
@@ -666,8 +676,8 @@ class Phrase:
 			var next_type2 = next_type[1]
 			
 			if next_type1 == "V":
-				if next_type2 == "_":
-					phrase.append(words[i], "V_")
+				if next_type2 == "N":
+					phrase.append(words[i], "VN")
 				elif next_type2 == "A":
 					phrase.append(words[i], "VA")
 				return phrase
@@ -684,6 +694,8 @@ class Phrase:
 					phrase.append(words[i], "VA")
 				return phrase
 		elif type2 == "_":
+			pass
+		elif type2 == "N":
 			pass
 		return phrase
 	

@@ -11,7 +11,10 @@ func init_ap():
 	ap.load("res://Attention Parser/2/data.json")
 
 func read_s(sentence:String)->Sentence:
-	return read(ap.parse_phrase_s(sentence))
+	var packedphrase = ap.parse_phrase_s(sentence)
+	var guess = ap.guess_phrase(packedphrase)
+	packedphrase.apply(guess)
+	return read(packedphrase)
 
 func read(packedphrase:AP2.PackedPhrase, index:DS.Pointer = DS.Pointer.new())->Sentence:
 	var sentence:Sentence = Sentence.new()
@@ -75,8 +78,23 @@ func read(packedphrase:AP2.PackedPhrase, index:DS.Pointer = DS.Pointer.new())->S
 			var infinitive = eat_infinitive(phrases, index, limit)
 			clause_data.append(infinitive)
 			clause_words.append_array(infinitive["word"])
+		elif phrase.phrasetype == En.PHRASE_TYPE.Symbol:
+			var symbol:String = phrase.types[0]
+			var symbol1:String = symbol[0]
+			var symbol2:String = symbol[1]
+			if symbol == ",S":
+				clause.data = clause_data
+				clause.words = clause_words
+				define_clause(clause)
+				sentence.clauses.append(clause)
+				clause = Clause.new()
+				clause_data = []
+				clause_words = []
+			else:
+				printerr("uncatched symbol! ", symbol)
 		else:
-			printerr("uncacthed! ", En.phrase_list[phrase.phrasetype])
+			printerr("uncacthed! ", En.phrase_list[phrase.phrasetype], " at index ", index.data)
+			return null
 	clause.data = clause_data
 	clause.words = clause_words
 	define_clause(clause)
@@ -477,8 +495,8 @@ class Sentence:
 	var sentence:String
 	var clauses:Array
 	
-	func find_clause(type:String)->int:
-		for i in range(clauses.size()):
+	func find_clause(type:String, from:int = 0)->int:
+		for i in range(from, clauses.size()):
 			if clauses[i]["type"] == type:
 				return i
 		return -1

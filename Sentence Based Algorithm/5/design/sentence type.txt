@@ -1,0 +1,17 @@
+Greet
+hello
+
+Expression
+i like your shoes
+
+Order
+close the app
+
+Question
+how do i get it back?
+
+Conditional Order
+whenever you see them, start shooting
+
+Conditional Question
+what would be happen if that was true

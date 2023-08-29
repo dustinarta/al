@@ -1,7 +1,12 @@
 res://Attention Parser/2/word_data.tscn
 res://English/editor/1/theme.tres
-res://Sentence Based Algorithm/5/sba5.gd
-res://Sentence Based Algorithm/5/test1.gd
-res://Attention Parser/2/ap2lvl2.gd
-res://Sentence Based Algorithm/5/algorithm.txt
 res://Sentence Based Algorithm/5/data.json
+res://Sentence Based Algorithm/5/design/state.txt
+res://Attention Parser/2/ap2.gd
+res://Sentence Based Algorithm/5/design/sentence type.txt
+res://Attention Parser/2/data.json
+res://Sentence Based Algorithm/5/design/think.txt
+res://Sentence Based Algorithm/5/design/algorithm2.txt
+res://Sentence Based Algorithm/5/sba5.gd
+res://Attention Parser/2/ap2lvl2.gd
+res://Sentence Based Algorithm/5/test1.gd

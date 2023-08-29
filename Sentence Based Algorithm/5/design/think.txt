@@ -1,0 +1,73 @@
+
+
+associate:
+	{
+		statement: "car is a vehicle", "alex car is honda"
+		association: "alex vehicle is honda"
+	}
+
+conclude:
+	{
+		statement: "if he run, he will be healty"
+		condition: "he run"
+		conclusion: "he will be healty"
+	}
+
+classify:
+	{
+		condition: "i like cat", "he like cat", "she like cat", "they like cat"
+		classification: "everyone like cat"
+	}
+	{
+		condition: "andy is a person and love swimming", "leon is a person and love swimming", "brian is a person and love running"
+		classification: "all person love swimming except brian"
+	}
+
+clarify:
+	{
+		statement: "all engineer have degree"
+		condition: "he was an engineer"
+		clarification: "he have degree"
+	}
+	{
+		statement: "human will be died someday"
+		condition: "lynda is a human and she is a mother"
+		clarification: "lynda will be died someday", "lynda who is a mother will be died someday"
+	}
+
+interogate:
+	{
+		statement: "my name is Optimus Prime"
+		question: "who is your name"
+		answear: "my name is Optimus Prime"
+	}
+	{
+		statement: "i live in NYC"
+		question: "where do you live"
+		answear: "i live in NYC"
+	}
+	{
+		statement: "i hide because i was scared"
+		question: "why do you hide"
+		answear: "i hide because i was scared", "because i was scared", "i was scared"
+	}
+	{
+		statement: "get healty by jogging everyday"
+		question: "how to get healty"
+		answear: "get healty by jogging everyday", "by jogging everyday"
+	}
+	{
+		statement: "i win because i work hard"
+		question: "how do you win"
+		answear: "i win because i work hard", "by working hard"
+	}
+	{
+		statement: "dollars are money", "i have 5 dollars"
+		question: "how much money do you have"
+		answear: "i have 5 dollars", "5 dollars"
+	}
+	{
+		statement: "alex is 6 feet tall"
+		question: "how tall is alex"
+		answear: "alex is 6 feet tall", "6 feet tall"
+	}

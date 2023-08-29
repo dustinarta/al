@@ -26,7 +26,8 @@ func _run():
 #		"not only me"
 #		"i will be big"
 #		"this cat is as big as the dog"
-		"the dog fell as it climb"
+#		"the dog fell as it climb"
+		"if the dog is climbing, it fell"
 	)
 	print(res1)
 	res2 = ap.guess_phrase(res1)

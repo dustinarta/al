@@ -17,7 +17,8 @@ func save(path:String = "res://Sentence Based Algorithm/5/data.json"):
 	file.close()
 
 func conclude(statement:AP2_2.Sentence, condition:AP2_2.Sentence):
-	pass
+	var thisstatement = statement.find_clause("independent")
+	print(thisstatement)
 
 func clause_equal(clause1:AP2_2.Clause, clause2:AP2_2.Clause)->bool:
 	var clause_data1 = clause1.data

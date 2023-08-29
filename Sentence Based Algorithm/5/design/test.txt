@@ -1,0 +1,5 @@
+leon is a person
+leon has a dog
+the dog name is ryan
+
+does leon have a dog?

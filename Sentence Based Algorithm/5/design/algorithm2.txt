@@ -1,0 +1,19 @@
+"move that box to the corner"
+
+to move that box, push that box
+
+move something to someplace:
+	push something to someplace
+	or lift something to someplace
+
+push something to someplace:
+	put your hand to something
+	then walk to someplace
+
+lift something to someplace:
+	put your hand to something
+	then stand up
+	then walk to someplace
+
+walk to someplace:
+	

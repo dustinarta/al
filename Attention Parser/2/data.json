@@ -4,6 +4,13 @@
 			"#": ",_",
 			"?": [",E", ",S"]
 		},
+		".": {
+			"#": ".S"
+		},
+		":": {
+			"#": ":_",
+			"?": [":>", ":|", ":<"]
+		},
 		"i": {
 			"#": "P_"
 		},
@@ -180,7 +187,7 @@
 			"#": "NC"
 		},
 		"running": {
-			"#": "V_"
+			"#": "VN"
 		},
 		"boy": {
 			"#": "NC"
@@ -268,7 +275,7 @@
 			"#": "BV"
 		},
 		"climbing": {
-			"#": "V_"
+			"#": "VN"
 		},
 		"only": {
 			"#": "BE"
@@ -284,6 +291,9 @@
 		},
 		"save": {
 			"#": "V_"
+		},
+		"saving": {
+			"#": "VN"
 		},
 		"be": {
 			"#": "VA"
@@ -329,6 +339,15 @@
 		},
 		"happy": {
 			"#": "J_"
+		},
+		"about": {
+			"#": "R_"
+		},
+		"patient": {
+			"#": "J_"
+		},
+		"learning": {
+			"#": "VN"
 		}
 	},
 	"types": {
@@ -341,9 +360,10 @@
 		"PP": "Pronoun Posessive",
 		"PR": "Pronoun Relative",
 		"V_": "Verb",
+		"VN": "Verb Noun",
 		"VA": "Verb Auxilary",
 		"VM": "Verb Modal",
-		"VP": "Verb Participle",
+		"VJ": "Verb Adjective",
 		"J_": "Adjective",
 		"JA": "Adjective Article",
 		"B_" : "Adverb",

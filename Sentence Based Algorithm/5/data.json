@@ -1,4 +1,13 @@
 {
+	"word_position": {
+		"verb": [
+			["be", "", "being", "been"],
+			["am", "was", "being", "been"],
+			["is", "was", "being", "been"],
+			["are", "were", "being", "been"],
+			["run", "ran", "running", "run"]
+		]
+	},
 	"clauses": [
 		{
 			"clause": "",
