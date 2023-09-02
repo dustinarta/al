@@ -13,7 +13,7 @@ func _init():
 	pass
 
 func init():
-	pass
+	load("res://Attention Parser/2/data.json")
 
 func load(path:String):
 	var f = FileAccess.open(path, FileAccess.READ)
@@ -258,6 +258,14 @@ func parse_phrase_s(sentence:String):
 	var words:PackedStringArray = parse_word(sentence)
 	var types:PackedStringArray = read(words)
 	return parse_phrase(words, types, sentence)
+
+func parse_phrase_s2(sentence:String):
+	var words:PackedStringArray = parse_word(sentence)
+	var types:PackedStringArray = read(words)
+	var packedphrase:PackedPhrase = parse_phrase(words, types, sentence)
+	var guess = guess_phrase(packedphrase)
+	packedphrase.apply(guess)
+	return packedphrase
 
 func parse_phrase(words:PackedStringArray, types:PackedStringArray, sentence:String = ""):
 	var size:int = words.size()

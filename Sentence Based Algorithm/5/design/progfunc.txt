@@ -1,0 +1,4 @@
+
+write argumentation to destination
+append argumen for script or console
+

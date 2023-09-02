@@ -1,0 +1,48 @@
+
+
+var name:String = "Adam"
+declare name as String to "Adam".
+
+name = "Alice"
+set name to "Alice".
+
+print("Alice")
+call print with "Alice".
+
+if name == "Adam":
+	print(name)
+	name = "Bob"
+if name equal "Adam":
+call print with name;
+set name to "Bob".
+
+while i+1 < 100:
+	print(i)
+	i += 1
+while what i add 1 less_than 100:
+call print with i;
+set i to what i add 1.
+
+var list:Array = [1, 2, 3, 4, 5]
+list[2] = 10
+list.shuffle()
+declare list as Array to [1, 2, 3, 4, 5];
+set list at 2 to 10
+on list call shuffle.
+
+var entity = Object.new()
+declare entity to what on Object call new
+
+func multiply(number1:float, number2:float)->float:
+	return number1 * number2
+define multiply with number1 as float and number2 as float for float:
+return what number1 mul number2.
+
+for i in range(100):
+	if i < 10:
+		continue
+	break
+for i in what call range with 100:
+if i less_than 10:
+continue.
+break.
