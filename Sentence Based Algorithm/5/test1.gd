@@ -7,7 +7,7 @@ func _run():
 	var sba = SBA5.new()
 	var ap = AP2_2.new()
 	ap.init_ap()
-	var res1 = ap.read_s("if the dog is climbing, it fell")
+	var res1 = ap.read_s2("if the dog is climbing, it fell")
 	print(res1)
 	sba.conclude(res1, null)
 #	print(clause2)

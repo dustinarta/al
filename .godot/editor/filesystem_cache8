@@ -1,5 +1,5 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1693553750
+::res://::1693925397
 ai logo.png::CompressedTexture2D::2774366399910235203::1668783325::1677829033::1::::<><>::
 ai logo.svg::CompressedTexture2D::8187573020341992674::1668782914::1677829033::1::::<><>::
 dataset-key2.json::JSON::-1::1675419991::0::1::::<><>::
@@ -23,17 +23,18 @@ matrix softmax.gd::GDScript::-1::1691474168::0::1::::<>EditorScript<>::
 parser.gd::GDScript::-1::1691475220::0::1::::<>Control<>::
 parser.tscn::PackedScene::6334064443609095101::1691580357::0::1::::<><>::res://Attention Parser/1/parser.gd
 test1.gd::GDScript::-1::1691574591::0::1::::<>EditorScript<>::
-::res://Attention Parser/2/::1693553645
-ap2.gd::GDScript::-1::1693282768::0::1::::AP2<>RefCounted<>::
-ap2lvl2.gd::GDScript::-1::1693282963::0::1::::AP2_2<>RefCounted<>::
-data.json::JSON::-1::1693193738::0::1::::<><>::
+::res://Attention Parser/2/::1693913497
+ap2.gd::GDScript::-1::1693885639::0::1::::AP2<>RefCounted<>::
+ap2lvl2.gd::GDScript::-1::1693898487::0::1::::AP2_2<>RefCounted<>::
+data.json::JSON::-1::1693886609::0::1::::<><>::
 learn.gd::GDScript::-1::1691855057::0::1::::<>Control<>::
 learn.tscn::PackedScene::870469697923096653::1691855058::0::1::::<><>::res://Attention Parser/2/learn.gd
 phrase_data.tscn::PackedScene::4168723285396389561::1691942054::0::1::::<><>::
-test1.gd::GDScript::-1::1692957495::0::1::::<>EditorScript<>::
+test1.gd::GDScript::-1::1693898086::0::1::::<>EditorScript<>::
 test2.gd::GDScript::-1::1692783132::0::1::::<>EditorScript<>::
+test3.gd::GDScript::-1::1693887179::0::1::::<>EditorScript<>::
 word_data.gd::GDScript::-1::1692783132::0::1::::<>Control<>::
-word_data.tscn::PackedScene::7298393869232386687::1693553645::0::1::::<><>::res://Attention Parser/2/word_data.gd
+word_data.tscn::PackedScene::7298393869232386687::1693913497::0::1::::<><>::res://Attention Parser/2/word_data.gd
 ::res://Block Of Words/::1686670960
 block.gd::GDScript::-1::1684766046::0::1::::<>Control<>::
 block.tres::Theme::3490788157727473355::1684489572::0::1::::<><>::
@@ -53,8 +54,8 @@ test3.gd::GDScript::-1::1685870325::0::1::::<>EditorScript<>::
 ::res://Compiler Engine/::1689152773
 compen.gd::GDScript::-1::1689153147::0::1::::CompilerEngine<>RefCounted<>::
 ::res://cpp/::1687670648
-::res://Data Structure/::1692783131
-ds.gd::GDScript::-1::1692783131::0::1::::<>Node<>::
+::res://Data Structure/::1693637491
+ds.gd::GDScript::-1::1693637491::0::1::::<>Node<>::
 test1.gd::GDScript::-1::1685855451::0::1::::<>EditorScript<>::
 test2.gd::GDScript::-1::1689345821::0::1::::<>EditorScript<>::
 ::res://Database Editor/::1665324690
@@ -102,7 +103,7 @@ input english.gd::GDScript::-1::1689172623::0::1::::<>Control<>::
 input english.tscn::PackedScene::5367641717744605810::1689938191::0::1::::<><>::res://English/data/input english.gd
 rewrite.gd::GDScript::-1::1690816983::0::1::::<>EditorScript<>::
 ::res://English/editor/::1673319534
-::res://English/editor/1/::1693553645
+::res://English/editor/1/::1693884772
 combiner.gd::GDScript::-1::1669027950::0::1::::<>RefCounted<>::
 converter.gd::GDScript::-1::1668772411::0::1::::<>RefCounted<>::
 Main array.gd::GDScript::-1::1668772508::0::1::::<>Control<>::
@@ -110,7 +111,7 @@ Main.gd::GDScript::-1::1669016338::0::1::::<>Control<>::
 Main.tscn::PackedScene::-1::1673319589::0::1::::<><>::res://English/editor/1/Main.gd<>res://English/editor/1/theme.tres
 test pop up.gd::GDScript::-1::1669016338::0::1::::<>Control<>::
 test pop up.tscn::PackedScene::-1::1669015735::0::1::::<><>::res://English/editor/test pop up.gd
-theme.tres::Theme::609664349692798676::1693553645::0::1::::<><>::
+theme.tres::Theme::609664349692798676::1693884772::0::1::::<><>::
 ::res://English/editor/2/::1691855058
 combine.gd::GDScript::-1::1673756699::0::1::::<>RefCounted<>::
 convert.gd::GDScript::-1::1673594854::0::1::::<>RefCounted<>::
@@ -276,22 +277,29 @@ test1.gd::GDScript::-1::1690816983::0::1::::<>EditorScript<>::
 ::res://Sentence Based Algorithm/4/::1692783132
 sba4.gd::GDScript::-1::1692783131::0::1::::SBA4<>RefCounted<>::
 test1.gd::GDScript::-1::1692783132::0::1::::<>EditorScript<>::
-::res://Sentence Based Algorithm/5/::1693553645
-data.json::JSON::-1::1693553645::0::1::::<><>::
+::res://Sentence Based Algorithm/5/::1693913497
+data.json::JSON::-1::1693884773::0::1::::<><>::
 example2.json::JSON::-1::1692674819::0::1::::<><>::
 example.json::JSON::-1::1692783131::0::1::::<><>::
-programming.gd::GDScript::-1::1693553645::0::1::::SBA5_Program<>RefCounted<>::
-sba5.gd::GDScript::-1::1693282072::0::1::::SBA5<>RefCounted<>::
-test1.gd::GDScript::-1::1693282866::0::1::::<>EditorScript<>::
-test2.gd::GDScript::-1::1693553480::0::1::::<>EditorScript<>::
-::res://Sentence Based Algorithm/5/design/::1693552180
+learn.txt::TextFile::-1::1693810014::0::1::::<><>::
+memory.json::JSON::-1::1693821758::0::1::::<><>::
+mind.txt::TextFile::-1::1693809418::0::1::::<><>::
+programming.gd::GDScript::-1::1693736135::0::1::::SBA5_Program<>RefCounted<>::
+programminghigh.gd::GDScript::-1::1693736120::0::1::::SBA5_ProgramHigh<>RefCounted<>::
+programminglow.gd::GDScript::-1::1693736120::0::1::::SBA5_ProgramLow<>RefCounted<>::
+sba5.gd::GDScript::-1::1693809858::0::1::::SBA5<>RefCounted<>::
+script.gd::GDScript::-1::1693913497::0::1::::<>RefCounted<>::
+test1.gd::GDScript::-1::1693887329::0::1::::<>EditorScript<>::
+test2.gd::GDScript::-1::1693736006::0::1::::<>EditorScript<>::
+test3.gd::GDScript::-1::1693735995::0::1::::<>EditorScript<>::
+::res://Sentence Based Algorithm/5/design/::1693898317
 algorithm2.txt::TextFile::-1::1693232324::0::1::::<><>::
 algorithm.txt::TextFile::-1::1692982850::0::1::::<><>::
 design.txt::TextFile::-1::1692955053::0::1::::<><>::
 progfunc.txt::TextFile::-1::1693388323::0::1::::<><>::
-proglang.txt::TextFile::-1::1693552180::0::1::::<><>::
+proglang.txt::TextFile::-1::1693639830::0::1::::<><>::
 sentence type.txt::TextFile::-1::1693130706::0::1::::<><>::
-state.txt::TextFile::-1::1693131403::0::1::::<><>::
+state.txt::TextFile::-1::1693898317::0::1::::<><>::
 story1.txt::TextFile::-1::1692948982::0::1::::<><>::
 test.txt::TextFile::-1::1692929980::0::1::::<><>::
 think.txt::TextFile::-1::1693281303::0::1::::<><>::

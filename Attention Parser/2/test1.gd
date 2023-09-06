@@ -22,12 +22,12 @@ func _run():
 #		"my dog is too big"
 #		"he climb the tree and he fell"
 #		"my dog and cat are climbing the very big tree in that backyard and almost fell"
-#		"cat, dog, and frog are animal"
+		"cat, dog, and frog are animal"
 #		"not only me"
 #		"i will be big"
 #		"this cat is as big as the dog"
 #		"the dog fell as it climb"
-		"if the dog is climbing, it fell"
+#		"if the dog is climbing, it fell"
 	)
 	print(res1)
 	res2 = ap.guess_phrase(res1)

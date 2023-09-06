@@ -1,0 +1,9 @@
+
+
+you said "hello"
+
+you greet me
+i greet back
+i ask what you need
+i say "hello there, how can i help you?"
+

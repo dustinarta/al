@@ -1,0 +1,24 @@
+{
+	"word position": {
+		"alex": [
+			0, 1
+		],
+		"london": [
+			1, 2
+		]
+	},
+	"statement": [
+		"alex has a dog.",
+		"alex live in london.",
+		"bobby work in london.",
+		"when bobby was walking to the park, he saw alex.",
+		"apple, banana, durian are fruit.",
+		"apple is a phone company.",
+		"buy an apple and banana for me."
+	],
+	"conversation": [
+		
+	]
+}
+
+

@@ -12,6 +12,10 @@ func init_ap():
 
 func read_s(sentence:String)->Sentence:
 	var packedphrase = ap.parse_phrase_s(sentence)
+	return read(packedphrase)
+
+func read_s2(sentence:String)->Sentence:
+	var packedphrase = ap.parse_phrase_s(sentence)
 	var guess = ap.guess_phrase(packedphrase)
 	packedphrase.apply(guess)
 	return read(packedphrase)
@@ -82,7 +86,7 @@ func read(packedphrase:AP2.PackedPhrase, index:DS.Pointer = DS.Pointer.new())->S
 			var symbol:String = phrase.types[0]
 			var symbol1:String = symbol[0]
 			var symbol2:String = symbol[1]
-			if symbol == ",S":
+			if symbol2 == "S":
 				clause.data = clause_data
 				clause.words = clause_words
 				define_clause(clause)
@@ -101,7 +105,40 @@ func read(packedphrase:AP2.PackedPhrase, index:DS.Pointer = DS.Pointer.new())->S
 	sentence.clauses.append(clause)
 	return sentence
 
-
+func read_paragraph_s(paragraph_s:String):
+	var parahraph:Paragraph = Paragraph.new()
+	var packedphrase = ap.parse_phrase_s(paragraph_s)
+	var guess = ap.guess_phrase(packedphrase)
+	packedphrase.apply(guess)
+	var phrases = packedphrase.phrases
+	var newpackedphrases:Array
+	var limit:int = packedphrase.size()
+	var i:int = 0
+	var j:int = 0
+	while i < limit:
+		var phrase = phrases[i]
+		if phrase.phrasetype == En.PHRASE_TYPE.Symbol:
+			var type = phrase.types[0]
+			var type1 = type[0]
+			var type2 = type[1]
+			
+			if type2 == "S":
+				i += 1
+				packedphrase = AP2.PackedPhrase.new()
+				packedphrase.phrases = phrases.slice(j, i)
+				newpackedphrases.append(
+					packedphrase
+				)
+				j = i
+			
+		i += 1
+	parahraph.sentences.resize(newpackedphrases.size())
+	for k in range(newpackedphrases.size()):
+		parahraph.sentences[k] = read(newpackedphrases[k])
+	
+#	print(newpackedphrases[0])
+#	print(newpackedphrases[1])
+	return parahraph
 
 func eat_noun(phrase:AP2.Phrase):
 	var words:PackedStringArray = phrase.words
@@ -183,7 +220,7 @@ func eat_nouns(phrases:Array[AP2.Phrase], index:DS.Pointer, limit:int):
 #		print(i)
 		phrase = phrases[i]
 		if phrase.phrasetype == En.PHRASE_TYPE.Symbol:
-			nouns_word.append(" , ")
+#			nouns_word.append(" , ")
 			if phrase.types[0] != ",E":
 				break
 			i += 1
@@ -491,9 +528,19 @@ func clause_has(clause:Array[Dictionary], part:String):
 		if c["@"] == part:
 			return true
 
+class Paragraph:
+	var sentences:Array[Sentence]
+	
+	func _to_string():
+		return str(sentences)
+	
+
 class Sentence:
 	var sentence:String
 	var clauses:Array
+	
+	func size()->int:
+		return clauses.size()
 	
 	func find_clause(type:String, from:int = 0)->int:
 		for i in range(from, clauses.size()):

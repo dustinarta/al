@@ -4,7 +4,7 @@ extends EditorScript
 
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
-	var program = SBA5_Program.new()
+	var program = SBA5_ProgramHigh.new()
 	
 #	for i in range(20):
 #		print(SBA5_Program.generatelabel())
@@ -12,7 +12,7 @@ func _run():
 	var key:Dictionary
 	var i:int = 0
 	while i < 100000:
-		var word = SBA5_Program.generatelabel()
+		var word = SBA5_ProgramHigh.generatelabel()
 		if key.has(word):
 			if first == -1:
 				print("first collision at ", word, " in ", i)

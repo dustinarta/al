@@ -223,11 +223,12 @@ func is_number(number:String):
 
 func parse_word(sentence:String):
 	sentence = sentence.to_lower()
+	sentence.strip_edges()
 	var split:PackedStringArray = sentence.split(" ", false)
 	var result:PackedStringArray
 	for word in split:
 		var w = word[-1]
-		if w == ",":
+		if w in ",.;:":
 			word = word.substr(0, word.length()-1)
 		else:
 			w = ""
