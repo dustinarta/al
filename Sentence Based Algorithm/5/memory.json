@@ -1,10 +1,20 @@
 {
 	"word position": {
 		"alex": [
-			0, 1
+			0,
+			1
 		],
-		"london": [
-			1, 2
+		"has": [
+			0
+		],
+		"a": [
+			0
+		],
+		"dog": [
+			0
+		],
+		"sleep": [
+			1
 		]
 	},
 	"statement": [
@@ -16,9 +26,103 @@
 		"apple is a phone company.",
 		"buy an apple and banana for me."
 	],
+	"sentence": [
+
+	],
+	"clause line": [
+		[
+			"alex",
+			"has",
+			"a",
+			"dog"
+		],
+		[
+			"alex",
+			"sleep"
+		]
+	],
+	"clause object": [
+		{
+			"clause": "",
+			"type": "independent",
+			"has_undefined": true,
+			"words": [
+				"alex",
+				"has",
+				"a",
+				"dog"
+			],
+			"data": [
+				{
+					"@": "undefined",
+					"?": null,
+					"$": [
+						"alex"
+					]
+				},
+				{
+					"@": "verb",
+					"word": [
+						"has",
+						"a",
+						"dog"
+					],
+					"T": "",
+					"B<": "",
+					"M": "",
+					"A": "has",
+					"$": [
+
+					],
+					"O": {
+						"@": "object",
+						"word": [
+							"a",
+							"dog"
+						],
+						"$": {
+							"word": [
+								"a",
+								"dog"
+							],
+							"#": "N",
+							"J": [
+								{
+									"#": "J",
+									"B": null,
+									"$": "a"
+								}
+							],
+							"$": [
+								"dog"
+							]
+						}
+					},
+					"B>": ""
+				}
+			]
+		},
+		{
+			"clause": "",
+			"type": "independent",
+			"has_undefined": true,
+			"words": [
+				"alex",
+				"sleep"
+			],
+			"data": [
+				{
+					"@": "undefined",
+					"?": null,
+					"$": [
+						"alex",
+						"sleep"
+					]
+				}
+			]
+		}
+	],
 	"conversation": [
-		
+
 	]
 }
-
-

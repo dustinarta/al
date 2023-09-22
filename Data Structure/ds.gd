@@ -44,7 +44,7 @@ class Table:
 			if at == -1:
 				printerr("there is no ", columns[i], " in the table")
 			var val = values[i]
-#			if _is_valid_type(val, column_type[at]):
+			#if _is_valid_type(val, column_type[at]):
 			elemen[at] = _retrieve(val, column_type[at])
 		rows.append(elemen)
 	
@@ -112,6 +112,68 @@ class Table:
 			_:
 				printerr("undfined data type!", value)
 		return null
+
+class Collection:
+	var data:Array
+	var has_function:Callable
+	var equal_function:Callable
+	
+	func _init():
+		pass
+	
+	func init(_data:Array, _has_function:Callable)->Collection:
+		data = _data
+		has_function = _has_function
+		return self
+	
+	func fill(_data:Array):
+		data = _data
+	
+	func set_equal_function(_equal_function:Callable):
+		equal_function = _equal_function
+	
+	func set_has_function(_has_function:Callable):
+		has_function = _has_function
+	
+	func get_data()->Array:
+		return data
+	
+	func select_equal(selections:Array):
+		var result:Array
+		var selection_size:int = selections.size()
+		for i in range(data.size()):
+			var yes:bool = true
+			for j in range(selection_size):
+				if not has_function.call(data[i], selections[j]):
+					yes = false
+					break
+			if yes:
+				result.append(data[i])
+				break
+		return Collection.new().init(result, has_function)
+	
+	func select_or(selections:Array):
+		var result:Array
+		var selection_size:int = selections.size()
+		for i in range(data.size()):
+			for j in range(selection_size):
+				if has_function.call(data[i], selections[j]):
+					result.append(data[i])
+					break
+		return Collection.new().init(result, has_function)
+	
+	func select_and(selections:Array):
+		var result:Array
+		var selection_size:int = selections.size()
+		for i in range(data.size()):
+			var yes:bool = true
+			for j in range(selection_size):
+				if not has_function.call(data[i], selections[j]):
+					yes = false
+					break
+			if yes:
+				result.append(data[i])
+		return Collection.new().init(result, has_function)
 
 func forEach(function:Callable, elements:Array):
 	var result:Array

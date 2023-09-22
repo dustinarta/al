@@ -85,6 +85,15 @@ func self_append_row(column:PackedFloat64Array)->Matrix:
 	row_size += 1
 	return self
 
+func self_append_rows(columns:Array[PackedFloat64Array])->Matrix:
+	if col_size != columns[0].size():
+		printerr("invalid column size!")
+	
+	data.append_array(columns)
+	
+	row_size += columns[0].size()
+	return self
+
 func append_col(row:PackedFloat64Array)->Matrix:
 	if row_size != row.size():
 		printerr("invalid column size!")

@@ -63,11 +63,20 @@ func read(packedphrase:AP2.PackedPhrase, index:DS.Pointer = DS.Pointer.new())->S
 			clause_data.append(verb)
 			clause_words.append_array(verb["word"])
 		elif phrase.phrasetype == En.PHRASE_TYPE.Relative:
-			clause_data.append({
+			var relative = {
 				"@": "relative",
 				"$": phrase.words[0]
-			})
-			clause_words.append(phrase.words[0])
+			}
+			var relative_words = [phrase.words[0]]
+			if index.data + 1 < limit:
+				phrase = phrases[index.data+1]
+				if phrase.phrasetype == En.PHRASE_TYPE.Verb:
+					if phrase.types[0] == "VA":
+						relative["V"] = phrase.words[0]
+						relative_words.append(phrase.words[0])
+						index.data += 1
+			clause_data.append(relative)
+			clause_words.append_array(relative_words)
 		elif phrase.phrasetype == En.PHRASE_TYPE.Adverb:
 			clause_data.append({
 				"@": "adverb",
@@ -96,6 +105,14 @@ func read(packedphrase:AP2.PackedPhrase, index:DS.Pointer = DS.Pointer.new())->S
 				clause_words = []
 			else:
 				printerr("uncatched symbol! ", symbol)
+		elif phrase.phrasetype == En.PHRASE_TYPE.Undefined:
+			clause.has_undefined = true
+			clause_data.append({
+				"@": "undefined",
+				"?": null,
+				"$": phrase.words.duplicate()
+			})
+			clause_words.append_array(phrase.words)
 		else:
 			printerr("uncacthed! ", En.phrase_list[phrase.phrasetype], " at index ", index.data)
 			return null
@@ -533,11 +550,10 @@ class Paragraph:
 	
 	func _to_string():
 		return str(sentences)
-	
 
 class Sentence:
 	var sentence:String
-	var clauses:Array
+	var clauses:Array[Clause]
 	
 	func size()->int:
 		return clauses.size()
@@ -560,8 +576,12 @@ class Sentence:
 class Clause:
 	var clause:String
 	var type:String
+	var has_undefined:bool
 	var words:PackedStringArray
 	var data:Array[Dictionary]
+	
+	func _init():
+		has_undefined = false
 	
 	func duplicate()->Clause:
 		var clause = Clause.new()
@@ -587,10 +607,10 @@ class Clause:
 		return {
 			"clause": clause,
 			"type": type,
+			"has_undefined" : has_undefined,
 			"words": words,
 			"data": data
 		}
 	
 	func _to_string():
 		return JSON.stringify(to_dict(), "\t", false)
-	

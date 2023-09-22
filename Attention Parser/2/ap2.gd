@@ -1,7 +1,7 @@
 extends RefCounted
 class_name AP2
 
-const SYMBOLS:String = ",.:;'\""
+const SYMBOLS:String = ",.:;'\"!?"
 
 var Words:Dictionary
 var Types:Dictionary
@@ -228,7 +228,7 @@ func parse_word(sentence:String):
 	var result:PackedStringArray
 	for word in split:
 		var w = word[-1]
-		if w in ",.;:":
+		if w in ",.;:?!":
 			word = word.substr(0, word.length()-1)
 		else:
 			w = ""
@@ -356,15 +356,18 @@ func parse_phrase(words:PackedStringArray, types:PackedStringArray, sentence:Str
 			packedphrase.append(
 				phrase
 			)
-		else:
-			var phrase:Phrase = Phrase.new()
-			phrase.phrasetype == En.PHRASE_TYPE.Undefined
-			phrase.words = [words[i]]
-			phrase.types = ["UW"]
+		#Undefined
+		elif type1 == "U":
+			var phrase:Phrase = Phrase.parse_undefined(words, types, i, size)
+			if phrase == null:
+				printerr("parsing undefined error! at index ", i)
+				return null
+			i += phrase.size
 			packedphrase.append(
 				phrase
 			)
-			i += 1
+		else:
+			printerr("uncatched!")
 #		print(i)
 	return packedphrase
 
@@ -450,11 +453,11 @@ func guess_phrase(packedphrase:PackedPhrase):
 					result.append(
 						[i, now.words[0], "BV"]
 					)
-			elif after != null:
-				if after.phrasetype == En.PHRASE_TYPE.Verb:
-					result.append(
-						[i, now.words[0], "N_"]
-					)
+#			elif after != null:
+#				if after.phrasetype == En.PHRASE_TYPE.Verb:
+#					result.append(
+#						[i, now.words[0], "N_"]
+#					)
 		elif now.phrasetype == En.PHRASE_TYPE.Symbol:
 			before = null
 			after = null
@@ -540,6 +543,7 @@ class PackedPhrase:
 		phrases.append(phrase)
 	
 	func apply(guess:Array):
+#		print(guess)
 		var size:int = guess.size()
 		for i in range(size):
 			var phrase = phrases[guess[i][0]]
@@ -550,7 +554,6 @@ class PackedPhrase:
 	
 	func _to_string():
 		return str(phrases)
-
 
 class Phrase:
 	var phrasetype:int
@@ -601,6 +604,9 @@ class Phrase:
 	
 	func get_word()->String:
 		return " ".join(words)
+	
+	func to_list():
+		return [words.duplicate(), types.duplicate()]
 	
 	func _to_string():
 		var s:String = En.phrase_list[phrasetype] + "["
@@ -894,6 +900,36 @@ class Phrase:
 			return null
 		phrase.phrasetype = En.PHRASE_TYPE.Conjunctive
 		phrase.append(words[i], type)
+		return phrase
+	
+	static func parse_undefined(words:PackedStringArray, types:PackedStringArray, index:int, limit:int)->Phrase:
+		var type = types[index]
+		var type1 = type[0]
+		var type2 = type[1]
+		var phrase:Phrase = Phrase.new()
+		phrase.phrasetype = En.PHRASE_TYPE.Undefined
+		phrase.append(words[index], type)
+		index += 1
+		if index >= limit:
+			return phrase
+		var nexttype = types[index]
+		var nexttype1 = nexttype[0]
+		var nexttype2 = nexttype[1]
+		if nexttype == "UW":
+			phrase.append(words[index], nexttype)
+		else:
+			return phrase
+		index += 1
+		while index < limit:
+			nexttype = types[index]
+			nexttype1 = nexttype[0]
+			nexttype2 = nexttype[1]
+			print(nexttype)
+			if nexttype == "UW":
+				phrase.append(words[index], nexttype)
+			else:
+				break
+			index += 1
 		return phrase
 	
 	static func parse_symbol(words:PackedStringArray, types:PackedStringArray, index:int, limit:int)->Phrase:
