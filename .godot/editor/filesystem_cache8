@@ -1,5 +1,5 @@
 2a60927148abd1d33b818b535e306557
-::res://::1695372737
+::res://::1695458751
 ai logo.png::CompressedTexture2D::2774366399910235203::1668783325::1677829033::1::::<><>::
 ai logo.svg::CompressedTexture2D::8187573020341992674::1668782914::1677829033::1::::<><>::
 dataset-key2.json::JSON::-1::1675419991::0::1::::<><>::
@@ -23,7 +23,7 @@ matrix softmax.gd::GDScript::-1::1691474168::0::1::::<>EditorScript<>::
 parser.gd::GDScript::-1::1691475220::0::1::::<>Control<>::
 parser.tscn::PackedScene::6334064443609095101::1691580357::0::1::::<><>::res://Attention Parser/1/parser.gd
 test1.gd::GDScript::-1::1691574591::0::1::::<>EditorScript<>::
-::res://Attention Parser/2/::1694932176
+::res://Attention Parser/2/::1695458763
 ap2.gd::GDScript::-1::1694149906::0::1::::AP2<>RefCounted<>::
 ap2lvl2.gd::GDScript::-1::1694142462::0::1::::AP2_2<>RefCounted<>::
 data.json::JSON::-1::1694140428::0::1::::<><>::
@@ -34,7 +34,7 @@ test1.gd::GDScript::-1::1694141745::0::1::::<>EditorScript<>::
 test2.gd::GDScript::-1::1692783132::0::1::::<>EditorScript<>::
 test3.gd::GDScript::-1::1693887179::0::1::::<>EditorScript<>::
 word_data.gd::GDScript::-1::1692783132::0::1::::<>Control<>::
-word_data.tscn::PackedScene::7298393869232386687::1694932176::0::1::::<><>::res://Attention Parser/2/word_data.gd
+word_data.tscn::PackedScene::7298393869232386687::1695458763::0::1::::<><>::res://Attention Parser/2/word_data.gd
 ::res://Block Of Words/::1686670960
 block.gd::GDScript::-1::1684766046::0::1::::<>Control<>::
 block.tres::Theme::3490788157727473355::1684489572::0::1::::<><>::
@@ -104,7 +104,7 @@ input english.gd::GDScript::-1::1689172623::0::1::::<>Control<>::
 input english.tscn::PackedScene::5367641717744605810::1689938191::0::1::::<><>::res://English/data/input english.gd
 rewrite.gd::GDScript::-1::1690816983::0::1::::<>EditorScript<>::
 ::res://English/editor/::1673319534
-::res://English/editor/1/::1694855945
+::res://English/editor/1/::1695451245
 combiner.gd::GDScript::-1::1669027950::0::1::::<>RefCounted<>::
 converter.gd::GDScript::-1::1668772411::0::1::::<>RefCounted<>::
 Main array.gd::GDScript::-1::1668772508::0::1::::<>Control<>::
@@ -112,7 +112,7 @@ Main.gd::GDScript::-1::1669016338::0::1::::<>Control<>::
 Main.tscn::PackedScene::-1::1673319589::0::1::::<><>::res://English/editor/1/Main.gd<>res://English/editor/1/theme.tres
 test pop up.gd::GDScript::-1::1669016338::0::1::::<>Control<>::
 test pop up.tscn::PackedScene::-1::1669015735::0::1::::<><>::res://English/editor/test pop up.gd
-theme.tres::Theme::609664349692798676::1694855945::0::1::::<><>::
+theme.tres::Theme::609664349692798676::1695451245::0::1::::<><>::
 ::res://English/editor/2/::1691855058
 combine.gd::GDScript::-1::1673756699::0::1::::<>RefCounted<>::
 convert.gd::GDScript::-1::1673594854::0::1::::<>RefCounted<>::
@@ -153,8 +153,8 @@ lstm2.gd::GDScript::-1::1687695011::0::1::::LSTM2<>RefCounted<>::
 test1.gd::GDScript::-1::1687688333::0::1::::<>EditorScript<>::
 test3.gd::GDScript::-1::1687693142::0::1::::<>EditorScript<>::
 test4.gd::GDScript::-1::1687695591::0::1::::<>EditorScript<>::
-::res://Matrix/::1692783131
-matrix.gd::GDScript::-1::1692783131::0::1::::Matrix<>RefCounted<>::
+::res://Matrix/::1695451628
+matrix.gd::GDScript::-1::1695451628::0::1::::Matrix<>RefCounted<>::
 test1.gd::GDScript::-1::1688382762::0::1::::<>EditorScript<>::
 test2.gd::GDScript::-1::1688472663::0::1::::<>EditorScript<>::
 test3.gd::GDScript::-1::1688475317::0::1::::<>EditorScript<>::
@@ -375,11 +375,14 @@ string test.gd::GDScript::-1::1666058213::0::1::::<>RefCounted<>::
 string valid.gd::GDScript::-1::1669016338::0::1::::<>RefCounted<>::
 thread test.gd::GDScript::-1::1665918940::0::1::::<>RefCounted<>::
 venn test.gd::GDScript::-1::1666416561::0::1::::<>RefCounted<>::
-::res://Transformer/::1691399538
+::res://Transformer/::1695458770
+::res://Transformer/1/::1695458751
 create.gd::GDScript::-1::1691399536::0::1::::<>EditorScript<>::
 test1.gd::GDScript::-1::1691291963::0::1::::<>EditorScript<>::
 test memory.json::JSON::-1::1691291964::0::1::::<><>::
 transfomer.gd::GDScript::-1::1691399538::0::1::::Transformer<>RefCounted<>::
+::res://Transformer/2/::1695458786
+transformer2.gd::GDScript::-1::1695458786::0::1::::<>RefCounted<>::
 ::res://VAF Model/::1668395471
 model.txt::TextFile::-1::1668395293::0::1::::<><>::
 ::res://VAF Model/src/::1685682994
@@ -392,5 +395,8 @@ src.gd::GDScript::-1::1685682994::0::1::::<>EditorScript<>::
 model.json::JSON::-1::1686211080::0::1::::<><>::
 test1.gd::GDScript::-1::1686187747::0::1::::<>EditorScript<>::
 wem.gd::GDScript::-1::1686537202::0::1::::WEM<>RefCounted<>::
-::res://Word Embedding/2/::1686537294
-wem2.gd::GDScript::-1::1686537294::0::1::::WEM2<>RefCounted<>::
+::res://Word Embedding/2/::1695458648
+data.json::JSON::-1::1695451825::0::1::::<><>::
+test1.gd::GDScript::-1::1695451769::0::1::::<>EditorScript<>::
+test2.gd::GDScript::-1::1695458583::0::1::::<>EditorScript<>::
+wem2.gd::GDScript::-1::1695458648::0::1::::WEM2<>RefCounted<>::

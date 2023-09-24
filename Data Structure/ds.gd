@@ -206,10 +206,8 @@ func deviation(numbers:PackedFloat64Array)->float:
 	var size:int = numbers.size()
 	var mean:float = mean(numbers)
 	var result:float = 0.0
-	
 	for i in range(size):
 		result += pow( (mean-numbers[i]) , 2)
-	
 	return sqrt( result/size )
 
 func minmax_normalization(numbers:PackedFloat64Array):

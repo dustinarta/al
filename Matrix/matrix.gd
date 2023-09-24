@@ -41,10 +41,10 @@ static func mean(matrixs:Array[Matrix])->Matrix:
 	var mat = matrixs[0]
 	var matrix_count:int = matrixs.size()
 	
-	for i in range(1, matrix_count):
-		if mat.is_equal_shape( matrixs[i] ) == false:
-			printerr("Invalid size for mean!")
-			return null
+#	for i in range(1, matrix_count):
+#		if mat.is_equal_shape( matrixs[i] ) == false:
+#			printerr("Invalid size for mean!")
+#			return null
 	
 	var result:Matrix = Matrix.new().init(mat.row_size, mat.col_size)
 	var row_size = mat.row_size
@@ -91,7 +91,7 @@ func self_append_rows(columns:Array[PackedFloat64Array])->Matrix:
 	
 	data.append_array(columns)
 	
-	row_size += columns[0].size()
+	row_size += columns.size()
 	return self
 
 func append_col(row:PackedFloat64Array)->Matrix:
@@ -488,6 +488,52 @@ func derivative_softmax()->Matrix:
 			var val:float = my_row[c]
 			row[c] = val * (1 - val)
 	return result
+
+
+func row_mean()->PackedFloat64Array:
+	var col_size:int = self.col_size
+	var result:PackedFloat64Array
+	result.resize(row_size)
+	for r in range(row_size):
+		var row = data[r]
+		var mean:float = 0.0
+		for num in row:
+			mean += num
+		result[r] = mean/col_size
+#		print(result)
+	return result
+
+func row_deviation(means = null)->PackedFloat64Array:
+	var col_size:int = self.col_size
+	if means == null:
+		means = row_mean()
+#	print(means)
+	var result:PackedFloat64Array
+	result.resize(row_size)
+	for r in range(row_size):
+		var row = data[r]
+		var mean:float = means[r]
+		var deviation:float = 0.0
+#		print(col_size)
+		for c in range(col_size):
+			deviation += pow( (mean-row[c]) , 2)
+#			print(deviation)
+		result[r] = sqrt( deviation/col_size )
+	return result
+
+func batch_normalization():
+	var normalized:Matrix = Matrix.new().init(row_size, col_size)
+	var means = row_mean()
+	var denominators = row_deviation(means)
+	var result
+	for r in range(row_size):
+		var mean:float = means[r]
+		var denominator:float = denominators[r]
+		var normalized_row = normalized.data[r]
+		var my_row = data[r]
+		for c in range(col_size):
+			normalized_row[c] = (my_row[c] - mean) / denominator
+	return normalized
 
 func self_mask_topright(value:float)->Matrix:
 	for r in range(row_size):
