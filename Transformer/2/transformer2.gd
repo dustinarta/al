@@ -45,12 +45,20 @@ class Coder:
 		if input.col_size != Vector_size:
 			printerr("Invalid vector size!")
 			return null
-		
+		_result.clear()
+		_result.resize(6)
 		var query = input.mul(Query)
 		var key = input.mul(Key)
 		var value = input.mul(Value)
-#		print(query.mul_t(key))
-		return query.mul_t(key).softmax().div_self_by_number(sqrt(Vector_size)).mul(value).batch_normalization()
+		_result[0] = input.duplicate()
+		_result[1] = query.duplicate()
+		_result[2] = key.duplicate()
+		_result[3] = value.duplicate()
+		var attention = query.mul_t(key).div_self_by_number(sqrt(Vector_size)).softmax()
+		_result[4] = attention.duplicate()
+		var output = attention.mul(value).batch_normalization()
+		_result[5] = output.duplicate()
+		return output
 	
 	func forward2(input1:Matrix, input2:Matrix):
 		if input1.col_size != Vector_size and input2.col_size != Vector_size:
@@ -61,7 +69,13 @@ class Coder:
 		var key = input2.mul(Key)
 		var value = input2.mul(Value)
 		
-		return query.mul_t(key).softmax().div_self_by_number(sqrt(Vector_size)).mul(value).batch_normalization()
+		return query.mul_t(key).div_self_by_number(sqrt(Vector_size)).softmax().mul(value).batch_normalization()
+	
+	func learn(input:Matrix, error:Matrix):
+		var learn_value:Matrix
+		
+		
+		
 	
 	func to_dict()->Dictionary:
 		return {

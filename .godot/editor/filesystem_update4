@@ -1,11 +1,7 @@
-res://Data Structure/ds.gd
 res://Attention Parser/2/word_data.tscn
 res://English/editor/1/theme.tres
-res://Word Embedding/2/wem2.gd
-res://Word Embedding/2/test1.gd
-res://Word Embedding/2/data.json
 res://Matrix/matrix.gd
-res://Word Embedding/2/test2.gd
+res://Word Embedding/2/wem2.gd
 res://Transformer/2/transformer2.gd
-res://Transformer/2/test1.gd
-res://Matrix/test5.gd
+res://Transformer/2/test2.gd
+res://Word Embedding/2/data.json

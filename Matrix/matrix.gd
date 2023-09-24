@@ -167,9 +167,41 @@ func zeros():
 	for i in range(row_size):
 		data[i].fill(0)
 
+func self_add_row(at:int, numbers:PackedFloat64Array):
+	var size:int = numbers.size()
+	if self.col_size != size:
+		printerr("false colomn size for self_add_row")
+		return null
+	if self.row_size < at:
+		printerr("false row index for self_add_row")
+		return null
+	
+	var row:PackedFloat64Array = self.data[at]
+	for c in range(size):
+		row[c] += numbers[c]
+	
+	return self
+
+func self_min_row(at:int, numbers:PackedFloat64Array):
+	var size:int = numbers.size()
+	if self.col_size != size:
+		printerr("false colomn size for self_min_row")
+		return null
+	if self.row_size < at:
+		printerr("false row index for self_min_row")
+		print("max row ", self.row_size, " given ", at)
+		return null
+	
+	var row:PackedFloat64Array = self.data[at]
+	for c in range(size):
+		row[c] -= numbers[c]
+	
+	return self
+
 func add_self(mat:Matrix)->Matrix:
 	if not is_equal_shape(mat):
 		printerr("false dimension of matrix!")
+		return null
 	for r in range(row_size):
 		var my_row = self.data[r]
 		var your_row = mat.data[r]
@@ -521,7 +553,7 @@ func row_deviation(means = null)->PackedFloat64Array:
 		result[r] = sqrt( deviation/col_size )
 	return result
 
-func batch_normalization():
+func batch_normalization()->Matrix:
 	var normalized:Matrix = Matrix.new().init(row_size, col_size)
 	var means = row_mean()
 	var denominators = row_deviation(means)
@@ -542,7 +574,7 @@ func self_mask_topright(value:float)->Matrix:
 			row[c] = value
 	return self
 
-func add_row()->Matrix:
+func row_add()->Matrix:
 	var result:PackedFloat64Array
 	result.resize(col_size)
 	

@@ -19,6 +19,8 @@ var SEQUENCE_LENGTH:int
 var VECTOR_SIZE:int
 var PE_cache:Matrix
 
+var _forward_result:Array
+var _backward_result:Array
 var _path:String
 
 func _init():
@@ -83,13 +85,22 @@ func backward_sentence(inputs:Matrix):
 	var size = inputs.row_size
 	var output = backward(inputs)
 	var highest = highest(output)
-	print(highest)
-	var word_position = word_dict.keys()
-	var result:PackedStringArray
-	result.resize(size)
-	for i in range(size):
-		result[i] = word_position[highest[i]]
+	var result:PackedStringArray = ids_to_words(highest)
 	return result
+
+func learn_forward(inputs:PackedInt64Array, error:Matrix):
+	var learn:Matrix = Matrix.new()
+	learn.init(inputs.size(), VECTOR_SIZE)
+	var error_rows:Array[PackedFloat64Array] = error.data
+	for i in range(inputs.size()):
+		learn.self_add_row(inputs[i], error_rows[i])
+	learn.div_self_by_number(10.0)
+	embedding.add_self(learn)
+
+func learn_backward(inputs:Matrix, error:Matrix):
+	var learn:Matrix = error.transpose().mul(inputs)
+	learn.div_self_by_number(10.0)
+	embedding.min_self(learn)
 
 func highest(outputs:Matrix)->PackedInt64Array:
 	var size:int = outputs.row_size
@@ -109,6 +120,25 @@ func highest(outputs:Matrix)->PackedInt64Array:
 func parse(sentence:String):
 	return words_to_ids(standard_split_word(sentence))
 
+func rectify_backward(output:Matrix, expected:PackedInt64Array):
+	var size:int = output.row_size
+	var col_size:int = output.col_size
+	if size != expected.size():
+		printerr("expected equal size of output and expected")
+		print(size, " ", expected.size())
+		return null
+	var original_row:PackedFloat64Array
+	original_row.resize(col_size)
+	original_row.fill(0.0)
+	var error:Matrix = output.duplicate()
+	
+	for i in range(size):
+		var index = expected[i]
+		var row = original_row.duplicate()
+		row[index] = 1.0
+		error.self_min_row(i, row)
+	return error
+
 func append_word(split:PackedStringArray):
 	var new_word_count:int = 0
 	for s in split:
@@ -123,6 +153,15 @@ func append_word(split:PackedStringArray):
 		print(new_matrix.row_size)
 		print(embedding.row_size)
 		embedding.self_append_rows(new_matrix.data)
+
+func ids_to_words(ids:PackedInt64Array)->PackedStringArray:
+	var size:int = ids.size()
+	var word_position = word_dict.keys()
+	var result:PackedStringArray
+	result.resize(size)
+	for i in range(size):
+		result[i] = word_position[ids[i]]
+	return result
 
 func words_to_ids(words:PackedStringArray)->PackedInt64Array:
 	var size:int = words.size()
