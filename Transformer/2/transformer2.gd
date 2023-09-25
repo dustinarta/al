@@ -1,7 +1,7 @@
 extends RefCounted
 class_name Transformer2
 
-var Layer:Array
+var Layer:Array[Coder]
 
 func _init():
 	pass
@@ -10,6 +10,35 @@ func init(vector_size:int, layer_size:int = 1):
 	Layer.resize(layer_size)
 	for i in range(layer_size):
 		Layer[i] = Coder.new().init(vector_size)
+	return self
+
+func save(_path:String):
+	var f = FileAccess.open(_path, FileAccess.WRITE)
+	var layer:Array
+	layer.resize(Layer.size())
+	for i in range(Layer.size()):
+		layer[i] = Layer[i].to_dict()
+	f.store_string(
+		JSON.stringify(
+			{
+				"layer" : layer
+			},
+			"\t", false, true
+		)
+	)
+	f.close()
+
+func load(_path:String):
+	var f = FileAccess.open(_path, FileAccess.READ)
+	var data = JSON.parse_string(
+		f.get_as_text()
+	)
+	f.close()
+	var layer:Array = data["layer"]
+	Layer.resize(layer.size())
+	
+	for i in range(layer.size()):
+		Layer[i] = Coder.init_from_dict(layer[i])
 	return self
 
 func forward(input:Matrix):
@@ -21,7 +50,10 @@ func forward(input:Matrix):
 	
 	return result
 
-
+func learn(error:Matrix):
+	
+	Layer[0].learn(error)
+	
 
 class Coder:
 	var Query:Matrix
@@ -40,6 +72,14 @@ class Coder:
 		Key = Matrix.new().init(vector_size, vector_size).self_randomize(-num_range, num_range)
 		Value = Matrix.new().init(vector_size, vector_size).self_randomize(-num_range, num_range)
 		return self
+	
+	static func init_from_dict(data:Dictionary)->Coder:
+		var coder:Coder = Coder.new()
+		coder.Vector_size = data["vector_size"]
+		coder.Query = Matrix.new().load_from_dict(data["query"])
+		coder.Key = Matrix.new().load_from_dict(data["key"])
+		coder.Value = Matrix.new().load_from_dict(data["value"])
+		return coder
 	
 	func forward(input:Matrix):
 		if input.col_size != Vector_size:
@@ -71,9 +111,16 @@ class Coder:
 		
 		return query.mul_t(key).div_self_by_number(sqrt(Vector_size)).softmax().mul(value).batch_normalization()
 	
-	func learn(input:Matrix, error:Matrix):
-		var learn_value:Matrix
+	func learn(error:Matrix):
+		var learn_value:Matrix = _result[4].transpose().mul(error)
+		learn_value = _result[0].transpose().mul(learn_value)
+#		print(learn_value.row_size, " ", learn_value.col_size)
+#		print(_result[4].row_size, " ", _result[4].col_size)
+#		print(error.row_size, " ", error.col_size)
+		learn_value.div_self_by_number(100.0)
+		Value.min_self(learn_value)
 		
+		var learn_key:Matrix
 		
 		
 	

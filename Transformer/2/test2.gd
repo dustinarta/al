@@ -4,7 +4,11 @@ extends EditorScript
 
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
-	var transformer = Transformer2.new().init(512, 1)
+#	var transformer:Transformer2 = Transformer2.new().init(64, 1)
+	var transformer:Transformer2 = Transformer2.new()
+#	transformer.save("res://Transformer/2/data.json")
+	transformer.load("res://Transformer/2/data.json")
+#	return
 	var wem = WEM2.new()
 	wem.load("res://Word Embedding/2/data.json")
 	var input = wem.forward_sentence(
@@ -29,7 +33,7 @@ func _run():
 		result1
 	)
 	print(output)
-	for i in range(100):
+	for i in range(1):
 		input = wem.forward_sentence(
 		"the key is stored"
 		)
@@ -41,7 +45,8 @@ func _run():
 			result1
 		)
 		result2 = wem.rectify_backward(output, expected)
-		wem.learn_backward(result1, result2)
+		var transformer_learn = wem.learn_backward(result1, result2)
+		transformer.learn(transformer_learn)
 	input = wem.forward_sentence(
 	"the key is stored"
 	)
@@ -53,6 +58,7 @@ func _run():
 		result1
 	)
 	print(output)
-#	wem.save("res://Word Embedding/2/data.json")
+	wem.save("res://Word Embedding/2/data.json")
+	transformer.save("res://Transformer/2/data.json")
 #	print(result1)
 #	print(output)

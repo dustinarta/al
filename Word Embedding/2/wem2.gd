@@ -94,13 +94,14 @@ func learn_forward(inputs:PackedInt64Array, error:Matrix):
 	var error_rows:Array[PackedFloat64Array] = error.data
 	for i in range(inputs.size()):
 		learn.self_add_row(inputs[i], error_rows[i])
-	learn.div_self_by_number(10.0)
+	learn.div_self_by_number(100.0)
 	embedding.add_self(learn)
 
 func learn_backward(inputs:Matrix, error:Matrix):
 	var learn:Matrix = error.transpose().mul(inputs)
-	learn.div_self_by_number(10.0)
+	learn.div_self_by_number(100.0)
 	embedding.min_self(learn)
+	return error.mul(embedding)
 
 func highest(outputs:Matrix)->PackedInt64Array:
 	var size:int = outputs.row_size

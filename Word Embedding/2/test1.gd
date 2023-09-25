@@ -5,12 +5,12 @@ extends EditorScript
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
 	var wem = WEM2.new()
-#	wem.init(512)
+#	wem.init(64, 100)
 	wem.load("res://Word Embedding/2/data.json")
 	var res
 	
 	res = wem.standard_split_word(
-		"Expressions are sequences of operators and their operands in orderly fashion. An expression by itself can be a statement too, though only calls are reasonable to use as statements since other expressions don't have side effects."
+		"$$p Expressions are sequences of operators and their operands in orderly fashion. An expression by itself can be a statement too, though only calls are reasonable to use as statements since other expressions don't have side effects."
 	)
 	wem.append_word(res)
 	res = wem.standard_split_word(
