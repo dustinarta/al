@@ -1,0 +1,11 @@
+
+mat1 x T(mat2 x mat3) x mat4
+mat1 x Tmat3 x Tmat2 x mat4
+Tmat4 x mat2 x mat3 x Tmat1
+mat1 {1, 2}
+mat2 {4, 3}
+mat3 {3, 2} x
+mat4 {4, 5}
+error {1, 5}
+
+Tmat2 x mat4 x Terror x mat1

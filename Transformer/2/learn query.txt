@@ -1,0 +1,10 @@
+
+mat1 x mat2 x Tmat3 x mat4
+
+mat1 {1, 2}
+mat2 {2, 3}
+mat3 {4, 3}
+mat4 {4, 5}
+error {1, 5}
+
+Tmat1 x error x Tmat4 x mat3

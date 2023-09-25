@@ -112,16 +112,27 @@ class Coder:
 		return query.mul_t(key).div_self_by_number(sqrt(Vector_size)).softmax().mul(value).batch_normalization()
 	
 	func learn(error:Matrix):
-		var learn_value:Matrix = _result[4].transpose().mul(error)
-		learn_value = _result[0].transpose().mul(learn_value)
+		## A x i x v -> Ti x TA x e
+		## Q x Tk x Ti x V
+		## TV x i x k x TQ -> Ti x V x e x Q
+		## i x Q x TK x V -> Ti x e x TV x K
+		var learn_value:Matrix = _result[0].transpose().mul_t(_result[4]).mul(error)
 #		print(learn_value.row_size, " ", learn_value.col_size)
-#		print(_result[4].row_size, " ", _result[4].col_size)
-#		print(error.row_size, " ", error.col_size)
-		learn_value.div_self_by_number(100.0)
+		learn_value.div_self_by_number(1000.0)
 		Value.min_self(learn_value)
+#		print(learn_value)
 		
-		var learn_key:Matrix
+		var learn_key:Matrix = _result[0].transpose().mul(_result[3]).mul_t(error).mul(_result[1])
+#		print(learn_key.row_size, " ", learn_key.col_size)
+		learn_key.div_self_by_number(1000.0)
+		Key.min_self(learn_key)
 		
+		var learn_query:Matrix = _result[0].transpose().mul(error)#.mul_t(_result[3]).mul(_result[2])
+#		print(learn_query)
+#		print(_result[0].transpose())
+#		print(error)
+		learn_query.div_self_by_number(1000.0)
+		Query.min_self(learn_query)
 		
 	
 	func to_dict()->Dictionary:

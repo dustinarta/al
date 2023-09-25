@@ -26,21 +26,35 @@ var _path:String
 func _init():
 	pass
 
-func init(vector_size:int, sequence_length:int):
+func init(vector_size:int, sequence_length:int = 100):
 	word_dict = {}
-	SEQUENCE_LENGTH = 0
+	SEQUENCE_LENGTH = sequence_length
 	VECTOR_SIZE = vector_size
 	embedding = Matrix.new().init(0, VECTOR_SIZE)
 	PE_cache = Matrix.new()
 
-func save(path:String):
-	var data:Dictionary = {
+static func init_from_dict(data:Dictionary):
+	var wem = WEM2.new()
+	wem.SEQUENCE_LENGTH = data["sequence_length"]
+	wem.VECTOR_SIZE = data["vector_size"]
+	wem.word_dict = data["word_dict"]
+	wem.embedding = Matrix.new()
+	wem.embedding.load_from_dict(data["embedding"])
+	wem.PE_cache = Matrix.new()
+	wem.PE_cache.load_from_dict(data["pe_cache"])
+	return wem
+
+func to_dict()->Dictionary:
+	return {
 		"sequence_length": SEQUENCE_LENGTH,
 		"vector_size": VECTOR_SIZE,
 		"word_dict": word_dict,
 		"embedding": embedding.to_dict(),
 		"pe_cache": PE_cache.to_dict()
 	}
+
+func save(path:String):
+	var data:Dictionary = to_dict()
 	var f = FileAccess.open(path, FileAccess.WRITE)
 	f.store_string(
 		JSON.stringify(
@@ -99,6 +113,7 @@ func learn_forward(inputs:PackedInt64Array, error:Matrix):
 
 func learn_backward(inputs:Matrix, error:Matrix):
 	var learn:Matrix = error.transpose().mul(inputs)
+#	print(learn)
 	learn.div_self_by_number(100.0)
 	embedding.min_self(learn)
 	return error.mul(embedding)
@@ -132,7 +147,7 @@ func rectify_backward(output:Matrix, expected:PackedInt64Array):
 	original_row.resize(col_size)
 	original_row.fill(0.0)
 	var error:Matrix = output.duplicate()
-	
+#	print(output)
 	for i in range(size):
 		var index = expected[i]
 		var row = original_row.duplicate()
