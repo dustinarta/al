@@ -4,13 +4,13 @@ extends EditorScript
 
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
-#	var transformer:Transformer2 = Transformer2.new().init(64, 1)
+#	var transformer:Transformer2 = Transformer2.new().init(64, 2)
 #	transformer.save("res://Transformer/2/data.json")
 #	return
 	var transformer:Transformer2 = Transformer2.new()
 	transformer.load("res://Transformer/2/data.json")
-	var wem = WEM2.new()
-	wem.load("res://Word Embedding/2/data.json")
+	transformer.wem.load("res://Word Embedding/2/data.json")
+	var wem = transformer.wem
 	var input = wem.forward_sentence(
 		"the key is stored"
 	)
@@ -42,6 +42,10 @@ func _run():
 		result1
 	)
 	print(output)
+	
+#	return
+	
+	
 	for i in range(1):
 		input = wem.forward_sentence(
 			this_input
@@ -60,7 +64,7 @@ func _run():
 		var transformer_learn = wem.learn_backward(result1, result2)
 #		print(transformer_learn)
 #		return
-		transformer.learn(transformer_learn)
+		transformer.learn_coder(transformer_learn)
 #		return
 	input = wem.forward_sentence(
 		this_input

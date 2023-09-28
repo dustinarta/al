@@ -1,10 +1,11 @@
 extends RefCounted
 class_name Transformer2
 
+var wem:WEM2
 var Layer:Array[Coder]
 
 func _init():
-	pass
+	wem = WEM2.new()
 
 func init(vector_size:int, layer_size:int = 1):
 	Layer.resize(layer_size)
@@ -50,10 +51,34 @@ func forward(input:Matrix):
 	
 	return result
 
-func learn(error:Matrix):
+func forward_s(input:String):
+	return forward(
+		wem.forward_sentence(input)
+	)
+
+func forward_sentence_to_sentence(input:String):
+	return wem.backward_sentence(
+		forward(
+			wem.forward_sentence(input)
+		)
+	) 
+
+func learn_coder(error:Matrix):
 	
-	Layer[0].learn(error)
+	for c in range(Layer.size()-1, -1, -1):
+#		print(error)
+		error = Layer[c].learn(error, 1.0/100000.0)
 	
+
+func learn_s(input_s:String, expected_s:String):
+	var input = wem.forward_sentence(input_s)
+	var expected = wem.sentence_to_ids(expected_s)
+	var result1 = forward(input)
+	var output = wem.backward(result1)
+	
+	var result2 = wem.rectify_backward(output, expected)
+	var transformer_learn = wem.learn_backward(result1, result2)
+	learn_coder(transformer_learn)
 
 class Coder:
 	var Query:Matrix
@@ -111,29 +136,48 @@ class Coder:
 		
 		return query.mul_t(key).div_self_by_number(sqrt(Vector_size)).softmax().mul(value).batch_normalization()
 	
-	func learn(error:Matrix):
+	func learn(error:Matrix, rate:float = 0.001):
 		## A x i x v -> Ti x TA x e
 		## Q x Tk x Ti x V
 		## TV x i x k x TQ -> Ti x V x e x Q
 		## i x Q x TK x V -> Ti x e x TV x K
-		var learn_value:Matrix = _result[0].transpose().mul_t(_result[4]).mul(error)
-#		print(learn_value.row_size, " ", learn_value.col_size)
-		learn_value.div_self_by_number(1000.0)
+		var _fast_result0:Matrix = _result[0].transpose()
+		var learn_value:Matrix = _fast_result0.mul_t(_result[4]).mul(error)
+		learn_value.mul_self_by_number(rate)
 		Value.min_self(learn_value)
-#		print(learn_value)
 		
-		var learn_key:Matrix = _result[0].transpose().mul(_result[3]).mul_t(error).mul(_result[1])
-#		print(learn_key.row_size, " ", learn_key.col_size)
-		learn_key.div_self_by_number(1000.0)
+		var learn_key:Matrix = _fast_result0.mul(_result[3]).mul_t(error).mul(_result[1])
+		learn_key.mul_self_by_number(rate)
 		Key.min_self(learn_key)
 		
-		var learn_query:Matrix = _result[0].transpose().mul(error)#.mul_t(_result[3]).mul(_result[2])
-#		print(learn_query)
-#		print(_result[0].transpose())
-#		print(error)
-		learn_query.div_self_by_number(1000.0)
+		var learn_query:Matrix = _fast_result0.mul(error).mul_t(_result[3]).mul(_result[2])
+		learn_query.mul_self_by_number(rate)
 		Query.min_self(learn_query)
 		
+		
+		var next_learn:Matrix
+		next_learn = error.mul_t(Value)
+		next_learn.add_self(error.mul(Key))
+		next_learn.add_self(error.mul_t(Query))
+		next_learn.div_self_by_number(3.0)
+#		print("error ", error)
+#		print("Value ", Value)
+#		print("next learn ", next_learn)
+		return next_learn
+	
+	
+	func __next_learn(error:Matrix):
+		var next_learn:Matrix
+		next_learn = error.mul_t(Value)
+		#next_learn = error.mul(Key)#.mul(Value)
+		#next_learn = error.mul_t(Query)#.mul_t(Value)
+		
+		next_learn.add_self(error.mul(Key))
+		next_learn.add_self(error.mul_t(Query))
+		next_learn.div_self_by_number(3.0)
+		
+#		print(next_learn.row_size, " ", next_learn.col_size)
+		return next_learn
 	
 	func to_dict()->Dictionary:
 		return {

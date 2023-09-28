@@ -108,14 +108,16 @@ func learn_forward(inputs:PackedInt64Array, error:Matrix):
 	var error_rows:Array[PackedFloat64Array] = error.data
 	for i in range(inputs.size()):
 		learn.self_add_row(inputs[i], error_rows[i])
-	learn.div_self_by_number(100.0)
-	embedding.add_self(learn)
+	learn.div_self_by_number(1000.0)
+	embedding.min_self(learn)
 
-func learn_backward(inputs:Matrix, error:Matrix):
+func learn_backward(inputs:Matrix, error:Matrix)->Matrix:
 	var learn:Matrix = error.transpose().mul(inputs)
 #	print(learn)
-	learn.div_self_by_number(100.0)
+	learn.div_self_by_number(1000.0)
 	embedding.min_self(learn)
+	print(error.row_size, " ", error.col_size)
+	print(embedding.row_size, " ", embedding.col_size)
 	return error.mul(embedding)
 
 func highest(outputs:Matrix)->PackedInt64Array:
@@ -193,6 +195,11 @@ func words_to_ids(words:PackedStringArray)->PackedInt64Array:
 			printerr("Unknown \"", word, "\"")
 	
 	return ids
+
+func sentence_to_ids(sentence:String)->PackedInt64Array:
+	return words_to_ids(
+		sentence.split(" ", false)
+	)
 
 func standard_split_word(input:String)->PackedStringArray:
 	input = input.to_lower()

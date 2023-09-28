@@ -1,0 +1,18 @@
+A x i x v -> e x Tv
+
+Q x T(i x k) x V
+//Q x Tk x Ti x V
+TV x i x k x //TQ -> 
+
+Tmat1 x Tmat2 x mat3 -> 
+
+mat1 {3, 2}
+mat2 {4, 3}
+mat3 {4, 5}
+Oe {2, 5}
+
+Tmat1 x mat2 x mat3 ->
+mat1 {2, 1}
+mat2 {2, 3}
+mat3 {3, 4}
+Oe {1, 4}
