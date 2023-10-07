@@ -12,7 +12,7 @@ Data Structure
 }
 
 """
-var data
+
 var word_dict:Dictionary
 var embedding:Matrix
 var SEQUENCE_LENGTH:int
@@ -26,14 +26,14 @@ var _path:String
 func _init():
 	pass
 
-func init(vector_size:int, sequence_length:int = 100):
-	word_dict = {}
+func init(vector_size:int, sequence_length:int = 20):
+	word_dict = { "<p>": 0 }
 	SEQUENCE_LENGTH = sequence_length
 	VECTOR_SIZE = vector_size
-	embedding = Matrix.new().init(0, VECTOR_SIZE)
-	PE_cache = Matrix.new()
+	embedding = Matrix.new().init(1, VECTOR_SIZE).self_randomize(-0.5, 0.5)
+	PE_cache = generate_positional_encoding(0, sequence_length)
 
-static func init_from_dict(data:Dictionary):
+static func init_from_dict(data:Dictionary)->WEM2:
 	var wem = WEM2.new()
 	wem.SEQUENCE_LENGTH = data["sequence_length"]
 	wem.VECTOR_SIZE = data["vector_size"]
@@ -43,6 +43,9 @@ static func init_from_dict(data:Dictionary):
 	wem.PE_cache = Matrix.new()
 	wem.PE_cache.load_from_dict(data["pe_cache"])
 	return wem
+
+func is_empty()->bool:
+	return word_dict.is_empty()
 
 func to_dict()->Dictionary:
 	return {
@@ -77,23 +80,31 @@ func load(path:String):
 	PE_cache.load_from_dict(data["pe_cache"])
 	return self
 
-func forward(inputs:PackedInt64Array):
+func forward(inputs:PackedInt64Array, sequence_length:int = SEQUENCE_LENGTH):
 	var size:int = inputs.size()
 	var output:Array[PackedFloat64Array]
-	output.resize(size)
+	output.resize(sequence_length)
 	
 	for i in range(size):
 		output[i] = embedding.data[inputs[i]].duplicate()
 	
-	return Matrix.new().fill_force(output)
+	for i in range(size, sequence_length):
+		output[i] = embedding.data[0].duplicate()
+	
+	return Matrix.new().fill_force(output).add_self(PE_cache.split_row(0, sequence_length))
 
-func forward_sentence(inputs:String):
+func forward_sentence(inputs:String, sequence_length:int = SEQUENCE_LENGTH):
 	return forward(
-		parse(inputs)
+		parse(inputs), sequence_length
 	)
 
 func backward(inputs:Matrix):
 	return inputs.mul_t(embedding).softmax()
+
+func output_to_sentence(output:Matrix):
+	var highest = highest(output)
+	var result:PackedStringArray = ids_to_words(highest)
+	return result
 
 func backward_sentence(inputs:Matrix):
 	var size = inputs.row_size
@@ -104,20 +115,20 @@ func backward_sentence(inputs:Matrix):
 
 func learn_forward(inputs:PackedInt64Array, error:Matrix):
 	var learn:Matrix = Matrix.new()
-	learn.init(inputs.size(), VECTOR_SIZE)
+	learn.init(embedding.row_size, VECTOR_SIZE)
 	var error_rows:Array[PackedFloat64Array] = error.data
 	for i in range(inputs.size()):
 		learn.self_add_row(inputs[i], error_rows[i])
-	learn.div_self_by_number(1000.0)
+	learn.mul_self_by_number(1.0/VECTOR_SIZE)
 	embedding.min_self(learn)
 
 func learn_backward(inputs:Matrix, error:Matrix)->Matrix:
 	var learn:Matrix = error.transpose().mul(inputs)
 #	print(learn)
-	learn.div_self_by_number(1000.0)
+	learn.mul_self_by_number(1.0/VECTOR_SIZE)
 	embedding.min_self(learn)
-	print(error.row_size, " ", error.col_size)
-	print(embedding.row_size, " ", embedding.col_size)
+#	print(error.row_size, " ", error.col_size)
+#	print(embedding.row_size, " ", embedding.col_size)
 	return error.mul(embedding)
 
 func highest(outputs:Matrix)->PackedInt64Array:
@@ -141,6 +152,9 @@ func parse(sentence:String):
 func rectify_backward(output:Matrix, expected:PackedInt64Array):
 	var size:int = output.row_size
 	var col_size:int = output.col_size
+	expected.resize(SEQUENCE_LENGTH)
+	for i in range(col_size, SEQUENCE_LENGTH):
+		expected[i] = 0
 	if size != expected.size():
 		printerr("expected equal size of output and expected")
 		print(size, " ", expected.size())
@@ -155,6 +169,7 @@ func rectify_backward(output:Matrix, expected:PackedInt64Array):
 		var row = original_row.duplicate()
 		row[index] = 1.0
 		error.self_min_row(i, row)
+#	print(error)
 	return error
 
 func append_word(split:PackedStringArray):
@@ -167,7 +182,7 @@ func append_word(split:PackedStringArray):
 			new_word_count += 1
 	if new_word_count != 0:
 		var new_matrix = Matrix.new().init(new_word_count, VECTOR_SIZE)
-		new_matrix.shufle()
+		new_matrix.self_randomize(-0.5, 0.5)
 		print(new_matrix.row_size)
 		print(embedding.row_size)
 		embedding.self_append_rows(new_matrix.data)

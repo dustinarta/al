@@ -1,0 +1,24 @@
+
+mat1 x mat2 -> e x Tmat2
+mat1 x mat2 -> Tmat1 x e
+
+
+mat1 x mat2 x mat1 -> Tmat1 x e x Tmat1
+mat1 x mat2 x mat1 -> e x Tmat1 x Tmat2
+mat1 x mat2 x mat1 -> Tmat2 x Tmat1 x e
+
+mat1 {1, 2}
+mat2 {2, 1}
+e {1, 2}
+
+
+mat1 x mat2 x Tmat3 x Tmat1 (mat2)-> Tmat1 x e x mat1 x mat3
+mat1 x mat2 x Tmat3 x Tmat1 (mat3)-> Tmat1 x Te x mat1 x mat2
+mat1 x mat2 x Tmat3 x Tmat1 (mat1)-> e x mat1 x mat3 x Tmat2
+mat1 x mat2 x Tmat3 x Tmat1 (mat1)-> Te x mat1 x mat2 x Tmat3
+
+
+mat1 {1, 2}
+mat2 {2, 3}
+mat3 {2, 3}
+e {1, 1}

@@ -1,21 +1,12 @@
 res://Attention Parser/2/word_data.tscn
 res://English/editor/1/theme.tres
-res://Transformer/2/transformer2.gd
-res://Transformer/2/test3.gd
-res://Transformer/2/test2.gd
-res://Word Embedding/2/data.json
-res://Attention Parser/2/ap2lvl2.gd
-res://Data Structure/ds.gd
-res://Attention Parser/2/learn.gd
+res://Neural Network/6/nn6.gd
+res://Neural Network/6/test1.gd
 res://Matrix/matrix.gd
-res://Sentence Based Algorithm/5/memory.json
-res://Sentence Based Algorithm/5/script.gd
-res://Word Embedding/2/test1.gd
-res://Transformer/2/test1.gd
-res://Word Embedding/2/test2.gd
-res://Data Structure/test3.gd
-res://Sentence Based Algorithm/5/test4.gd
-res://Sentence Based Algorithm/5/test5.gd
-res://Matrix/test5.gd
+res://Transformer/2/test5.gd
+res://Transformer/2/transformer2.gd
 res://Word Embedding/2/wem2.gd
-res://Attention Parser/2/word_data.gd
+res://Word Embedding/2/test3.gd
+res://Transformer/2/learn/learn embedding 2.txt
+res://Transformer/2/test/test1.gd
+res://Transformer/2/test/test2.gd

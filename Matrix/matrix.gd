@@ -2,7 +2,7 @@ extends RefCounted
 ## Class for Matrix Object
 class_name Matrix
 
-const E = 2.7182818284
+const EULER = 2.7182818284
 
 var row_size:int
 var col_size:int
@@ -104,6 +104,12 @@ func append_col(row:PackedFloat64Array)->Matrix:
 	col_size += 1
 	return self
 
+func at_row(row_index:int):
+	if row_index >= row_size:
+		printerr("Out of index ", row_index, " while the row size was ", row_size)
+		return
+	return Matrix.new().init(1, col_size).fill_rows(data[row_index])
+
 func fill(_data:Array[PackedFloat64Array]):
 	if _data.size() == row_size:
 		if _data[0].size() == col_size:
@@ -115,6 +121,24 @@ func fill_force(_data:Array[PackedFloat64Array]):
 	row_size = _data.size()
 	col_size = _data[0].size()
 	data = _data
+	return self
+
+func fill_rows(row:PackedFloat64Array):
+	if col_size != row.size():
+		printerr("Invalid col size for fill rows!")
+		return null
+	
+	for r in range(row_size):
+		data[r] = row.duplicate()
+	return self
+
+func fill_cols(col:PackedFloat64Array):
+	if row_size != col.size():
+		printerr("Invalid col size for fill rows!")
+		return null
+	
+	for r in range(row_size):
+		data[r].fill(col[r])
 	return self
 
 func duplicate()->Matrix:
@@ -175,7 +199,7 @@ func self_add_row(at:int, numbers:PackedFloat64Array):
 	if self.row_size < at:
 		printerr("false row index for self_add_row")
 		return null
-	
+#	print(self.row_size, " ", at)
 	var row:PackedFloat64Array = self.data[at]
 	for c in range(size):
 		row[c] += numbers[c]
@@ -503,7 +527,7 @@ func softmax()->Matrix:
 		numbers = data[r]
 		total = 0.0
 		for c in range(col_size):
-			var res = pow(E, numbers[c])
+			var res = pow(EULER, numbers[c])
 			exp[c] = res
 			total += res
 		for c in range(col_size):
@@ -520,7 +544,6 @@ func derivative_softmax()->Matrix:
 			var val:float = my_row[c]
 			row[c] = val * (1 - val)
 	return result
-
 
 func row_mean()->PackedFloat64Array:
 	var col_size:int = self.col_size
@@ -567,12 +590,41 @@ func batch_normalization()->Matrix:
 			normalized_row[c] = (my_row[c] - mean) / denominator
 	return normalized
 
+func activation_tanh()->Matrix:
+	var new_matrix:Matrix = Matrix.new().init(row_size, col_size)
+	for r in range(row_size):
+		var my_row = data[r]
+		var new_row = new_matrix.data[r]
+		for c in range(col_size):
+			new_row[c] = tanh(my_row[c])
+	return new_matrix
+
+func activation_sigmoid()->Matrix:
+	var new_matrix:Matrix = Matrix.new().init(row_size, col_size)
+	for r in range(row_size):
+		var my_row = data[r]
+		var new_row = new_matrix.data[r]
+		for c in range(col_size):
+			new_row[c] = 1.0/(1.0 + pow(EULER, -my_row))
+	return new_matrix
+
+func activation_softmax()->Matrix:
+	return self.softmax()
+
 func self_mask_topright(value:float)->Matrix:
 	for r in range(row_size):
 		var row = data[r]
 		for c in range(r+1, col_size):
 			row[c] = value
 	return self
+
+func split_row(from:int, to:int)->Matrix:
+	var new_row_size:int = to - from
+	var new_matrix:Matrix = Matrix.new().init(new_row_size, col_size)
+	
+	new_matrix.data = data.slice(from, to)
+	
+	return new_matrix
 
 func row_add()->Matrix:
 	var result:PackedFloat64Array

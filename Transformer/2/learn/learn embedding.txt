@@ -1,0 +1,39 @@
+A x i x v (i)-> TA x e x Tv
+
+mat1 x mat2 x mat3
+
+mat1 {1, 2}
+mat2 {2, 3}
+mat3 {3, 4}
+e {1, 4}
+
+Tmat1 x e x Tmat3
+
+
+Q x T(i x k) x V
+Q x Tk x Ti x V
+TV x i x k x TQ -> 
+
+mat1 x Tmat2 x Tmat3 x mat4
+
+mat1 {1, 2}
+mat2 {3, 2}
+mat3 {4, 3}
+mat4 {4, 5}
+e {1, 5}
+
+mat4 x Te x mat1 x Tmat2
+
+
+
+i x q x TK x V
+
+mat1 x mat2 x Tmat3 x mat4
+
+mat1 {1, 2}
+mat2 {2, 3}
+mat3 {4, 3}
+mat4 {4, 5}
+e {1, 5}
+
+e x Tmat4 x mat3 x Tmat2
