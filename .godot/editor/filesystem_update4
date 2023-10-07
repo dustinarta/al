@@ -1,12 +1,4 @@
 res://Attention Parser/2/word_data.tscn
 res://English/editor/1/theme.tres
-res://Neural Network/6/nn6.gd
-res://Neural Network/6/test1.gd
-res://Matrix/matrix.gd
-res://Transformer/2/test5.gd
+res://Transformer/2/test6.gd
 res://Transformer/2/transformer2.gd
-res://Word Embedding/2/wem2.gd
-res://Word Embedding/2/test3.gd
-res://Transformer/2/learn/learn embedding 2.txt
-res://Transformer/2/test/test1.gd
-res://Transformer/2/test/test2.gd

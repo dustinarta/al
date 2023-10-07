@@ -69,6 +69,15 @@ func forward(input:Matrix):
 	
 	return result
 
+func forward_fast(input:Matrix):
+	var result = input
+#	print("input ", input, "\n")
+	for c in range(Layer.size()):
+		result = Layer[c].forward_fast(result)
+#		print("forward of ", c, " ", result, "\n")
+	
+	return result
+
 func forward_s(input:String):
 	return forward(
 		wem.forward_sentence(input)
@@ -116,7 +125,7 @@ class Coder:
 	
 	func init(vector_size:int):
 		Vector_size = vector_size
-		var num_range:float = 0.1
+		var num_range:float = 1.0/Vector_size
 		Query = Matrix.new().init(vector_size, vector_size).self_randomize(-num_range, num_range)
 		Key = Matrix.new().init(vector_size, vector_size).self_randomize(-num_range, num_range)
 		Value = Matrix.new().init(vector_size, vector_size).self_randomize(-num_range, num_range)
@@ -170,7 +179,7 @@ class Coder:
 		var attention = query.mul_t(key).div_self_by_number(sqrt(Vector_size)).softmax()
 		_result[4] = attention#.duplicate()
 		var output = attention.mul(value).batch_normalization()
-		_result[5] = output#.add_self(input)#.duplicate()
+		_result[5] = output.add_self(input)#.duplicate()
 #		print("Query result", _result[1], "\n")
 #		print("Key result", _result[2], "\n")
 #		print("Value result", _result[3], "\n")
