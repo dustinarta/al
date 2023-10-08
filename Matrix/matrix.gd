@@ -414,6 +414,44 @@ static func _mul_t(mat1:Matrix, mat2:Matrix, from:int, to:int):
 		result[r-from] = row_result
 	return result
 
+static func multi_mul(matrices1:Array[Matrix], matrices2:Array[Matrix])->Array[Matrix]:
+	if matrices1.size() != matrices2.size():
+		printerr("unequal size of matrices in multi mul")
+		return []
+	var matrices_size:int = matrices1.size()
+	var matrices_result:Array[Matrix]
+	matrices_result.resize(matrices_size)
+	
+	for i in range(matrices_size):
+		matrices_result[i] = matrices1[i].mul(matrices2[i])
+	
+	return matrices_result
+
+static func multi_mul_t(matrices1:Array[Matrix], matrices2:Array[Matrix])->Array[Matrix]:
+	if matrices1.size() != matrices2.size():
+		printerr("unequal size of matrices in multi mul")
+		return []
+	var matrices_size:int = matrices1.size()
+	var matrices_result:Array[Matrix]
+	matrices_result.resize(matrices_size)
+	
+	for i in range(matrices_size):
+		matrices_result[i] = matrices1[i].mul_t(matrices2[i])
+	
+	return matrices_result
+
+static func multi_div_by_number(matrices:Array[Matrix], number:float)->Array[Matrix]:
+	for matrix in matrices:
+		matrix.div_self_by_number(number)
+	return matrices
+
+static func multi_softmax(matrices:Array[Matrix])->Array[Matrix]:
+	var new_matrices:Array[Matrix]
+	new_matrices.resize(matrices.size())
+	for i in range(matrices.size()):
+		new_matrices[i] = matrices[i].softmax()
+	return new_matrices
+
 func add_self_by_number(number:float)->Matrix:
 	for r in range(row_size):
 		for c in range(col_size):
@@ -618,13 +656,47 @@ func self_mask_topright(value:float)->Matrix:
 			row[c] = value
 	return self
 
-func split_row(from:int, to:int)->Matrix:
+func slice_row(from:int, to:int)->Matrix:
 	var new_row_size:int = to - from
 	var new_matrix:Matrix = Matrix.new().init(new_row_size, col_size)
 	
 	new_matrix.data = data.slice(from, to)
 	
 	return new_matrix
+
+func split_col(count:int)->Array[Matrix]:
+	if (col_size % count) != 0:
+		printerr("Unbalanced split col")
+		return []
+	var matrices:Array[Matrix]
+	matrices.resize(count)
+	var col_length:int = col_size / count
+	for mat in range(count):
+		var matrix:Matrix = Matrix.new().init(row_size, col_length)
+		var matrix_data = matrix.data
+		for r in range(row_size):
+			matrix_data[r] = data[r].slice(mat*col_length, (mat+1)*col_length)
+		matrices[mat] = matrix
+	return matrices
+
+static func join_col(matrices:Array[Matrix])->Matrix:
+	if matrices.is_empty():
+		printerr("Empty matrices on join col")
+		return null
+	var joined_matrix:Matrix = Matrix.new()
+	var count:int = matrices.size()
+	var row_size = matrices[0].row_size
+	var col_size = matrices[0].col_size
+	var data:Array[PackedFloat64Array] = matrices[0].data
+	
+	for r in range(row_size):
+		for i in range(1, count):
+			data[r].append_array(matrices[i].data[r])
+	joined_matrix.row_size = row_size
+	joined_matrix.col_size = col_size * count
+	joined_matrix.data = data
+	
+	return joined_matrix
 
 func row_add()->Matrix:
 	var result:PackedFloat64Array
