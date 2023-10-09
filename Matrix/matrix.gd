@@ -12,14 +12,16 @@ func _init():
 	pass
 
 func init(row:int, col:int, fill_value:float = 0.0)->Matrix:
+	self.row_size = row
+	self.col_size = col
 	self.data.resize(row)
+	if col == 0:
+		return self
 	var array:PackedFloat64Array
 	array.resize(col)
 	array.fill(fill_value)
 	for i in range(row):
 		self.data[i] = array.duplicate()
-	self.row_size = row
-	self.col_size = col
 	return self
 
 static func create(data:Array[PackedFloat64Array])->Matrix:
@@ -716,7 +718,7 @@ func concat_col(mat:Matrix)->Matrix:
 	
 	var result:Matrix = self.duplicate()
 	for r in range(row_size):
-		result.data[r].append_array(mat.data[r].duplicate())
+		result.data[r].append_array(mat.data[r])
 	result.col_size += mat.col_size
 	return result
 

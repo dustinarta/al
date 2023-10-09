@@ -5,7 +5,7 @@ extends EditorScript
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
 #	var transformer:Transformer2 = Transformer2.new()
-#	transformer.init(128, 4, 20)
+#	transformer.init(128, 2, 4, 100)
 #	transformer.wem.append_word("<p> 1 2 3 4".split(" "))
 #	transformer.save("res://Transformer/2/datatest3.json")
 #	return
@@ -61,6 +61,7 @@ func _run():
 #		return
 #		var wem_forward_error = 
 		transformer.learn_coder(transformer_learn)
+#		print("no problem")
 #		return
 #		wem.learn_forward(input_id, wem_forward_error)
 	

@@ -91,7 +91,7 @@ func forward(inputs:PackedInt64Array, sequence_length:int = SEQUENCE_LENGTH):
 	for i in range(size, sequence_length):
 		output[i] = embedding.data[0].duplicate()
 	
-	return Matrix.new().fill_force(output).add_self(PE_cache.split_row(0, sequence_length))
+	return Matrix.new().fill_force(output).add_self(PE_cache.slice_row(0, sequence_length))
 
 func forward_sentence(inputs:String, sequence_length:int = SEQUENCE_LENGTH):
 	return forward(
