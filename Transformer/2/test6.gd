@@ -5,7 +5,7 @@ extends EditorScript
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
 #	var transformer:Transformer2 = Transformer2.new()
-#	transformer.init(128, 2, 4, 100)
+#	transformer.init(128, 2, 4, 20)
 #	transformer.wem.append_word("<p> 1 2 3 4".split(" "))
 #	transformer.save("res://Transformer/2/datatest3.json")
 #	return
@@ -23,7 +23,7 @@ func _run():
 	var this_input
 	var this_expected
 	this_input = "1 2"
-	this_expected = ["3", "4"]
+	this_expected = ["3", "4", "2"]
 	
 #	this_input = "variable have side effects"
 #	this_expected = ["current", "element", "is", "iterating"]
@@ -39,7 +39,7 @@ func _run():
 #	return
 	
 	
-	for i in range(5):
+	for i in range(1):
 		var input_id = wem.sentence_to_ids(this_input)
 		input = wem.forward_sentence(
 			this_input
@@ -48,7 +48,7 @@ func _run():
 			this_expected
 		)
 #		print("input ", input)
-		result1 = transformer.forward_fast(input)
+		result1 = transformer.forward(input)
 		output = wem.backward(
 			result1
 		)
@@ -68,19 +68,19 @@ func _run():
 	output = transformer.forward_sentence_to_sentence(this_input)
 	print(output)
 	
-	input = wem.forward_sentence(
-		this_input
-	)
-	expected = wem.words_to_ids(
-		this_expected
-	)
-	result1 = transformer.forward_fast(input)
-	output = wem.backward(
-		result1
-	)
-	result2 = wem.rectify_backward(output, expected)
-	print(result2)
-	transformer.save("res://Transformer/2/datatest3.json")
+#	input = wem.forward_sentence(
+#		this_input
+#	)
+#	expected = wem.words_to_ids(
+#		this_expected
+#	)
+#	result1 = transformer.forward_fast(input)
+#	output = wem.backward(
+#		result1
+#	)
+#	result2 = wem.rectify_backward(output, expected)
+#	print(result2)
+#	transformer.save("res://Transformer/2/datatest3.json")
 #	print(result1)
 #	print(output)
 	

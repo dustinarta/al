@@ -37,18 +37,19 @@ func forward_fast(input:Matrix):
 		printerr("Invalid vector size!")
 		return null
 	_result.clear()
-	_result.resize(6)
+	_result.resize(7)
 	var query = input._mul_fast(Query, 4)
 	var key = input._mul_fast(Key, 4)
 	var value = input._mul_fast(Value, 4)
 	_result[0] = input#.duplicate()
-	_result[1] = query#.duplicate()
-	_result[2] = key#.duplicate()
-	_result[3] = value#.duplicate()
+	_result[1] = input#.duplicate()
+	_result[2] = query#.duplicate()
+	_result[3] = key#.duplicate()
+	_result[4] = value#.duplicate()
 	var attention = query._mul_t_fast(key, 4).div_self_by_number(sqrt(Vector_size)).softmax()
-	_result[4] = attention#.duplicate()
+	_result[5] = attention#.duplicate()
 	var output = attention._mul_fast(value, 4).batch_normalization()
-	_result[5] = output.add_self(input)#.duplicate()
+	_result[6] = output.add_self(input)#.duplicate()
 #		print("Query result", _result[1], "\n")
 #		print("Key result", _result[2], "\n")
 #		print("Value result", _result[3], "\n")
@@ -61,7 +62,7 @@ func forward(input:Matrix):
 		printerr("Invalid vector size!")
 		return null
 	_result.clear()
-	_result.resize(6)
+	_result.resize(7)
 	var query = input.mul(Query)
 	var key = input.mul(Key)
 	var value = input.mul(Value)
@@ -69,16 +70,17 @@ func forward(input:Matrix):
 	var keys = key.split_col(Head_size)
 	var values = value.split_col(Head_size)
 	_result[0] = input#.duplicate()
-	_result[1] = queries#.duplicate()
-	_result[2] = keys#.duplicate()
-	_result[3] = values#.duplicate()
+	_result[1] = input#.duplicate()
+	_result[2] = queries#query#.duplicate()
+	_result[3] = keys#key#.duplicate()
+	_result[4] = values#value#.duplicate()
 	var attention = query.mul_t(key).div_self_by_number(sqrt(Vector_size)).softmax()
 	var attentions = Matrix.multi_softmax(
 		Matrix.multi_div_by_number(
 			Matrix.multi_mul_t(queries, keys), sqrt(Vector_size)
 		)
 	)
-	_result[4] = attentions#.duplicate()
+	_result[5] = attentions#attention#.duplicate()
 	var output = Matrix.join_col(
 		Matrix.multi_mul(
 			attentions, values
@@ -86,7 +88,7 @@ func forward(input:Matrix):
 	).batch_normalization()
 	
 #	var output = attention.mul(value).batch_normalization()
-	_result[5] = output.add_self(input)#.duplicate()
+	_result[6] = output.add_self(input)#.duplicate()
 #	print("Queries result", _result[1], "\n")
 #	print("Keys result", _result[2], "\n")
 #	print("Values result", _result[3], "\n")
@@ -111,18 +113,19 @@ func learn(error:Matrix, rate:float = 0.0001):
 	## TV x i x k x TQ -> Ti x V x e x Q
 	## i x Q x TK x V -> Ti x e x TV x K
 	var _fast_result0:Matrix = _result[0].transpose()
-	var learn_value:Matrix = _fast_result0._mul_t_fast(_result[4], 4)._mul_fast(error, 4)
+	var _fast_result1:Matrix = _result[1].transpose()
+	var learn_value:Matrix = _fast_result1._mul_t_fast(_result[5], 4)._mul_fast(error, 4)
 	learn_value.mul_self_by_number(rate)
 	Value.min_self(learn_value)
 #		print("Value learn ", learn_value)
 	
 	
-	var learn_key:Matrix = _fast_result0._mul_fast(_result[3], 4)._mul_t_fast(error, 4)._mul_fast(_result[1], 4)
+	var learn_key:Matrix = _fast_result1._mul_fast(_result[4], 4)._mul_t_fast(error, 4)._mul_fast(_result[2], 4)
 #		print("Key learn ", learn_value)
 	learn_key.mul_self_by_number(rate)
 	Key.min_self(learn_key)
 	
-	var learn_query:Matrix = _fast_result0._mul_fast(error, 4)._mul_t_fast(_result[3], 4)._mul_fast(_result[2], 4)
+	var learn_query:Matrix = _fast_result0._mul_fast(error, 4)._mul_t_fast(_result[4], 4)._mul_fast(_result[3], 4)
 	learn_query.mul_self_by_number(rate)
 	Query.min_self(learn_query)
 #		print("Query learn ", learn_value)
@@ -130,9 +133,9 @@ func learn(error:Matrix, rate:float = 0.0001):
 	
 	var next_learn:Matrix
 #		next_learn = error.mul_t(Value).mul(Key).mul_t(Query)
-	next_learn = _result[4].transpose().mul(error).mul_t(Value)
-	next_learn.add_self(_result[3].mul_t(error).mul(_result[1]).mul_t(Key))
-	next_learn.add_self(error.mul_t(_result[3]).mul(_result[2]).mul_t(Query))
+	next_learn = _result[5].transpose().mul(error).mul_t(Value)
+	next_learn.add_self(_result[4].mul_t(error).mul(_result[2]).mul_t(Key))
+	next_learn.add_self(error.mul_t(_result[4]).mul(_result[3]).mul_t(Query))
 #		print(_result[3].mul_t(error).mul(_result[1]).mul_t(Key))
 	next_learn.mul_self_by_number(1.0/3.0)
 #		print("error ", error)
@@ -141,71 +144,51 @@ func learn(error:Matrix, rate:float = 0.0001):
 #		print(next_learn, "\n")
 	return next_learn
 
-func learn2(errors:Array, rate:float = 0.0001):
-	## A x i x v -> Ti x TA x e
-	## Q x Tk x Ti x V
-	## TV x i x k x TQ -> Ti x V x e x Q
-	## i x Q x TK x V -> Ti x e x TV x K
-	var _fast_result0:Matrix = _result[0].transpose()
-	var learn_value:Matrix = _fast_result0._mul_t_fast(_result[4], 4)._mul_fast(errors[2], 4)
-	learn_value.mul_self_by_number(rate)
-	Value.min_self(learn_value)
-#		print("Value learn ", learn_value)
-	
-	
-	var learn_key:Matrix = _fast_result0._mul_fast(_result[3], 4)._mul_t_fast(errors[1], 4)._mul_fast(_result[1], 4)
-#		print("Key learn ", learn_value)
-	learn_key.mul_self_by_number(rate)
-	Key.min_self(learn_key)
-	
-	var learn_query:Matrix = _fast_result0._mul_fast(errors[0], 4)._mul_t_fast(_result[3], 4)._mul_fast(_result[2], 4)
-	learn_query.mul_self_by_number(rate)
-	Query.min_self(learn_query)
-#		print("Query learn ", learn_value)
-	
-	
-#		next_learn = error.mul_t(Value).mul(Key).mul_t(Query)
-	var next_learn_value = _result[4].transpose().mul(errors[2]).mul_t(Value)
-	var next_learn_key = _result[3].mul_t(errors[1]).mul(_result[1]).mul_t(Key)
-	var next_learn_query = errors[0].mul_t(_result[3]).mul(_result[2]).mul_t(Query)
-#		print(_result[3].mul_t(error).mul(_result[1]).mul_t(Key))
-#		print("error ", error)
-#		print("Value ", Value)
-#		print("next learn ", next_learn)
-#		print(next_learn, "\n")
-	return [next_learn_query, next_learn_key, next_learn_value]
-
 func __learn(error:Matrix, rate:float = 0.0001):
+#	print("error ", error.row_size)
+	var sequence_length:int = error.row_size
 	var errors:Array[Matrix] = error.split_col(Head_size)
-	var inputs:Array[Matrix] = _result[0].split_col(Head_size)
+	var inputs1:Array[Matrix] = _result[0].split_col(Head_size)
+	var inputs2:Array[Matrix] = _result[1].split_col(Head_size)
 	
-	var next_learn:Matrix = Matrix.new().init(Vector_size, 0)
+	var next_learn:Matrix = Matrix.new().init(sequence_length, Vector_size)
+	print("next learn ", next_learn.row_size, " ", next_learn.col_size)
 	var Queries = Query.split_col(Head_size)
 	var Keys = Key.split_col(Head_size)
 	var Values = Value.split_col(Head_size)
 	
 	for h in range(Head_size):
-		var this_next_learn:Matrix = _result[4][h].transpose().mul(errors[h]).mul_t(Values[h])
-		this_next_learn.add_self(_result[3][h].mul_t(errors[h]).mul(_result[1][h]).mul_t(Keys[h]))
-		this_next_learn.add_self(errors[h].mul_t(_result[3][h]).mul(_result[2][h]).mul_t(Queries[h]))
+		var this_next_learn:Matrix = _result[5][h].transpose().mul(errors[h]).mul_t(Values[h])
+		this_next_learn.add_self(_result[4][h].mul_t(errors[h]).mul(_result[2][h]).mul_t(Keys[h]))
+		this_next_learn.add_self(errors[h].mul_t(_result[4][h]).mul(_result[3][h]).mul_t(Queries[h]))
 		this_next_learn.mul_self_by_number(0.333333)
-		next_learn.concat_col(this_next_learn)
+#		print("this next learn ", this_next_learn.row_size, " ", this_next_learn.col_size)
+		next_learn.add_self(this_next_learn)
+#		if(is_error == null):
+#			print("problem")
+#		else:
+#			print(is_error)
 	
-	var learn_query:Matrix = Matrix.new().init(Vector_size, 0)
-	var learn_key:Matrix = Matrix.new().init(Vector_size, 0)
-	var learn_value:Matrix = Matrix.new().init(Vector_size, 0)
+	print("now next learn ", next_learn.row_size, " ", next_learn.col_size)
+#	var learn_query:Matrix = Matrix.new().init(Vector_size, 0)
+#	var learn_key:Matrix = Matrix.new().init(Vector_size, 0)
+#	var learn_value:Matrix = Matrix.new().init(Vector_size, 0)
+	var learn_query:Matrix = Matrix.new().init(0, Vector_size)
+	var learn_key:Matrix = Matrix.new().init(0, Vector_size)
+	var learn_value:Matrix = Matrix.new().init(0, Vector_size)
 	
 	for h in range(Head_size):
-		var _fast_result0:Matrix = inputs[h].transpose()
+		var _fast_result1:Matrix = inputs1[h].transpose()
+		var _fast_result2:Matrix = inputs2[h].transpose()
 		
-		var temp_learn_value:Matrix = _fast_result0._mul_t_fast(_result[4][h], 4)._mul_fast(errors[h], 4)
-		learn_value.concat_col(temp_learn_value)
+		var temp_learn_value:Matrix = _fast_result2._mul_t_fast(_result[5][h], 4)._mul_fast(errors[h], 4)
+		var temp_learn_key:Matrix = _fast_result2._mul_fast(_result[4][h], 4)._mul_t_fast(errors[h], 4)._mul_fast(_result[2][h], 4)
+		var temp_learn_query:Matrix = _fast_result1._mul_fast(errors[h], 4)._mul_t_fast(_result[4][h], 4)._mul_fast(_result[3][h], 4)
 		
-		var temp_learn_key:Matrix = _fast_result0._mul_fast(_result[3][h], 4)._mul_t_fast(errors[h], 4)._mul_fast(_result[1][h], 4)
-		learn_key.concat_col(temp_learn_key)
-		
-		var temp_learn_query:Matrix = _fast_result0._mul_fast(errors[h], 4)._mul_t_fast(_result[3][h], 4)._mul_fast(_result[2][h], 4)
-		learn_query.concat_col(temp_learn_query)
+		print("temp learn value ", temp_learn_value.row_size, " ", temp_learn_value.col_size)
+		learn_value.concat_row(temp_learn_value)
+		learn_key.concat_row(temp_learn_key)
+		learn_query.concat_row(temp_learn_query)
 		
 	learn_query.mul_self_by_number(rate)
 	learn_key.mul_self_by_number(rate)

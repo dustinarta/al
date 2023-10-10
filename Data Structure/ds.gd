@@ -1,7 +1,6 @@
-@tool
 extends Node
 
-const E = 2.7182818284
+const E = 2.71828182845904523536
 
 class Table:
 	var column_name:PackedStringArray
@@ -175,6 +174,27 @@ class Collection:
 				result.append(data[i])
 		return Collection.new().init(result, has_function)
 
+class LinkedList:
+	extends RefCounted
+	var data
+	var directory:Dictionary
+	
+	func _init(_data):
+		data = _data
+	
+	func link(direction:String, to:LinkedList):
+		directory[direction] = to
+	
+	func link_between(direction_to:String, to:LinkedList, direction_from:String):
+		directory[direction_to] = to
+		to.directory[direction_from] = self
+	
+	func unlink(direction:String):
+		directory.erase(direction)
+	
+	func traverse()->PackedStringArray:
+		return directory.keys()
+
 func forEach(function:Callable, elements:Array):
 	var result:Array
 	result.resize(elements.size())
@@ -253,3 +273,7 @@ class Pointer:
 	func write(input):
 		data = input
 		return self
+
+
+
+

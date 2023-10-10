@@ -96,15 +96,9 @@ func forward_sentence_to_sentence(input:String):
 func learn_coder(error:Matrix, rate:float = 0.1/pow(VectorSize, 2.0)):
 	for c in range(Layer.size()-1, -1, -1):
 #		print("error ", error, "\n")
-		error = Layer[c].learn(error, rate)
+		error = Layer[c].__learn(error, rate)
 #		Layer[c].learn(error, rate)
 	return error
-
-func learn_coder2(error:Matrix, rate:float = 0.1/pow(VectorSize, 2.0)):
-	var errors:Array = [error, error, error]
-	for c in range(Layer.size()-1, -1, -1):
-#		print(error)
-		errors = Layer[c].learn2(errors, rate)
 
 func learn_s(input_s:String, expected_s:String):
 	var input = wem.forward_sentence(input_s)

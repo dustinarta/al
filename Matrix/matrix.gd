@@ -713,7 +713,8 @@ func row_add()->Matrix:
 
 func concat_col(mat:Matrix)->Matrix:
 	if row_size != mat.row_size:
-		printerr("must be the same row size!")
+		printerr("must be the same row size for concat col!")
+		printerr("expected ", row_size, " but given ", mat.row_size)
 		return
 	
 	var result:Matrix = self.duplicate()
@@ -724,7 +725,8 @@ func concat_col(mat:Matrix)->Matrix:
 
 func concat_row(mat:Matrix)->Matrix:
 	if col_size != mat.col_size:
-		printerr("must be the same row size!")
+		printerr("must be the same col size for concat row!")
+		printerr("expected ", col_size, " but given ", mat.col_size)
 		return
 	
 	var result:Matrix = self.duplicate()
@@ -732,9 +734,19 @@ func concat_row(mat:Matrix)->Matrix:
 	result.row_size += mat.row_size
 	return result
 
+func self_concat_col(mat:Matrix)->Matrix:
+	if row_size != mat.row_size:
+		printerr("must be the same col size for self concat col!")
+		return
+	
+	for r in range(row_size):
+		data[r].append_array(mat.data[r])
+	col_size += mat.col_size
+	return self
+
 func self_concat_row(mat:Matrix)->Matrix:
 	if col_size != mat.col_size:
-		printerr("must be the same row size!")
+		printerr("must be the same row size for self concat row!")
 		return
 	
 	data.append_array(mat.data.duplicate(true))
@@ -748,7 +760,7 @@ func sub_row(from:int, to:int)->Matrix:
 
 func self_concat_row_by_array(data:Array[PackedFloat64Array])->Matrix:
 	if col_size != data.size():
-		printerr("must be the same row size!")
+		printerr("must be the same row size for self concat row by array!")
 		return
 	
 	data.append_array(data.duplicate(true))
