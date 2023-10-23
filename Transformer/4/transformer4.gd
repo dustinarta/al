@@ -1,9 +1,9 @@
 extends RefCounted
-class_name Transformer2
+class_name Transformer4
 
 var wem:WEM2
 var VectorSize:int
-var Layer:Array[Coder2]
+var Layer:Array[Coder4]
 
 func _init():
 	wem = WEM2.new()
@@ -15,7 +15,7 @@ func init(vector_size:int, layer_size:int = 1, head_size:int = 2, sequence_lengt
 		return null
 	Layer.resize(layer_size)
 	for i in range(layer_size):
-		Layer[i] = Coder2.new().init(vector_size, head_size)
+		Layer[i] = Coder4.new().init(vector_size, head_size)
 	wem.init(vector_size, sequence_length)
 	return self
 
@@ -25,6 +25,7 @@ func save(_path:String):
 	layer.resize(Layer.size())
 	for i in range(Layer.size()):
 		layer[i] = Layer[i].to_dict()
+#		print(layer[i])
 	if wem.is_empty():
 		f.store_string(
 			JSON.stringify(
@@ -56,23 +57,23 @@ func load(_path:String):
 	Layer.resize(layer.size())
 	
 	for i in range(layer.size()):
-		Layer[i] = Coder2.init_from_dict(layer[i])
+		Layer[i] = Coder4.init_from_dict(layer[i])
 	VectorSize = Layer[0].Vector_size
 	if data.has("wem"):
 		wem = WEM2.init_from_dict(data["wem"])
 	
 	return self
 
-func forward(input:Matrix):
+func forward(input:Matrix)->Matrix:
 	var result = input
 #	print("input ", input, "\n")
 	for c in range(Layer.size()):
-		result = Layer[c].forward(result)
+		result = Layer[c].forward(result, result)
 #		print("forward of ", c, " ", result, "\n")
 	
 	return result
 
-func forward_fast(input:Matrix):
+func forward_fast(input:Matrix)->Matrix:
 	var result = input
 #	print("input ", input, "\n")
 	for c in range(Layer.size()):
@@ -81,12 +82,12 @@ func forward_fast(input:Matrix):
 	
 	return result
 
-func forward_s(input:String):
+func forward_s(input:String)->Matrix:
 	return forward(
 		wem.forward_sentence(input)
 	)
 
-func forward_sentence_to_sentence(input:String):
+func forward_sentence_to_sentence(input:String)->PackedStringArray:
 	return wem.backward_sentence(
 		forward(
 			wem.forward_sentence(input)
@@ -133,4 +134,4 @@ func train(input_data:Array, expected_data:Array, itteration:int):
 	#		print("transformer_learn ", transformer_learn)
 	#		return
 		var wem_learn = learn_coder(transformer_learn)
-#		wem.learn_forward(wem_learn)
+		wem.learn_forward(wem_learn)

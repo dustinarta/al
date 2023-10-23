@@ -1,9 +1,9 @@
 extends RefCounted
-class_name Transformer2
+class_name Transformer3
 
 var wem:WEM2
 var VectorSize:int
-var Layer:Array[Coder2]
+var Layer:Array[Coder3]
 
 func _init():
 	wem = WEM2.new()
@@ -15,7 +15,7 @@ func init(vector_size:int, layer_size:int = 1, head_size:int = 2, sequence_lengt
 		return null
 	Layer.resize(layer_size)
 	for i in range(layer_size):
-		Layer[i] = Coder2.new().init(vector_size, head_size)
+		Layer[i] = Coder3.new().init(vector_size, head_size)
 	wem.init(vector_size, sequence_length)
 	return self
 
@@ -25,6 +25,7 @@ func save(_path:String):
 	layer.resize(Layer.size())
 	for i in range(Layer.size()):
 		layer[i] = Layer[i].to_dict()
+#		print(layer[i])
 	if wem.is_empty():
 		f.store_string(
 			JSON.stringify(
@@ -56,7 +57,7 @@ func load(_path:String):
 	Layer.resize(layer.size())
 	
 	for i in range(layer.size()):
-		Layer[i] = Coder2.init_from_dict(layer[i])
+		Layer[i] = Coder3.init_from_dict(layer[i])
 	VectorSize = Layer[0].Vector_size
 	if data.has("wem"):
 		wem = WEM2.init_from_dict(data["wem"])

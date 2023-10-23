@@ -24,6 +24,20 @@ func init(row:int, col:int, fill_value:float = 0.0)->Matrix:
 		self.data[i] = array.duplicate()
 	return self
 
+func init_random_value(from:float, to:float)->Matrix:
+	for r in range(row_size):
+		var row:PackedFloat64Array = data[r]
+		for c in range(col_size):
+			row[c] = randf_range(from, to)
+	return self
+
+func init_box_muller(mean:float = 0.3, deviation:float = 0.1)->Matrix:
+	for r in range(row_size):
+		var row:PackedFloat64Array = data[r]
+		for c in range(col_size):
+			row[c] = randfn(mean, deviation)
+	return self
+
 static func create(data:Array[PackedFloat64Array])->Matrix:
 	var this:Matrix = Matrix.new()
 	var row_size:int = data.size()
@@ -237,7 +251,7 @@ func add_self(mat:Matrix)->Matrix:
 
 func min_self(mat:Matrix)->Matrix:
 	if not is_equal_shape(mat):
-		printerr("false dimension of matrix!")
+		printerr("false dimension of matrix for min self!")
 	for r in range(row_size):
 		var my_row = self.data[r]
 		var your_row = mat.data[r]
@@ -276,6 +290,7 @@ func min(mat:Matrix)->Matrix:
 func mul(mat:Matrix)->Matrix:
 	if not self.col_size == mat.row_size:
 		printerr("Cant multiply invalid shape!")
+		print("matrix ", self.row_size, "x", self.col_size, " for matrix ", mat.row_size, "x", mat.col_size)
 		return null
 	
 	var result:Matrix = Matrix.new().init(self.row_size, mat.col_size)
@@ -311,6 +326,7 @@ func mul2(mat:Matrix)->Matrix:
 func mul_t(mat:Matrix)->Matrix:
 	if not self.col_size == mat.col_size:
 		printerr("Cant multiply invalid shape!")
+		print("matrix ", self.row_size, "x", self.col_size, " for matrix transpose", mat.col_size, "x", mat.row_size)
 		return null
 	
 	var result:Matrix = Matrix.new().init(self.row_size, mat.row_size)
@@ -332,6 +348,7 @@ func mul_t(mat:Matrix)->Matrix:
 func _mul_fast(mat:Matrix, thread_count)->Matrix:
 	if not self.col_size == mat.row_size:
 		printerr("Cant multiply invalid shape!")
+		print("matrix ", self.row_size, "x", self.col_size, " for matrix ", mat.row_size, "x", mat.col_size)
 		return null
 	
 	var result:Matrix = Matrix.new().init(self.row_size, mat.col_size)
@@ -360,6 +377,7 @@ func _mul_fast(mat:Matrix, thread_count)->Matrix:
 func _mul_t_fast(mat:Matrix, thread_count)->Matrix:
 	if not self.col_size == mat.col_size:
 		printerr("Cant multiply invalid shape!")
+		print("matrix ", self.row_size, "x", self.col_size, " for matrix transpose", mat.col_size, "x", mat.row_size)
 		return null
 	
 	var result:Matrix = Matrix.new().init(self.row_size, mat.row_size)
@@ -444,15 +462,22 @@ static func multi_mul_t(matrices1:Array[Matrix], matrices2:Array[Matrix])->Array
 
 static func multi_div_by_number(matrices:Array[Matrix], number:float)->Array[Matrix]:
 	for matrix in matrices:
+#		print("before scale down ", matrix)
 		matrix.div_self_by_number(number)
+#		print("after scale down ", matrix)
 	return matrices
 
 static func multi_softmax(matrices:Array[Matrix])->Array[Matrix]:
 	var new_matrices:Array[Matrix]
 	new_matrices.resize(matrices.size())
 	for i in range(matrices.size()):
-		new_matrices[i] = matrices[i].softmax()
+		new_matrices[i] = matrices[i]._safe_softmax()
 	return new_matrices
+
+static func multi_reverse_row(matrices:Array[Matrix])->Array[Matrix]:
+	for matrix in matrices:
+		matrix.self_reverse_row()
+	return matrices
 
 func add_self_by_number(number:float)->Matrix:
 	for r in range(row_size):
@@ -499,6 +524,38 @@ func min_self_selected_col(numbers:PackedFloat64Array, at:int)->Matrix:
 		return null
 	for r in range(row_size):
 		data[r][at] += numbers[r]
+	return self
+
+func add_on_all()->float:
+	var result:float = 0.0
+	for r in range(row_size):
+		var row:PackedFloat64Array = data[r]
+		for c in range(col_size):
+			result += row[c]
+	return result
+
+func add_on_row()->PackedFloat64Array:
+	var result:PackedFloat64Array = []
+	result.resize(row_size)
+	for r in range(row_size):
+		var row:PackedFloat64Array = data[r]
+		var thisresult:float = 0.0
+		for c in range(col_size):
+			thisresult += row[c]
+		result[r] = thisresult
+	return result
+
+func add_on_col()->PackedFloat64Array:
+	var result:PackedFloat64Array = []
+	result.resize(col_size)
+	for r in range(row_size):
+		var row:PackedFloat64Array = data[r]
+		for c in range(col_size):
+			result[c] += row[c]
+	return result
+
+func self_reverse_row()->Matrix:
+	self.data.reverse()
 	return self
 
 func transpose()->Matrix:
@@ -575,6 +632,38 @@ func softmax()->Matrix:
 		result.data[r] = exp
 	return result
 
+func _safe_softmax()->Matrix:
+	var result:Matrix = Matrix.new().init(row_size, col_size)
+	var size = col_size
+	var exp:PackedFloat64Array
+	var numbers:PackedFloat64Array
+	var total:float = 0.0
+	exp.resize(size)
+	
+	var is_safe_from_nan:bool = true
+	var is_safe_from_inf:bool = true
+	
+	for r in range(row_size):
+		exp = exp.duplicate()
+		numbers = data[r]
+		total = 0.0
+		for c in range(col_size):
+			var res = pow(EULER, numbers[c])
+			if is_safe_from_inf:
+				if is_inf(res):
+					printerr("inf because pow(", EULER, ", ", numbers[c], ")")
+					is_safe_from_inf = false
+			exp[c] = res
+			total += res
+		for c in range(col_size):
+			if is_safe_from_nan:
+				if is_nan(exp[c]/total):
+					printerr("nan because ", exp[c], "/", total)
+					is_safe_from_nan = false
+			exp[c] /= total
+		result.data[r] = exp
+	return result
+
 func derivative_softmax()->Matrix:
 	var result:Matrix = Matrix.new().init(row_size, col_size)
 	for r in range(row_size):
@@ -616,7 +705,28 @@ func row_deviation(means = null)->PackedFloat64Array:
 		result[r] = sqrt( deviation/col_size )
 	return result
 
-func batch_normalization()->Matrix:
+func batch_normalization(weight:float, bias:float)->Matrix:
+	var normalized:Matrix = Matrix.new().init(row_size, col_size)
+	for r in range(row_size):
+		var normalized_row = normalized.data[r]
+		var my_row = data[r]
+		for c in range(col_size):
+			normalized_row[c] = my_row[c] * weight + bias
+	return normalized
+
+func self_activation_normalization()->Matrix:
+	var means = row_mean()
+	var denominators = row_deviation(means)
+	var result
+	for r in range(row_size):
+		var mean:float = means[r]
+		var denominator:float = denominators[r]
+		var my_row = data[r]
+		for c in range(col_size):
+			my_row[c] = (my_row[c] - mean) / denominator
+	return self
+
+func activation_normalization()->Matrix:
 	var normalized:Matrix = Matrix.new().init(row_size, col_size)
 	var means = row_mean()
 	var denominators = row_deviation(means)
@@ -700,6 +810,59 @@ static func join_col(matrices:Array[Matrix])->Matrix:
 	
 	return joined_matrix
 
+static func row_addition(row1:PackedFloat64Array, row2:PackedFloat64Array)->PackedFloat64Array:
+	if row1.size() != row2.size():
+		printerr("Invalid row size for row addition!")
+		return []
+	var row_result:PackedFloat64Array
+	row_result.resize(row1.size())
+	
+	for i in range(row1.size()):
+		row_result[i] = row1[i] + row2[i]
+	
+	return row_result
+
+static func row_minus(row1:PackedFloat64Array, row2:PackedFloat64Array)->PackedFloat64Array:
+	if row1.size() != row2.size():
+		printerr("Invalid row size for row minus!")
+		return []
+	var row_result:PackedFloat64Array
+	row_result.resize(row1.size())
+	
+	for i in range(row1.size()):
+		row_result[i] = row1[i] - row2[i]
+	
+	return row_result
+
+static func row_multiply(row1:PackedFloat64Array, row2:PackedFloat64Array)->PackedFloat64Array:
+	if row1.size() != row2.size():
+		printerr("Invalid row size for row multiply!")
+		return []
+	var row_result:PackedFloat64Array
+	row_result.resize(row1.size())
+	
+	for i in range(row1.size()):
+		row_result[i] = row1[i] * row2[i]
+	
+	return row_result
+
+static func row_devision(row1:PackedFloat64Array, row2:PackedFloat64Array)->PackedFloat64Array:
+	if row1.size() != row2.size():
+		printerr("Invalid row size for row devision!")
+		return []
+	var row_result:PackedFloat64Array
+	row_result.resize(row1.size())
+	
+	for i in range(row1.size()):
+		row_result[i] = row1[i] / row2[i]
+	
+	return row_result
+
+static func self_row_multiply_by_number(row:PackedFloat64Array, number:float)->PackedFloat64Array:
+	for i in range(row.size()):
+		row[i] = row[i] * number
+	return row
+
 func row_add()->Matrix:
 	var result:PackedFloat64Array
 	result.resize(col_size)
@@ -746,7 +909,7 @@ func self_concat_col(mat:Matrix)->Matrix:
 
 func self_concat_row(mat:Matrix)->Matrix:
 	if col_size != mat.col_size:
-		printerr("must be the same row size for self concat row!")
+		printerr("must be the same col size for self concat row!")
 		return
 	
 	data.append_array(mat.data.duplicate(true))
@@ -804,6 +967,9 @@ func get_col(at:int)->PackedFloat64Array:
 	for r in range(row_size):
 		result[r] = data[r][at]
 	return result
+
+func get_total_element()->int:
+	return row_size * col_size
 
 func set_row_size(v):
 	printerr("cannot set row size")

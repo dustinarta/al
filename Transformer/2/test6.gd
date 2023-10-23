@@ -5,8 +5,8 @@ extends EditorScript
 # Called when the script is executed (using File -> Run in Script Editor).
 func _run():
 #	var transformer:Transformer2 = Transformer2.new()
-#	transformer.init(128, 2, 4, 20)
-#	transformer.wem.append_word("<p> 1 2 3 4".split(" "))
+#	transformer.init(64, 2, 8, 10)
+#	transformer.wem.append_word("<p> 0 1 2 3 4 5 6 7 8 9".split(" "))
 #	transformer.save("res://Transformer/2/datatest3.json")
 #	return
 	var transformer:Transformer2 = Transformer2.new()
@@ -22,8 +22,14 @@ func _run():
 #	print(input)
 	var this_input
 	var this_expected
-	this_input = "1 2"
-	this_expected = ["3", "4", "2"]
+#	this_input = "1 2"
+#	this_expected = ["3", "4", "2"]
+#	this_input = "4 4 4"
+#	this_expected = ["1", "1"]
+	this_input = "9 9 9"
+	this_expected = ["6", "7", "8"]
+#	this_input = "1 2 3"
+#	this_expected = ["6", "7", "8"]
 	
 #	this_input = "variable have side effects"
 #	this_expected = ["current", "element", "is", "iterating"]
@@ -59,8 +65,7 @@ func _run():
 		var transformer_learn = wem.learn_backward(result1, result2)
 #		print("transformer_learn ", transformer_learn)
 #		return
-#		var wem_forward_error = 
-		transformer.learn_coder(transformer_learn)
+		var wem_forward_error = transformer.learn_coder(transformer_learn)
 #		print("no problem")
 #		return
 #		wem.learn_forward(input_id, wem_forward_error)
@@ -80,7 +85,7 @@ func _run():
 #	)
 #	result2 = wem.rectify_backward(output, expected)
 #	print(result2)
-#	transformer.save("res://Transformer/2/datatest3.json")
+	transformer.save("res://Transformer/2/datatest3.json")
 #	print(result1)
 #	print(output)
 	

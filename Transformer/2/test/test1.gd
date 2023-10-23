@@ -6,7 +6,7 @@ extends EditorScript
 func _run():
 	var vector_size = 64
 	var sequence_length = 1
-	var transformer:Transformer2 = Transformer2.new()
+	var transformer:Transformer = Transformer.new()
 	transformer.init(vector_size, 1)
 	
 	var input:Matrix = Matrix.new().init(sequence_length, vector_size).self_randomize(-1.0, 1.0)
@@ -22,7 +22,7 @@ func _run():
 #	print(result1)
 	print(error)
 	
-	for i in range(1000):
+	for i in range(1):
 		result1 = transformer.forward(input)
 		error = result1.min_self(expected)
 		transformer.learn_coder(error)

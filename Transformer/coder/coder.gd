@@ -41,7 +41,7 @@ func forward_fast(input:Matrix):
 	_result[3] = value#.duplicate()
 	var attention = query._mul_t_fast(key, 2).div_self_by_number(sqrt(Vector_size)).softmax()
 	_result[4] = attention#.duplicate()
-	var output = attention._mul_fast(value, 2).batch_normalization()
+	var output = attention._mul_fast(value, 2).activation_normalization()
 	_result[5] = output.add_self(input)#.duplicate()
 #		print("Query result", _result[1], "\n")
 #		print("Key result", _result[2], "\n")
@@ -65,7 +65,7 @@ func forward(input:Matrix):
 	_result[3] = value#.duplicate()
 	var attention = query.mul_t(key).div_self_by_number(sqrt(Vector_size)).softmax()
 	_result[4] = attention#.duplicate()
-	var output = attention.mul(value).batch_normalization()
+	var output = attention.mul(value).activation_normalization()
 	_result[5] = output.add_self(input)#.duplicate()
 #		print("Query result", _result[1], "\n")
 #		print("Key result", _result[2], "\n")
@@ -83,7 +83,7 @@ func forward2(input1:Matrix, input2:Matrix):
 	var key = input2.mul(Key)
 	var value = input2.mul(Value)
 	
-	return query.mul_t(key).div_self_by_number(sqrt(Vector_size)).softmax().mul(value).batch_normalization()
+	return query.mul_t(key).div_self_by_number(sqrt(Vector_size)).softmax().mul(value).activation_normalization()
 
 func learn(error:Matrix, rate:float = 0.0001):
 	## A x i x v -> Ti x TA x e
