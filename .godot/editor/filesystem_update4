@@ -1,6 +1,5 @@
-res://Transformer/3/transformer3.gd
-res://Attention Parser/2/learn.tscn
+res://Matrix/matrix.gd
+res://English/editor/2/Main.tscn
 res://English/editor/1/theme.tres
-res://Transformer/2/transformersave.gd
-res://Transformer/coder/coder4.gd
-res://Transformer/4/test1.gd
+res://Transformer/weight iniliziation/test3.gd
+res://Transformer/weight iniliziation/test4.gd

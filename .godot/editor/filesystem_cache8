@@ -1,5 +1,5 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1698070489
+::res://::1700794738
 ai logo.png::CompressedTexture2D::2774366399910235203::1668783325::1677829033::1::::<><>::
 ai logo.svg::CompressedTexture2D::8187573020341992674::1668782914::1677829033::1::::<><>::
 dataset-key2.json::JSON::-1::1675419991::0::1::::<><>::
@@ -23,12 +23,12 @@ matrix softmax.gd::GDScript::-1::1691474168::0::1::::<>EditorScript<>::
 parser.gd::GDScript::-1::1691475220::0::1::::<>Control<>::
 parser.tscn::PackedScene::6334064443609095101::1691580357::0::1::::<><>::res://Attention Parser/1/parser.gd
 test1.gd::GDScript::-1::1691574591::0::1::::<>EditorScript<>::
-::res://Attention Parser/2/::1698070129
+::res://Attention Parser/2/::1699074739
 ap2.gd::GDScript::-1::1694149906::0::1::::AP2<>RefCounted<>::
 ap2lvl2.gd::GDScript::-1::1696411947::0::1::::AP2_2<>RefCounted<>::
 data.json::JSON::-1::1694140428::0::1::::<><>::
-learn.gd::GDScript::-1::1696411947::0::1::::<>Control<>::
-learn.tscn::PackedScene::870469697923096653::1698070129::0::1::::<><>::res://Attention Parser/2/learn.gd
+learn.gd::GDScript::-1::1699074739::0::1::::<>Control<>::
+learn.tscn::PackedScene::870469697923096653::1699074739::0::1::::<><>::res://Attention Parser/2/learn.gd
 phrase_data.tscn::PackedScene::4168723285396389561::1691942054::0::1::::<><>::
 test1.gd::GDScript::-1::1694141745::0::1::::<>EditorScript<>::
 test2.gd::GDScript::-1::1692783132::0::1::::<>EditorScript<>::
@@ -106,7 +106,7 @@ input english.gd::GDScript::-1::1689172623::0::1::::<>Control<>::
 input english.tscn::PackedScene::5367641717744605810::1689938191::0::1::::<><>::res://English/data/input english.gd
 rewrite.gd::GDScript::-1::1690816983::0::1::::<>EditorScript<>::
 ::res://English/editor/::1673319534
-::res://English/editor/1/::1698068266
+::res://English/editor/1/::1700642713
 combiner.gd::GDScript::-1::1669027950::0::1::::<>RefCounted<>::
 converter.gd::GDScript::-1::1668772411::0::1::::<>RefCounted<>::
 Main array.gd::GDScript::-1::1668772508::0::1::::<>Control<>::
@@ -114,12 +114,12 @@ Main.gd::GDScript::-1::1669016338::0::1::::<>Control<>::
 Main.tscn::PackedScene::-1::1673319589::0::1::::<><>::res://English/editor/1/Main.gd<>res://English/editor/1/theme.tres
 test pop up.gd::GDScript::-1::1669016338::0::1::::<>Control<>::
 test pop up.tscn::PackedScene::-1::1669015735::0::1::::<><>::res://English/editor/test pop up.gd
-theme.tres::Theme::609664349692798676::1698068266::0::1::::<><>::
-::res://English/editor/2/::1691855058
+theme.tres::Theme::609664349692798676::1700642713::0::1::::<><>::
+::res://English/editor/2/::1700642854
 combine.gd::GDScript::-1::1673756699::0::1::::<>RefCounted<>::
 convert.gd::GDScript::-1::1673594854::0::1::::<>RefCounted<>::
-Main.gd::GDScript::-1::1691399537::0::1::::<>Control<>::
-Main.tscn::PackedScene::3485712110275720417::1691855058::0::1::::<><>::res://English/editor/2/Main.gd<>uid://ixlc2xbw33u3
+Main.gd::GDScript::-1::1699692044::0::1::::<>Control<>::
+Main.tscn::PackedScene::3485712110275720417::1700642854::0::1::::<><>::res://English/editor/2/Main.gd<>uid://ixlc2xbw33u3::::res://English/editor/1/theme.tres
 ::res://English/src/::1692783131
 en.gd::GDScript::-1::1692783131::0::1::::<>Node<>::
 english.gd::GDScript::-1::1691399536::0::1::::<>Node<>::
@@ -155,8 +155,8 @@ lstm2.gd::GDScript::-1::1687695011::0::1::::LSTM2<>RefCounted<>::
 test1.gd::GDScript::-1::1687688333::0::1::::<>EditorScript<>::
 test3.gd::GDScript::-1::1687693142::0::1::::<>EditorScript<>::
 test4.gd::GDScript::-1::1687695591::0::1::::<>EditorScript<>::
-::res://Matrix/::1698069422
-matrix.gd::GDScript::-1::1698069422::0::1::::Matrix<>RefCounted<>::
+::res://Matrix/::1700642835
+matrix.gd::GDScript::-1::1700724103::0::1::::Matrix<>RefCounted<>::
 test1.gd::GDScript::-1::1688382762::0::1::::<>EditorScript<>::
 test2.gd::GDScript::-1::1688472663::0::1::::<>EditorScript<>::
 test3.gd::GDScript::-1::1688475317::0::1::::<>EditorScript<>::
@@ -195,9 +195,9 @@ test1.gd::GDScript::-1::1687686113::0::1::::<>EditorScript<>::
 ::res://Neural Network/5/::1692536989
 nn5.gd::GDScript::-1::1692536953::0::1::::NN5<>RefCounted<>::
 test1.gd::GDScript::-1::1692536989::0::1::::<>EditorScript<>::
-::res://Neural Network/6/::1696550454
-nn6.gd::GDScript::-1::1696550454::0::1::::NN6<>RefCounted<>::
-test1.gd::GDScript::-1::1696418742::0::1::::<>EditorScript<>::
+::res://Neural Network/6/::1699858705
+nn6.gd::GDScript::-1::1699858705::0::1::::NN6<>RefCounted<>::
+test1.gd::GDScript::-1::1699858319::0::1::::<>EditorScript<>::
 ::res://Neural Network/editor/::1677829032
 circle selected.svg::CompressedTexture2D::8439960507438417546::1670134700::1677829032::1::::<><>::
 circle.svg::CompressedTexture2D::8912557223945649036::1670134396::1677829032::1::::<><>::
@@ -387,13 +387,13 @@ string test.gd::GDScript::-1::1666058213::0::1::::<>RefCounted<>::
 string valid.gd::GDScript::-1::1669016338::0::1::::<>RefCounted<>::
 thread test.gd::GDScript::-1::1665918940::0::1::::<>RefCounted<>::
 venn test.gd::GDScript::-1::1666416561::0::1::::<>RefCounted<>::
-::res://Transformer/::1697875124
+::res://Transformer/::1700200071
 ::res://Transformer/1/::1695625764
 create.gd::GDScript::-1::1691399536::0::1::::<>EditorScript<>::
 test1.gd::GDScript::-1::1691291963::0::1::::<>EditorScript<>::
 test memory.json::JSON::-1::1691291964::0::1::::<><>::
 transformer.gd::GDScript::-1::1695625764::0::1::::Transformer<>RefCounted<>::
-::res://Transformer/2/::1698070087
+::res://Transformer/2/::1699692044
 data.json::JSON::-1::1696411922::0::1::::<><>::
 datatest2.json::JSON::-1::1696656946::0::1::::<><>::
 datatest3.json::JSON::-1::1697859421::0::1::::<><>::
@@ -406,7 +406,7 @@ test5.gd::GDScript::-1::1696656931::0::1::::<>EditorScript<>::
 test6.gd::GDScript::-1::1697079850::0::1::::<>EditorScript<>::
 test7.gd::GDScript::-1::1697795518::0::1::::<>EditorScript<>::
 transformer2.gd::GDScript::-1::1697450115::0::1::::Transformer2<>RefCounted<>::
-transformersave.gd::GDScript::-1::1698070087::0::1::::<>EditorScript<>::
+transformersave.gd::GDScript::-1::1699692044::0::1::::<>EditorScript<>::
 ::res://Transformer/2/learn/::1696651392
 learn embedding 2.txt::TextFile::-1::1696651392::0::1::::<><>::
 learn embedding 3.txt::TextFile::-1::1696090615::0::1::::<><>::
@@ -428,18 +428,47 @@ test8.gd::GDScript::-1::1697859317::0::1::::<>EditorScript<>::
 datatest3.json::JSON::-1::1697892647::0::1::::<><>::
 test1.gd::GDScript::-1::1697892650::0::1::::<>EditorScript<>::
 transformer3.gd::GDScript::-1::1697866146::0::1::::Transformer3<>RefCounted<>::
-::res://Transformer/4/::1698070325
-datatest.json::JSON::-1::1698070325::0::1::::<><>::
+::res://Transformer/4/::1699692044
+datatest.json::JSON::-1::1699341575::0::1::::<><>::
 learntest2.gd::GDScript::-1::1698068266::0::1::::<>EditorScript<>::
+learntest3.gd::GDScript::-1::1699076508::0::1::::<>EditorScript<>::
 learntest.gd::GDScript::-1::1697967081::0::1::::<>EditorScript<>::
-test1.gd::GDScript::-1::1698070129::0::1::::<>EditorScript<>::
-transformer4.gd::GDScript::-1::1698069707::0::1::::Transformer4<>RefCounted<>::
-::res://Transformer/coder/::1698069795
-coder2.gd::GDScript::-1::1697860642::0::1::::Coder2<>RefCounted<>::
-coder3.gd::GDScript::-1::1697890371::0::1::::Coder3<>RefCounted<>::
-coder4.gd::GDScript::-1::1698069795::0::1::::Coder4<>RefCounted<>::
-coder.gd::GDScript::-1::1697867015::0::1::::Coder<>RefCounted<>::
+test1.gd::GDScript::-1::1699692044::0::1::::<>EditorScript<>::
+transformer4.gd::GDScript::-1::1699692044::0::1::::Transformer4<>RefCounted<>::
+::res://Transformer/5/::1700117956
+transformer5.gd::GDScript::-1::1700117956::0::1::::Transformer5<>RefCounted<>::
+::res://Transformer/coder/::1699339583
 codercontrol.gd::GDScript::-1::1696948512::0::1::::CoderControl<>RefCounted<>::
+::res://Transformer/coder/1/::1699339583
+coder.gd::GDScript::-1::1697867015::0::1::::Coder<>RefCounted<>::
+::res://Transformer/coder/2/::1699339577
+coder2.gd::GDScript::-1::1697860642::0::1::::Coder2<>RefCounted<>::
+::res://Transformer/coder/3/::1699339579
+coder3.gd::GDScript::-1::1697890371::0::1::::Coder3<>RefCounted<>::
+::res://Transformer/coder/4/::1699692043
+coder4.gd::GDScript::-1::1699692043::0::1::::Coder4<>RefCounted<>::
+::res://Transformer/coder/5/::1700133097
+coder5.gd::GDScript::-1::1700119019::0::1::::Coder5<>RefCounted<>::
+dataset1save.json::JSON::-1::1699752864::0::1::::<><>::
+datatest1.json::JSON::-1::1700133105::0::1::::<><>::
+datatest2.json::JSON::-1::1700199596::0::1::::<><>::
+datatestdecode1.json::JSON::-1::1700199603::0::1::::<><>::
+test1.gd::GDScript::-1::1700020987::0::1::::<>EditorScript<>::
+test2.gd::GDScript::-1::1700118547::0::1::::<>EditorScript<>::
+test3.gd::GDScript::-1::1700133096::0::1::::<>EditorScript<>::
+::res://Transformer/weight iniliziation/::1700642854
+test1.gd::GDScript::-1::1700222999::0::1::::<>EditorScript<>::
+test2.gd::GDScript::-1::1700581481::0::1::::<>EditorScript<>::
+test3.gd::GDScript::-1::1700642854::0::1::::<>EditorScript<>::
+testtest1.gd::GDScript::-1::1700305210::0::1::::<>EditorScript<>::
+testtest2.gd::GDScript::-1::1700641679::0::1::::<>EditorScript<>::
+::res://Utility/::1699250220
+math.gd::GDScript::-1::1699250211::0::1::::Math<>RefCounted<>::
+packedthread.gd::GDScript::-1::1699165986::0::1::::PackedThread<>RefCounted<>::
+test1.gd::GDScript::-1::1699165608::0::1::::<>EditorScript<>::
+test2.gd::GDScript::-1::1699168062::0::1::::<>EditorScript<>::
+testmath.gd::GDScript::-1::1699250220::0::1::::<>EditorScript<>::
+utility.gd::GDScript::-1::1699168087::0::1::::Utiliy<>Object<>::
 ::res://VAF Model/::1668395471
 model.txt::TextFile::-1::1668395293::0::1::::<><>::
 ::res://VAF Model/src/::1685682994
@@ -452,12 +481,12 @@ src.gd::GDScript::-1::1685682994::0::1::::<>EditorScript<>::
 model.json::JSON::-1::1686211080::0::1::::<><>::
 test1.gd::GDScript::-1::1686187747::0::1::::<>EditorScript<>::
 wem.gd::GDScript::-1::1686537202::0::1::::WEM<>RefCounted<>::
-::res://Word Embedding/2/::1698069654
+::res://Word Embedding/2/::1699338898
 data.json::JSON::-1::1696411947::0::1::::<><>::
 test1.gd::GDScript::-1::1696411947::0::1::::<>EditorScript<>::
 test2.gd::GDScript::-1::1696411948::0::1::::<>EditorScript<>::
 test3.gd::GDScript::-1::1697079663::0::1::::<>EditorScript<>::
 test4.gd::GDScript::-1::1697169856::0::1::::<>EditorScript<>::
-wem2.gd::GDScript::-1::1698069654::0::1::::WEM2<>RefCounted<>::
+wem2.gd::GDScript::-1::1699338898::0::1::::WEM2<>RefCounted<>::
 ::res://Word Embedding/2/test/::1697168154
 test1.gd::GDScript::-1::1697168154::0::1::::<>EditorScript<>::

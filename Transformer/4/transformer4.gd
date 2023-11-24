@@ -94,10 +94,10 @@ func forward_sentence_to_sentence(input:String)->PackedStringArray:
 		)
 	) 
 
-func learn_coder(error:Matrix, rate:float = 0.01/pow(VectorSize, 2.0)):
+func learn_coder(error:Matrix, rate:float = 0.001/pow(VectorSize, 3.0)):
 	for c in range(Layer.size()-1, -1, -1):
 #		print("error ", error, "\n")
-		error = Layer[c].learn(error)
+		error = Layer[c].learn(error, rate)
 #		Layer[c].learn(error, rate)
 	return error
 
@@ -134,4 +134,4 @@ func train(input_data:Array, expected_data:Array, itteration:int):
 	#		print("transformer_learn ", transformer_learn)
 	#		return
 		var wem_learn = learn_coder(transformer_learn)
-		wem.learn_forward(wem_learn)
+#		wem.learn_forward(wem_learn)

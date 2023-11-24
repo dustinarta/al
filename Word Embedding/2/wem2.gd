@@ -19,6 +19,7 @@ var SEQUENCE_LENGTH:int
 var VECTOR_SIZE:int
 var PE_cache:Matrix
 
+var _learning_rate
 var _init_weight_range:float = 0.1
 var _input_as_id:PackedInt64Array
 var _forward_result:Array
@@ -33,9 +34,11 @@ func init(vector_size:int, sequence_length:int = 20):
 	SEQUENCE_LENGTH = sequence_length
 	VECTOR_SIZE = vector_size
 	var limit:float = 1.0
-	embedding = Matrix.new().init(1, VECTOR_SIZE).init_box_muller(0, _init_weight_range)#.self_randomize(-limit, limit)
-	embedding.self_activation_normalization()
+	embedding = Matrix.new().init(1, VECTOR_SIZE).self_randomize(-limit, limit)#.init_box_muller(0, _init_weight_range)#
+#	embedding.self_activation_normalization()
+#	embedding.self_minmax_normalization()
 	PE_cache = generate_positional_encoding(0, sequence_length)
+	_learning_rate = 0.01/pow(VECTOR_SIZE, 2.0)
 
 func append_word(split:PackedStringArray):
 	var new_word_count:int = 0
@@ -48,16 +51,18 @@ func append_word(split:PackedStringArray):
 	if new_word_count != 0:
 		var new_matrix = Matrix.new().init(new_word_count, VECTOR_SIZE)
 		var limit:float = 1.0
-#		new_matrix.self_randomize(-limit, limit)
-		new_matrix.init_box_muller(0, _init_weight_range)
+		new_matrix.self_randomize(-limit, limit)
+#		new_matrix.init_box_muller(0, _init_weight_range)
 		print(new_matrix.row_size)
 		print(embedding.row_size)
 		embedding.self_append_rows(new_matrix.data)
+		embedding.self_minmax_normalization()
 
 static func init_from_dict(data:Dictionary)->WEM2:
 	var wem = WEM2.new()
 	wem.SEQUENCE_LENGTH = data["sequence_length"]
 	wem.VECTOR_SIZE = data["vector_size"]
+	wem._learning_rate = 0.01/pow(wem.VECTOR_SIZE, 2.0)
 	wem.word_dict = data["word_dict"]
 	wem.embedding = Matrix.new()
 	wem.embedding.load_from_dict(data["embedding"])
@@ -172,17 +177,19 @@ func learn_forward(error:Matrix):
 			continue
 		var this_learn = Matrix.self_row_multiply_by_number(learn_array[id][0], 1.0/learn_array[id][1])
 		learn.self_add_row(id, this_learn)
-	learn.mul_self_by_number(0.1/pow(VECTOR_SIZE, 3.0))
+	learn.mul_self_by_number(_learning_rate)
 #	print("learn ", learn)
 	embedding.min_self(learn)
-	embedding.self_activation_normalization()
+#	embedding.self_activation_normalization()
+#	embedding.self_minmax_normalization()
 
 func learn_backward(inputs:Matrix, error:Matrix)->Matrix:
 	var learn:Matrix = error.transpose().mul(inputs)
 #	print(learn)
-	learn.mul_self_by_number(0.1/pow(VECTOR_SIZE, 3.0))
+	learn.mul_self_by_number(_learning_rate)
 	embedding.min_self(learn)
-	embedding.self_activation_normalization()
+#	embedding.self_activation_normalization()
+#	embedding.self_minmax_normalization()
 #	print(error.row_size, " ", error.col_size)
 #	print(embedding.row_size, " ", embedding.col_size)
 	return error.mul(embedding)

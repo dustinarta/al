@@ -1,5 +1,6 @@
 EditorScript
 RefCounted
+Object
 Node
 EditorPaths
 Resource

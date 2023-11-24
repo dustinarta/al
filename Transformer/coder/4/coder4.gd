@@ -19,23 +19,28 @@ func init(vector_size:int, head_size:int):
 		return null
 	Head_size = head_size
 	Batch = {
-		"w":1.0, "b":0.0
+		"w":Matrix.new().init(1, vector_size, 1.0),
+		"b":Matrix.new().init(1, vector_size, 0.0)
 	}
-	var num_range:float = 1.0/pow(vector_size*3, 2.0)
+#	var num_range:float = 10.0/pow(vector_size, 2.0)
 #	var num_range:float = sqrt(1.0/(vector_size*6))
 #	var num_range:float = 1.0/vector_size
-#	Query = Matrix.new().init(vector_size, vector_size).self_randomize(-num_range, num_range)
-#	Key = Matrix.new().init(vector_size, vector_size).self_randomize(-num_range, num_range)
-#	Value = Matrix.new().init(vector_size, vector_size).self_randomize(-num_range, num_range)
+	var num_range:float = 1.0
+	Query = Matrix.new().init(vector_size, vector_size).self_randomize(-num_range, num_range)
+	Key = Matrix.new().init(vector_size, vector_size).self_randomize(-num_range, num_range)
+	Value = Matrix.new().init(vector_size, vector_size).self_randomize(-num_range, num_range)
 #	Query = Matrix.new().init(vector_size, vector_size, num_range)
 #	Key = Matrix.new().init(vector_size, vector_size, num_range)
 #	Value = Matrix.new().init(vector_size, vector_size, num_range)
-	Query = Matrix.new().init(vector_size, vector_size).init_box_muller(0, num_range)
-	Key = Matrix.new().init(vector_size, vector_size).init_box_muller(0, num_range)
-	Value = Matrix.new().init(vector_size, vector_size).init_box_muller(0, num_range)
+#	Query = Matrix.new().init(vector_size, vector_size).init_box_muller(0, num_range)
+#	Key = Matrix.new().init(vector_size, vector_size).init_box_muller(0, num_range)
+#	Value = Matrix.new().init(vector_size, vector_size).init_box_muller(0, num_range)
 	Query.self_activation_normalization()
 	Key.self_activation_normalization()
 	Value.self_activation_normalization()
+#	Query.self_minmax_normalization_range(-1.0, 1.0)
+#	Key.self_minmax_normalization_range(-1.0, 1.0)
+#	Value.self_minmax_normalization_range(-1.0, 1.0)
 	return self
 
 static func init_from_dict(data:Dictionary)->Coder4:
@@ -45,7 +50,10 @@ static func init_from_dict(data:Dictionary)->Coder4:
 	coder.Query = Matrix.new().load_from_dict(data["query"])
 	coder.Key = Matrix.new().load_from_dict(data["key"])
 	coder.Value = Matrix.new().load_from_dict(data["value"])
-	coder.Batch = data["batch"]
+	coder.Batch = {
+		"w" : Matrix.new().load_from_dict(data["batch"]["w"]),
+		"b" : Matrix.new().load_from_dict(data["batch"]["b"]),
+	}
 	return coder
 
 #func forward_fast(input:Matrix):
@@ -108,7 +116,8 @@ func forward(input1:Matrix, input2:Matrix):
 	
 #	var output = attention.mul(value).batch_normalization()
 	_result[6] = output.add_self(input2).activation_normalization()
-	_result[7] = _result[6].batch_normalization(Batch["w"], Batch["b"])#.duplicate()
+#	_result[7] = _result[6].batch_normalization(Batch["w"], Batch["b"])#.duplicate()
+	_result[7] = _result[6]#.mul_t(Batch["w"]).self_add_singlerow_to_all(Batch["b"])#.duplicate()
 #	print("Queries result", _result[1], "\n")
 #	print("Keys result", _result[2], "\n")
 #	print("Values result", _result[3], "\n")
@@ -116,22 +125,32 @@ func forward(input1:Matrix, input2:Matrix):
 #	print("Output result", _result[5], "\n")
 	return output
 
-func learn(error:Matrix, rate:float = 0.1/pow(Vector_size, 3.0)):
+func learn(error:Matrix, rate:float = 0.0001/pow(Vector_size, 2.0)):
 #	print("error ", error.row_size)
-	var learn_batch_w:float = error.mul2(_result[6]).add_on_all() * rate
-	var learn_batch_b:float = error.add_on_all() * rate
+#	var learn_batch_w:float = error.mul2(_result[6]).add_on_all() * rate
+#	var learn_batch_b:float = error.add_on_all() * rate
 	var sequence_length:int = error.row_size
-	error.mul_self_by_number(Batch["w"])
+#	error.mul_self_by_number(Batch["w"])
 	var errors:Array[Matrix] = error.split_col(Head_size)
 	var input1:Matrix = _result[0].transpose()
 	var input2:Matrix = _result[1].transpose()
 	
-	Batch["w"] -= learn_batch_w / error.get_total_element()
-	Batch["b"] -= learn_batch_b / error.get_total_element()
+#	Batch["w"] -= learn_batch_w / error.get_total_element()
+#	Batch["b"] -= learn_batch_b / error.get_total_element()
 	var next_learn:Matrix = Matrix.new().init(sequence_length, Vector_size)
 	var Queries = Query.split_col(Head_size)
 	var Keys = Key.split_col(Head_size)
 	var Values = Value.split_col(Head_size)
+	
+	for h in range(Head_size):
+		var this_next_learn:Matrix = _result[5][h].transpose().mul(errors[h]).mul_t(Values[h])
+		this_next_learn.add_self(_result[4][h].mul_t(errors[h]).mul(_result[2][h]).mul_t(Keys[h]))
+		this_next_learn.add_self(errors[h].mul_t(_result[4][h]).mul(_result[3][h]).mul_t(Queries[h]))
+		this_next_learn.mul_self_by_number(0.333333)
+#		print("this next learn ", this_next_learn.row_size, " ", this_next_learn.col_size)
+		next_learn.add_self(this_next_learn)
+	next_learn.div_self_by_number(Head_size)
+	next_learn.mul_self_by_number(rate)
 	
 	
 #	print("now next learn ", next_learn.row_size, " ", next_learn.col_size)
@@ -205,25 +224,23 @@ func learn(error:Matrix, rate:float = 0.1/pow(Vector_size, 3.0)):
 	Query.min_self(learn_query)
 	Key.min_self(learn_key)
 	Value.min_self(learn_value)
+#	Query.self_minmax_normalization_range(-1.0, 1.0)
+#	Key.self_minmax_normalization_range(-1.0, 1.0)
+#	Value.self_minmax_normalization_range(-1.0, 1.0)
 	Query.self_activation_normalization()
 	Key.self_activation_normalization()
 	Value.self_activation_normalization()
 	
-	for h in range(Head_size):
-		var this_next_learn:Matrix = _result[5][h].transpose().mul(errors[h]).mul_t(Values[h])
-		this_next_learn.add_self(_result[4][h].mul_t(errors[h]).mul(_result[2][h]).mul_t(Keys[h]))
-		this_next_learn.add_self(errors[h].mul_t(_result[4][h]).mul(_result[3][h]).mul_t(Queries[h]))
-#		this_next_learn.mul_self_by_number(0.333333)
-#		print("this next learn ", this_next_learn.row_size, " ", this_next_learn.col_size)
-		next_learn.add_self(this_next_learn)
-	next_learn.div_self_by_number(Head_size)
 	return next_learn
 
 func to_dict()->Dictionary:
 	var data:Dictionary = {
 		"vector_size": Vector_size,
 		"head_size": Head_size,
-		"batch": Batch,
+		"batch": {
+			"w" : Batch["w"].to_dict(),
+			"b" : Batch["b"].to_dict(),
+		},
 		"query": Query.to_dict(),
 		"key": Key.to_dict(),
 		"value": Value.to_dict()

@@ -65,7 +65,6 @@ func _on_inputbutton_pressed():
 	print(thisap.parse_word(text))
 	InputText.text = ""
 
-
 func _on_learnbutton_pressed():
 	print(
 		collect_elements()

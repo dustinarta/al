@@ -38,6 +38,15 @@ func init_box_muller(mean:float = 0.3, deviation:float = 0.1)->Matrix:
 			row[c] = randfn(mean, deviation)
 	return self
 
+func init_diagonal(value:float = 1.0):
+	if not is_square():
+		printerr("Invalid init diagonal for non square matrix! ", row_size, "x", col_size)
+		return null
+	
+	for r in range(row_size):
+		data[r][r] = 1.0
+	return self
+
 static func create(data:Array[PackedFloat64Array])->Matrix:
 	var this:Matrix = Matrix.new()
 	var row_size:int = data.size()
@@ -83,6 +92,24 @@ static func mean(matrixs:Array[Matrix])->Matrix:
 	
 	return result
 
+func self_resquare_diagonal(value:float = 1.0)->Matrix:
+	var original:PackedFloat64Array
+	original.resize(col_size)
+	original.fill(0.0)
+	for i in range(row_size, col_size):
+		var array = original.duplicate()
+		array[i] = value
+		data.append(array)
+	row_size = col_size
+	return self
+
+func self_pop_row(count:int = 1):
+	if count > row_size:
+		printerr("pop to many element in pop row!")
+		return
+	row_size -= count
+	data = data.slice(0, row_size)
+
 func append_row(column:PackedFloat64Array)->Matrix:
 	if col_size != column.size():
 		printerr("invalid column size!")
@@ -126,6 +153,45 @@ func at_row(row_index:int):
 		return
 	return Matrix.new().init(1, col_size).fill_rows(data[row_index])
 
+func self_assign(_data:Array[PackedFloat64Array]):
+	if _data.size() > row_size:
+		printerr("invalid row size in self assign!")
+		return null
+	if _data[0].size() != col_size:
+		printerr("invalid col size in self assign")
+		return null
+	
+	if _data.size() == row_size:
+		data = _data
+	else:
+		_data.append_array(
+			data.slice(
+				_data.size(), row_size
+			)
+		)
+		data = _data
+	return self
+
+func self_assign_m(matrix:Matrix):
+	if matrix.row_size > row_size:
+		printerr("invalid row size in self assign matrix!")
+		return null
+	if matrix.col_size != col_size:
+		printerr("invalid col size in self assign matrix!")
+		return null
+	
+	if matrix.row_size == row_size:
+		data = matrix.data.duplicate(true)
+	else:
+		var data = matrix.data.duplicate(true)
+		data.append_array(
+			self.data.slice(
+				matrix.row_size, row_size
+			)
+		)
+		self.data = data
+	return self
+
 func fill(_data:Array[PackedFloat64Array]):
 	if _data.size() == row_size:
 		if _data[0].size() == col_size:
@@ -133,7 +199,7 @@ func fill(_data:Array[PackedFloat64Array]):
 			return self
 	printerr("invalid size!")
 
-func fill_force(_data:Array[PackedFloat64Array]):
+func fill_force(_data:Array[PackedFloat64Array])->Matrix:
 	row_size = _data.size()
 	col_size = _data[0].size()
 	data = _data
@@ -207,6 +273,40 @@ func zeros():
 	for i in range(row_size):
 		data[i].fill(0)
 
+func add_singlerow_to_all(singlerow:Matrix)->Matrix:
+	if singlerow.row_size != 1:
+		printerr("not single row!")
+		return null
+	if singlerow.col_size != self.col_size:
+		printerr("cant add invalid shape in add_singlerow_to_all!")
+		return null
+	
+	var result:Matrix = self.duplicate()
+	var single_row:PackedFloat64Array = singlerow.data[0]
+	for r in range(row_size):
+		var result_row:PackedFloat64Array = result.data[r]
+		for c in range(col_size):
+			result_row[c] += single_row[c]
+	
+	return result
+
+func self_add_singlerow_to_all(singlerow:Matrix)->Matrix:
+	if singlerow.row_size != 1:
+		printerr("not single row!")
+		return null
+	if singlerow.col_size != self.col_size:
+		printerr("cant add invalid shape in self_add_singlerow_to_all!")
+		print()
+		return null
+	
+	var single_row:PackedFloat64Array = singlerow.data[0]
+	for r in range(row_size):
+		var my_row:PackedFloat64Array = self.data[r]
+		for c in range(col_size):
+			my_row[c] += single_row[c]
+	
+	return self
+
 func self_add_row(at:int, numbers:PackedFloat64Array):
 	var size:int = numbers.size()
 	if self.col_size != size:
@@ -252,6 +352,8 @@ func add_self(mat:Matrix)->Matrix:
 func min_self(mat:Matrix)->Matrix:
 	if not is_equal_shape(mat):
 		printerr("false dimension of matrix for min self!")
+		print("This shape is ", get_shape(), " but given ", mat.get_shape())
+		return null
 	for r in range(row_size):
 		var my_row = self.data[r]
 		var your_row = mat.data[r]
@@ -274,8 +376,10 @@ func add(mat:Matrix)->Matrix:
 	return result
 
 func min(mat:Matrix)->Matrix:
+#	print("my shape ", get_shape())
 	if not is_equal_shape(mat):
-		printerr("false dimension of matrix! for min")
+		printerr("false dimension of matrix for min!")
+		return null
 	var result:Matrix = Matrix.new().init(row_size, col_size)
 	for r in range(row_size):
 		var my_row = self.data[r]
@@ -345,7 +449,7 @@ func mul_t(mat:Matrix)->Matrix:
 	
 	return result
 
-func _mul_fast(mat:Matrix, thread_count)->Matrix:
+func _mul_fast(mat:Matrix, thread_count:int = 2)->Matrix:
 	if not self.col_size == mat.row_size:
 		printerr("Cant multiply invalid shape!")
 		print("matrix ", self.row_size, "x", self.col_size, " for matrix ", mat.row_size, "x", mat.col_size)
@@ -432,6 +536,15 @@ static func _mul_t(mat1:Matrix, mat2:Matrix, from:int, to:int):
 				res += self_row[i] * mat_row[i]
 			row_result[c] = res
 		result[r-from] = row_result
+	return result
+
+static func multi_to_dict(matrices:Array[Matrix])->Array:
+	var result:Array
+	result.resize(matrices.size())
+	
+	for i in range(matrices.size()):
+		result[i] = matrices[i].to_dict()
+	
 	return result
 
 static func multi_mul(matrices1:Array[Matrix], matrices2:Array[Matrix])->Array[Matrix]:
@@ -554,6 +667,34 @@ func add_on_col()->PackedFloat64Array:
 			result[c] += row[c]
 	return result
 
+static func this_row_add_with_row(row1:PackedFloat64Array, row2:PackedFloat64Array, from:int = 0):
+	if row1.size() != row2.size():
+		printerr("Invalid size for this_row_add_with_row!")
+		return []
+	
+	for i in range(from, row1.size()):
+		row1[i] += row2[i]
+	return row1
+
+static func this_row_min_with_row(row1:PackedFloat64Array, row2:PackedFloat64Array, from:int = 0):
+	if row1.size() != row2.size():
+		printerr("Invalid size for this_row_min_with_row!")
+		return []
+	
+	for i in range(from, row1.size()):
+		row1[i] -= row2[i]
+	return row1
+
+static func this_row_mul_with_number(row:PackedFloat64Array, number:float, from:int = 0):
+	for i in range(from, row.size()):
+		row[i] *= number
+	return row
+
+static func this_row_div_with_number(row:PackedFloat64Array, number:float, from:int = 0):
+	for i in range(from, row.size()):
+		row[i] /= number
+	return row
+
 func self_reverse_row()->Matrix:
 	self.data.reverse()
 	return self
@@ -582,10 +723,10 @@ func self_transpose()->Matrix:
 	self.data = result.data
 	return self
 
-func determinan():
+func determinan()->float:
 	if not is_square():
 		printerr("cannot find determinan on non-square matrix!")
-		return null
+		return -INF
 	
 	var length = col_size
 	var right:float = 0.0
@@ -595,22 +736,226 @@ func determinan():
 		right = data[0][0] * data[1][1]
 		left = data[0][1] * data[1][0]
 	else:
-		for j in range(length):
-			var v:float = 1.0
-			for i in range(length):
-				v *= data[i][(i+j) % length]
-				print((i+j) % length)
-			right += v
-			print(v)
-		
-		for j in range(length-1, -1, -1):
-			var v:float = 1.0
-			for i in range(length):
-				v *= data[i][(j-i) % length]
-			left += v
-			print(v)
+		for k in range(length):
+			right = 0.0
+			left = 0.0
+			for j in range(length):
+				var v:float = 1.0
+				for i in range(length):
+					v *= data[i][(i+j+k) % length]
+				right += v
+				
+			
+			for j in range(length-1, -1, -1):
+				var v:float = 1.0
+				for i in range(length):
+					v *= data[i][(j-i+k) % length]
+				print(v)
+				left += v
 	
 	return right - left
+
+func determinan2():
+	if not is_square():
+		printerr("cannot find determinan on non-square matrix!")
+		return -INF
+	
+	var length:int = col_size
+	
+	var result_p:Array
+	var result_m:Array
+	
+	var len = col_size
+	for y in range(len):
+		for x in range(len):
+			var pos_x:int = x
+			var pos_y:int = y
+			var element_y:Array
+			var element_x:Array
+			
+			element_y.append_array(
+				range(0, y)
+			)
+			element_y.append_array(
+				range(y+1, len)
+			)
+			element_x.append_array(
+				range(0, x)
+			)
+			element_x.append_array(
+				range(x+1, len)
+			)
+			if x == 0 and y == 0:
+				print([element_y, element_x])
+			var _t = element_x.duplicate(true)
+			_t.reverse()
+			result_p.append([element_y, element_x])
+			result_m.append([element_y, _t])
+	return 
+
+func adjoint()->Matrix:
+	if not is_square():
+		printerr("Cant make adjoint on not square ", row_size, "x", col_size)
+		return null
+	
+	var result:Matrix = Matrix.new().init(row_size, col_size)
+	var result_p:Array
+	var result_m:Array
+	
+	var len = col_size
+	for y in range(len):
+		for x in range(len):
+			var pos_x:int = x
+			var pos_y:int = y
+			var element_y:Array
+			var element_x:Array
+			
+			element_y.append_array(
+				range(0, y)
+			)
+			element_y.append_array(
+				range(y+1, len)
+			)
+			element_x.append_array(
+				range(0, x)
+			)
+			element_x.append_array(
+				range(x+1, len)
+			)
+			if x == 0 and y == 0:
+				print([element_y, element_x])
+			var _t = element_x.duplicate(true)
+			_t.reverse()
+			result_p.append([element_y, element_x])
+			result_m.append([element_y, _t])
+	
+	for y in range(len):
+		for x in range(len):
+			var index = y * len + x
+			var result_p_index_0 = result_p[index][0]
+			var result_m_index_0 = result_m[index][0]
+			var result_p_index_1 = result_p[index][1]
+			var result_m_index_1 = result_m[index][1]
+			var value:float
+			if len > 2:
+				value = 0.0
+				for j in range(len-1):
+					var pos:float = 1
+					var min:float = -1
+					for i in range(len-1):
+						var my_index:int = (i+j)%(len-1)
+						pos *= data[result_p_index_0[i]][result_p_index_1[my_index]]
+						min *= data[result_m_index_0[i]][result_m_index_1[my_index]]
+					value += pos+min
+#				result.data[y][x] = value * (1 - 2 * ((x+y)%2))
+			else:
+				var pos:float = 1
+				var min:float = -1
+				for i in range(len-1):
+					pos *= data[result_p_index_0[i]][result_p_index_1[i]]
+					min *= data[result_m_index_0[i]][result_m_index_1[i]]
+				value = pos + min
+			result.data[y][x] = value * (1 - 2 * ((x+y)%2))
+	return result
+
+func _inverse()->Matrix:
+	var result:Matrix
+	var determinant:float = determinan()
+	var adjoint = adjoint()
+	
+	result = adjoint.transpose().div_self_by_number(determinan())
+	
+	return result
+
+#Gauss-Jordan Elimination
+func inverse()->Matrix:
+	var result:Matrix = Matrix.new().init(row_size, col_size).init_diagonal(1.0)
+	var usedmatrix:Matrix = self.duplicate()
+	var usedmatrixdata = usedmatrix.data
+	var resultdata = result.data
+	var number
+	for r in range(row_size):
+		number = usedmatrixdata[r][r]
+		this_row_div_with_number(resultdata[r], number)
+		this_row_div_with_number(usedmatrixdata[r], number)
+		for i in range(r+1, row_size):
+			number = usedmatrixdata[i][r]
+			this_row_min_with_row(
+				resultdata[i], 
+				this_row_mul_with_number(
+					resultdata[r].duplicate(), number
+				)
+			)
+			this_row_min_with_row(
+				usedmatrixdata[i], 
+				this_row_mul_with_number(
+					usedmatrixdata[r].duplicate(), number
+				)
+			)
+#	print(result)
+	for r in range(row_size):
+		for i in range(r):
+			number = usedmatrixdata[i][r]
+			this_row_min_with_row(
+				resultdata[i], 
+				this_row_mul_with_number(
+					resultdata[r].duplicate(), number
+				)
+			)
+			this_row_min_with_row(
+				usedmatrixdata[i], 
+				this_row_mul_with_number(
+					usedmatrixdata[r].duplicate(), number
+				)
+			)
+			print(usedmatrix)
+			print(result, "\n")
+	
+	return result
+
+func inverse_custom(skip:int)->Matrix:
+	var result:Matrix = Matrix.new().init(row_size, col_size).init_diagonal(1.0)
+	var usedmatrix:Matrix = self.duplicate()
+	var usedmatrixdata = usedmatrix.data
+	var resultdata = result.data
+	var number
+	for r in range(row_size):
+		number = usedmatrixdata[r][r]
+		this_row_div_with_number(resultdata[r], number)
+		this_row_div_with_number(usedmatrixdata[r], number)
+		for i in range(r+1, skip):
+			number = usedmatrixdata[i][r]
+			this_row_min_with_row(
+				resultdata[i], 
+				this_row_mul_with_number(
+					resultdata[r].duplicate(), number
+				)
+			)
+			this_row_min_with_row(
+				usedmatrixdata[i], 
+				this_row_mul_with_number(
+					usedmatrixdata[r].duplicate(), number
+				)
+			)
+#	print(usedmatrix)
+#	print(result)
+	for r in range(row_size):
+		for i in range(r, skip):
+			number = usedmatrixdata[i][r]
+			this_row_min_with_row(
+				resultdata[i], 
+				this_row_mul_with_number(
+					resultdata[r].duplicate(), number
+				)
+			)
+			this_row_min_with_row(
+				usedmatrixdata[i], 
+				this_row_mul_with_number(
+					usedmatrixdata[r].duplicate(), number
+				)
+			)
+#	print(usedmatrix)
+	return result
 
 func softmax()->Matrix:
 	var result:Matrix = Matrix.new().init(row_size, col_size)
@@ -726,6 +1071,57 @@ func self_activation_normalization()->Matrix:
 			my_row[c] = (my_row[c] - mean) / denominator
 	return self
 
+func minmax_normalization()->Matrix:
+	var result:Matrix = Matrix.new().init(row_size, col_size)
+	for r in range(row_size):
+		var row:PackedFloat64Array = data[r]
+		var max:float = 0.0
+		var min:float = 0.0
+		for i in range(col_size):
+			var this:float = row[i]
+			if this > max:
+				max = this
+			if min > this:
+				min = this
+		var your_row:PackedFloat64Array = result.data[r]
+		var denominator:float = max - min
+		for c in range(col_size):
+			your_row[c] = (row[c] - min)/denominator
+	return result
+
+func self_minmax_normalization()->Matrix:
+	for r in range(row_size):
+		var row:PackedFloat64Array = data[r]
+		var max:float = 0.0
+		var min:float = 0.0
+		for i in range(col_size):
+			var this:float = row[i]
+			if this > max:
+				max = this
+			if min > this:
+				min = this
+		var denominator:float = max - min
+		for c in range(col_size):
+			row[c] = (row[c] - min)/denominator
+	return self
+
+func self_minmax_normalization_range(from:float, to:float)->Matrix:
+	var range:float = to-from
+	for r in range(row_size):
+		var row:PackedFloat64Array = data[r]
+		var max:float = 0.0
+		var min:float = 0.0
+		for i in range(col_size):
+			var this:float = row[i]
+			if this > max:
+				max = this
+			if min > this:
+				min = this
+		var denominator:float = max - min
+		for c in range(col_size):
+			row[c] = from + ((row[c] - min)*(range))/denominator
+	return self
+
 func activation_normalization()->Matrix:
 	var normalized:Matrix = Matrix.new().init(row_size, col_size)
 	var means = row_mean()
@@ -778,7 +1174,7 @@ func slice_row(from:int, to:int)->Matrix:
 
 func split_col(count:int)->Array[Matrix]:
 	if (col_size % count) != 0:
-		printerr("Unbalanced split col")
+		printerr("Unbalanced split col for ", col_size, "/", count)
 		return []
 	var matrices:Array[Matrix]
 	matrices.resize(count)
@@ -986,6 +1382,9 @@ func get_col_size()->int:
 func get_size()->int:
 	return row_size * col_size
 
+func get_shape()->PackedInt64Array:
+	return [row_size, col_size]
+
 func is_size(row:int, col:int)->bool:
 	if data.size() == row:
 		for column in data:
@@ -1005,8 +1404,8 @@ static func _is_size(data:Array[PackedFloat64Array], row:int, col:int):
 		return false
 
 func is_equal_shape(mat:Matrix)->bool:
-	if self.get_row_size() == mat.get_row_size():
-		if self.get_col_size() == mat.get_col_size():
+	if self.row_size == mat.row_size:
+		if self.col_size == mat.col_size:
 			return true
 		return false
 	else:
@@ -1034,12 +1433,18 @@ func _to_dict():
 	return dict
 
 func to_dict():
-	var dict:Dictionary = {
-		"row" : row_size,
-		"col" : col_size,
-		"data" : data.duplicate(true)
-	}
-	return dict
+	return _to_dict()
+
+static func init_from_dict(_data:Dictionary)->Matrix:
+	var this_matrix:Matrix = Matrix.new()
+	this_matrix.row_size = _data["row"]
+	this_matrix.col_size = _data["col"]
+	this_matrix.data.resize(this_matrix.row_size)
+	var source_data = _data["data"]
+	var this_data = this_matrix.data
+	for d in range(this_matrix.row_size):
+		this_data[d] = source_data[d] as PackedFloat64Array
+	return this_matrix
 
 func load_from_dict(_data:Dictionary):
 	row_size = _data["row"]
@@ -1060,14 +1465,12 @@ func load(path:String):
 	var dict:Dictionary = JSON.parse_string(
 		file.get_as_text()
 	)
-	self.row_size = dict["row"]
-	self.col_size = dict["col"]
-	self.data = dict["data"]
+	load_from_dict(dict)
 	file.close()
 
 func save(path:String):
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(
-		JSON.stringify(_to_dict())
+		JSON.stringify(_to_dict(), "\t", false, true)
 	)
 	file.close()
