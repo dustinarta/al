@@ -908,9 +908,48 @@ func inverse()->Matrix:
 					usedmatrixdata[r].duplicate(), number
 				)
 			)
-			print(usedmatrix)
-			print(result, "\n")
+	return result
+
+func inverse2()->Matrix:
+	var result:Matrix = Matrix.new().init(row_size, col_size).init_diagonal(1.0)
+	var usedmatrix:Matrix = self.duplicate()
+	var usedmatrixdata = usedmatrix.data
+	var resultdata = result.data
+	var number
+	for r in range(row_size):
+		number = usedmatrixdata[r][r]
+		this_row_div_with_number(resultdata[r], number)
+		this_row_div_with_number(usedmatrixdata[r], number)
+		for i in range(r+1, row_size):
+			number = usedmatrixdata[i][r]
+			this_row_min_with_row(
+				resultdata[i], 
+				this_row_mul_with_number(
+					resultdata[r].duplicate(), number
+				), r
+			)
+			this_row_min_with_row(
+				usedmatrixdata[i], 
+				this_row_mul_with_number(
+					usedmatrixdata[r].duplicate(), number
+				), r
+			)
 	
+	for r in range(row_size):
+		for i in range(r):
+			number = usedmatrixdata[i][r]
+			this_row_min_with_row(
+				resultdata[i], 
+				this_row_mul_with_number(
+					resultdata[r].duplicate(), number, i
+				)
+			)
+			this_row_min_with_row(
+				usedmatrixdata[i], 
+				this_row_mul_with_number(
+					usedmatrixdata[r].duplicate(), number, i
+				)
+			)
 	return result
 
 func inverse_custom(skip:int)->Matrix:
