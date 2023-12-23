@@ -107,22 +107,41 @@ void Matrix::move(Matrix& mat){
 }
 
 Matrix Matrix::duplicate(){
+    uint64_t row_size = this->row_size;
+    uint64_t col_size = this->col_size;
     Matrix new_matrix = Matrix(row_size, col_size);
-    new_matrix.data.resize(row_size);
+    std::vector<std::vector<double>>& my_data = data;
+    std::vector<std::vector<double>>& new_matrix_data = new_matrix.data;
+    new_matrix_data.resize(row_size);
     for (size_t r = 0; r < row_size; r++)
     {
-        new_matrix.data[r] = duplicate_vector(data[r]);
+        vector<double>& my_row = my_data[r];
+        vector<double>& new_vector = new_matrix_data[r];
+        new_vector.resize(col_size);
+        for (size_t i = 0; i < col_size; i++)
+        {
+            new_vector[i] = my_row[i];
+        }
     }
     return new_matrix;
 };
 
 Matrix* Matrix::duplicate_ptr(){
+    uint64_t row_size = this->row_size;
+    uint64_t col_size = this->col_size;
     Matrix* new_matrix = new Matrix(row_size, col_size);
+    std::vector<std::vector<double>>& my_data = data;
     std::vector<std::vector<double>>& new_matrix_data = new_matrix->data;
     new_matrix_data.resize(row_size);
     for (size_t r = 0; r < row_size; r++)
     {
-        new_matrix_data[r] = duplicate_vector(data[r]);
+        vector<double>& my_row = my_data[r];
+        vector<double>& new_vector = new_matrix_data[r];
+        new_vector.resize(col_size);
+        for (size_t i = 0; i < col_size; i++)
+        {
+            new_vector[i] = my_row[i];
+        }
     }
     return new_matrix;
 };
@@ -814,11 +833,8 @@ Matrix Matrix::operator/(double number){
 }
 
 void _add(Matrix* left, Matrix* right, Matrix* result){
-    // if (left->row_size != right->row_size)
-    // {
-    //     /* code */
-    // }
-
+    uint64_t row_size = left->row_size;
+    uint64_t col_size = left->col_size;
     vector<vector<double>> &result_data = result->data;
     vector<vector<double>> &right_data = right->data;
     vector<vector<double>> &left_data = left->data;
@@ -832,8 +848,84 @@ void _add(Matrix* left, Matrix* right, Matrix* result){
             result_row[c] = left_row[c] + right_row[c];
         }
     }
-    return result;
+}
+
+void _min(Matrix* left, Matrix* right, Matrix* result){
+    uint64_t row_size = left->row_size;
+    uint64_t col_size = left->col_size;
+    vector<vector<double>> &result_data = result->data;
+    vector<vector<double>> &right_data = right->data;
+    vector<vector<double>> &left_data = left->data;
+    for (size_t r = 0; r < row_size; r++)
+    {
+        double *result_row = result_data[r].data();
+        double* left_row = left_data[r].data();
+        double* right_row = right_data[r].data();
+        for (size_t c = 0; c < col_size; c++)
+        {
+            result_row[c] = left_row[c] - right_row[c];
+        }
+    }
+}
+
+void _mul_matrix(Matrix* left, Matrix* right, Matrix* result){
+    uint64_t left_col_size = left->col_size;
+    uint64_t left_row_size = left->row_size;
+    uint64_t right_col_size = right->col_size;
+    uint64_t right_row_size = right->row_size;
     
+    vector<vector<double>> &result_data = result->data;
+    vector<vector<double>> &left_data = left->data;
+    vector<vector<double>> &right_data = right->data;
+    for (size_t r = 0; r < left_row_size; r++)
+    {
+        vector<double> &left_row = left_data[r];
+        vector<double> &result_row = result_data[r];
+        for (size_t c = 0; c < right_col_size; c++)
+        {
+            double number = 0.0;
+            for (size_t i = 0; i < left_col_size; i++)
+            {
+                number += left_row[i] * right_data[i][c];
+            }
+            result_row[c] = number;
+        }
+    }
+    // return result;
+}
+
+void _mul_number(Matrix* left, double right, Matrix* result){
+    uint64_t left_col_size = left->col_size;
+    uint64_t left_row_size = left->row_size;
+    
+    vector<vector<double>> &result_data = result->data;
+    vector<vector<double>> &left_data = left->data;
+    for (size_t r = 0; r < left_row_size; r++)
+    {
+        vector<double> &left_row = left_data[r];
+        vector<double> &result_row = result_data[r];
+        for (size_t c = 0; c < left_col_size; c++)
+        {
+            result_row[c] = left_row[c] * right;
+        }
+    }
+}
+
+void _div_number(Matrix* left, double right, Matrix* result){
+    uint64_t left_col_size = left->col_size;
+    uint64_t left_row_size = left->row_size;
+    
+    vector<vector<double>> &result_data = result->data;
+    vector<vector<double>> &left_data = left->data;
+    for (size_t r = 0; r < left_row_size; r++)
+    {
+        vector<double> &left_row = left_data[r];
+        vector<double> &result_row = result_data[r];
+        for (size_t c = 0; c < left_col_size; c++)
+        {
+            result_row[c] = left_row[c] / right;
+        }
+    }
 }
 
 Matrix Matrix::add(Matrix mat){
@@ -853,57 +945,126 @@ Matrix Matrix::min(Matrix mat){
         cerr << "Inavlid matrix shape for -";
         exit(-1);
     }
-    Matrix result = this->duplicate();
-    vector<vector<double>> &result_data = result.data;
-    for (size_t r = 0; r < row_size; r++)
-    {
-        vector<double> &result_row = result_data[r];
-        vector<double> your_row = mat.data[r];
-        for (size_t c = 0; c < col_size; c++)
-        {
-            result_row[c] -= your_row[c];
-        }
-    }
+    Matrix result = Matrix().init(row_size, col_size);
+    _min(this, &mat, &result);
     return result;
 };
 
-void _mul(Matrix* left, Matrix* right, Matrix* result){
-    uint64_t left_col_size = left->col_size;
-    uint64_t left_row_size = left->row_size;
-    uint64_t right_col_size = right->col_size;
-    uint64_t right_row_size = right->row_size;
-    if (left_col_size != right_row_size)
+Matrix Matrix::mul(Matrix mat){
+    if (this->col_size != mat.row_size)
     {
-        cerr << "Inavlid matrix shape for *";
+        cerr << "Inavlid matrix shape for multiply";
         exit(-1);
     }
-    // *result = Matrix(left_row_size, right_col_size);
-    // result.data.resize(left_row_size);
-    vector<vector<double>> &result_data = result->data;
-    vector<vector<double>> &left_data = left->data;
-    vector<vector<double>> &right_data = right->data;
-    for (size_t r = 0; r < left_row_size; r++)
-    {
-        vector<double> &left_row = left_data[r];
-        vector<double> temp_row(right_col_size);
-        for (size_t c = 0; c < right_col_size; c++)
-        {
-            double number = 0.0;
-            for (size_t i = 0; i < left_col_size; i++)
-            {
-                number += left_row[i] * right_data[i][c];
-            }
-            temp_row[c] = number;
-        }
-        result_data[r] = temp_row;
-    }
-    // return result;
+    Matrix result = Matrix().init(this->row_size, mat.col_size);
+    _mul_matrix(this, &mat, &result);
+    return result;
 }
 
-Matrix Matrix::mul(Matrix mat){
-    Matrix result = Matrix().init(this->row_size, mat.col_size);
-    _mul(this, &mat, &result);
-    return result;
+void _each_fast_mul_row(void* _argument, int at_row, int to_row, int col_size, int element_size){
+    struct _for_fast *argument = (struct _for_fast*)_argument;
+    std::vector<std::vector<double>> &left = argument->left->data;
+    std::vector<std::vector<double>> &right = argument->right->data;
+    std::vector<std::vector<double>> &result = argument->result->data;
+    for (size_t r = at_row; r < to_row; r++)
+    {
+        double* left_row = left[r].data();
+        double* result_index = result[r].data();
+        for (size_t c = 0; c < col_size; c++)
+        {
+            double number = 0.0;
+            for (size_t i = 0; i < element_size; i++)
+            {
+                number += left_row[i] * right[i][c];
+            }
+            result_index[c] = number;
+        }
+    }
+}
+
+void _each_fast_mul_col(void* _argument, int at_col, int to_col, int row_size, int element_size){
+    struct _for_fast *argument = (struct _for_fast*)_argument;
+    std::vector<std::vector<double>> &left = argument->left->data;
+    std::vector<std::vector<double>> &right = argument->right->data;
+    std::vector<std::vector<double>> &result = argument->result->data;
+    for (size_t r = 0; r < row_size; r++)
+    {
+        double* left_row = left[r].data();
+        double* result_index = result[r].data();
+        for (size_t c = at_col; c < to_col; c++)
+        {
+            double number = 0.0;
+            for (size_t i = 0; i < element_size; i++)
+            {
+                number += left_row[i] * right[i][c];
+            }
+            result_index[c] = number;
+        }
+    }
+}
+
+void _fast_mul(Matrix* left, Matrix* right, Matrix* result, const int thread_count){
+    uint64_t row_size = left->row_size;
+    uint64_t col_size = right->col_size;
+    uint64_t element_size = left->col_size;
+    _for_fast argument = {
+        .left = left,
+        .right = right,
+        .result = result
+    };
+    std::thread* threads;
+    double each_index = 1.0/double(thread_count);
+    double from_index = 0.0;
+    double to_index = each_index;
+    if (row_size < col_size)
+    {
+        if (col_size < thread_count)
+        {
+            threads = new std::thread[col_size];
+            each_index = 1.0/double(col_size);
+            for (size_t i = 0; i < col_size; i++)
+            {
+                from_index = col_size * (i*each_index);
+                to_index = col_size * ((i+1)*each_index);
+                threads[i] = std::thread(_each_fast_mul_col, (void*)(&argument), from_index, to_index, row_size, element_size);
+            }
+        }else
+        {
+            threads = new std::thread[thread_count];
+            for (size_t i = 0; i < thread_count; i++)
+            {
+                from_index = col_size * (i*each_index);
+                to_index = col_size * ((i+1)*each_index);
+                threads[i] = std::thread(_each_fast_mul_col, (void*)(&argument), from_index, to_index, row_size, element_size);
+            }
+        }
+    }else
+    {
+        if (row_size < thread_count)
+        {
+            threads = new std::thread[row_size];
+            each_index = 1.0/double(row_size);
+            for (size_t i = 0; i < row_size; i++)
+            {
+                from_index = row_size * (i*each_index);
+                to_index = row_size * ((i+1)*each_index);
+                threads[i] = std::thread(_each_fast_mul_row, (void*)(&argument), from_index, to_index, col_size, element_size);
+            }
+        }else
+        {
+            threads = new std::thread[thread_count];
+            for (size_t i = 0; i < thread_count; i++)
+            {
+                from_index = row_size * (i*each_index);
+                to_index = row_size * ((i+1)*each_index);
+                threads[i] = std::thread(_each_fast_mul_row, (void*)(&argument), from_index, to_index, col_size, element_size);
+            }
+        }
+    }
+    for (size_t i = 0; i < thread_count; i++)
+    {
+        threads[i].join();
+    }
 }
 
 std::vector<Matrix> Matrix::split_col(int count){
@@ -1062,7 +1223,28 @@ std::vector<Matrix> Matrix::multi_mul(std::vector<Matrix> &left, std::vector<Mat
     for (size_t i = 0; i < size; i++)
     {
         matrices[i].move(Matrix().init(result_row_size, result_col_size));
-        threads[i] = std::thread(_mul, &left[i], &right[i], &matrices[i]);
+        threads[i] = std::thread(_mul_matrix, &left[i], &right[i], &matrices[i]);
+    }
+    
+    for (size_t i = 0; i < size; i++)
+    {
+        threads[i].join();
+    }
+
+    return matrices;
+}
+
+std::vector<Matrix> Matrix::multi_fast_mul(std::vector<Matrix> &left, std::vector<Matrix> &right, const int thread_count){
+    uint64_t size = left.size();
+    uint64_t result_row_size = left.front().row_size;
+    uint64_t result_col_size = right.front().col_size;
+    std::vector<Matrix> matrices = std::vector<Matrix>(size);
+    std::thread threads[size];
+
+    for (size_t i = 0; i < size; i++)
+    {
+        matrices[i].move(Matrix().init(result_row_size, result_col_size));
+        threads[i] = std::thread(_fast_mul, &left[i], &right[i], &matrices[i], thread_count);
     }
     
     for (size_t i = 0; i < size; i++)
@@ -1074,19 +1256,63 @@ std::vector<Matrix> Matrix::multi_mul(std::vector<Matrix> &left, std::vector<Mat
 }
 
 void Matrix::multi_self_add(std::vector<Matrix>& left, std::vector<Matrix>& right){
+    uint64_t size = left.size();
     std::thread threads[size];
 
     for (size_t i = 0; i < size; i++)
     {
-        threads[i] = std::thread(_mul, &left[i], &right[i], &matrices[i]);
+        threads[i] = std::thread(_add, &left[i], &right[i], &left[i]);
     }
     
     for (size_t i = 0; i < size; i++)
     {
         threads[i].join();
     }
+}
 
-    return matrices;
+void Matrix::multi_self_min(std::vector<Matrix>& left, std::vector<Matrix>& right){
+    uint64_t size = left.size();
+    std::thread threads[size];
+
+    for (size_t i = 0; i < size; i++)
+    {
+        threads[i] = std::thread(_min, &left[i], &right[i], &left[i]);
+    }
+    
+    for (size_t i = 0; i < size; i++)
+    {
+        threads[i].join();
+    }
+}
+
+void Matrix::multi_self_mul(std::vector<Matrix>& matrices, double number){
+    uint64_t size = matrices.size();
+    std::thread threads[size];
+
+    for (size_t i = 0; i < size; i++)
+    {
+        threads[i] = std::thread(_mul_number, &matrices[i], number, &matrices[i]);
+    }
+    
+    for (size_t i = 0; i < size; i++)
+    {
+        threads[i].join();
+    }
+}
+
+void Matrix::multi_self_div(std::vector<Matrix>& matrices, double number){
+    uint64_t size = matrices.size();
+    std::thread threads[size];
+
+    for (size_t i = 0; i < size; i++)
+    {
+        threads[i] = std::thread(_div_number, &matrices[i], number, &matrices[i]);
+    }
+    
+    for (size_t i = 0; i < size; i++)
+    {
+        threads[i].join();
+    }
 }
 
 Matrix& Matrix::self_add(Matrix mat){
@@ -1149,10 +1375,6 @@ Matrix& Matrix::self_div(double number){
         }
     }
     return *this;
-}
-
-void Matrix::operator()(Matrix&& matrix){
-    _move(this, (Matrix&&)matrix);
 }
 
 void _each_fast_add_row(void* _argument, int at_row, int to_row, int col_size){
@@ -1355,78 +1577,11 @@ Matrix Matrix::fast_min(Matrix matrix, const int thread_count){
     return result;
 }
 
-void _each_fast_mul_row(void* _argument, int at_row, int to_row, int col_size, int element_size){
-    struct _for_fast *argument = (struct _for_fast*)_argument;
-    std::vector<std::vector<double>> &left = argument->left->data;
-    std::vector<std::vector<double>> &right = argument->right->data;
-    std::vector<std::vector<double>> &result = argument->result->data;
-    for (size_t r = at_row; r < to_row; r++)
-    {
-        double* left_row = left[r].data();
-        double* result_index = result[r].data();
-        for (size_t c = 0; c < col_size; c++)
-        {
-            double number = 0.0;
-            for (size_t i = 0; i < element_size; i++)
-            {
-                number += left_row[i] * right[i][c];
-            }
-            result_index[c] = number;
-        }
-    }
-}
-
-void _each_fast_mul_col(void* _argument, int at_col, int to_col, int row_size, int element_size){
-    struct _for_fast *argument = (struct _for_fast*)_argument;
-    std::vector<std::vector<double>> &left = argument->left->data;
-    std::vector<std::vector<double>> &right = argument->right->data;
-    std::vector<std::vector<double>> &result = argument->result->data;
-    for (size_t r = 0; r < row_size; r++)
-    {
-        double* left_row = left[r].data();
-        double* result_index = result[r].data();
-        for (size_t c = at_col; c < to_col; c++)
-        {
-            double number = 0.0;
-            for (size_t i = 0; i < element_size; i++)
-            {
-                number += left_row[i] * right[i][c];
-            }
-            result_index[c] = number;
-        }
-    }
-}
-
 Matrix Matrix::fast_mul(Matrix matrix, const int thread_count){
     Matrix result = Matrix().init(this->row_size, matrix.col_size);
-    uint64_t row_size = this->row_size;
-    uint64_t col_size = matrix.col_size;
-    uint64_t element_size = this->col_size;
-    _for_fast argument = {
-        .left = this,
-        .right = &matrix,
-        .result = &result
-    };
-    std::thread threads[thread_count];
-    double each_index = 1.0/double(thread_count);
-    double from_index = 0.0;
-    double to_index = each_index;
-    for (size_t i = 0; i < thread_count; i++)
-    {
-        from_index = row_size * (i*each_index);
-        to_index = row_size * ((i+1)*each_index);
-        threads[i] = std::thread(_each_fast_mul_row, (void*)(&argument), from_index, to_index, col_size, element_size);
-    }
-    for (size_t i = 0; i < thread_count; i++)
-    {
-        threads[i].join();
-    }
+    _fast_mul(this, &matrix, &result, thread_count);
     return result;
 }
-
-// Matrix Matrix::fast_mul(Matrix){
-//     fast_mul()
-// }
 
 bool Matrix::is_equal_shape(Matrix mat){
     return((row_size == mat.row_size) && (col_size == mat.col_size));

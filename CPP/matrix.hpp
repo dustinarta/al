@@ -8,6 +8,7 @@
 #include <thread>
 #include <cstdarg>
 #include <cstdio>
+#include <chrono>
 
 using std::vector;
 using std::string;
@@ -15,6 +16,7 @@ using std::cout;
 using std::cerr;
 
 class Matrix {
+private:
 public:
     uint64_t row_size;
     uint64_t col_size;
@@ -56,8 +58,7 @@ public:
     Matrix operator-(double);
     Matrix operator*(double);
     Matrix operator/(double);
-    //Move
-    void operator()(Matrix&&);
+    
     Matrix add(Matrix);
     Matrix min(Matrix);
     Matrix mul(Matrix);
@@ -88,6 +89,7 @@ public:
     //Copy (optimized)
     static Matrix join_col(std::vector<Matrix>& matrices);
     static std::vector<Matrix> multi_mul(std::vector<Matrix>& left, std::vector<Matrix>& right);
+    static std::vector<Matrix> multi_fast_mul(std::vector<Matrix>& left, std::vector<Matrix>& right, const int thread_count);
     static void multi_self_add(std::vector<Matrix>& left, std::vector<Matrix>& right);
     static void multi_self_min(std::vector<Matrix>& left, std::vector<Matrix>& right);
     static void multi_self_mul(std::vector<Matrix>& matrices, double number);
